@@ -111,7 +111,7 @@ if (gameOver != 0) {//if game is over
     updateBoard(tRow, tCol);
     chkWin(tRow, tCol);
     turn++;
-    if (turn > 41) {
+    if (turn > 41 && gameOver == 0) {
         endGame(3);
     }
 }
@@ -205,7 +205,6 @@ function endGame(pNum) {
         document.getElementById("output").style.color = "green";
         document.getElementById("output").innerText = "Draw! - Out of Moves";
     }
-
     gameOver = 1;
     return;
 }
