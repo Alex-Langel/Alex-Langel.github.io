@@ -85,10 +85,10 @@ else {
     }
     updateBoard(tRow, tCol);
     chkWin();
-    if (turn > 7) {
+    turn++;
+    if (turn > 8 && gameOver == 0) {
         endGame("Tie Game");
     }
-    turn++;
 }
 }
 
@@ -133,12 +133,12 @@ function chkWin() {
         strokeWeight(5);
         line(0, 300, 300, 0);
         endGame("Player 1 Wins");
-        } else if (board[0][0] == 1 && board[1][1] == 1 && board[2][2] == 1) { //first diag O
+        } else if (board[0][0] == 2 && board[1][1] == 2 && board[2][2] == 2) { //first diag O
         stroke('red');
         strokeWeight(5);
         line(0, 0, 300, 300);
         endGame("Player 2 Wins");
-        } else if (board[0][2] == 1 && board[1][1] == 1 && board[2][0] == 1) { //other diag O
+        } else if (board[0][2] == 2 && board[1][1] == 2 && board[2][0] == 2) { //other diag O
         stroke('red');
         strokeWeight(5);
         line(0, 300, 300, 0);
