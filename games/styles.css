@@ -1,0 +1,136 @@
+body {
+    /*background-color: rgb(52, 21, 59);*/
+    background-color:rgb(25, 2, 34);
+    border: 0%;
+    margin: 0%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom:0;
+    right:0;
+    height: 100%;
+    width: 100%;
+}
+
+.myHdr{
+    font-size: 3em;
+    color: black;
+    text-shadow:
+    -2px   -2px rgb(116, 23, 204),
+    -2px -1.5px rgb(116, 23, 204),
+    -2px   -1px rgb(116, 23, 204),
+    -2px -0.5px rgb(116, 23, 204),
+    -2px    0px rgb(116, 23, 204),
+    -2px  0.5px rgb(116, 23, 204),
+    -2px    1px rgb(116, 23, 204),
+    -2px  1.5px rgb(116, 23, 204),
+    -2px    2px rgb(116, 23, 204),
+    -1.5px  2px rgb(116, 23, 204),
+    -1px    2px rgb(116, 23, 204),
+    -0.5px  2px rgb(116, 23, 204),
+    0px     2px rgb(116, 23, 204),
+    0.5px   2px rgb(116, 23, 204),
+    1px     2px rgb(116, 23, 204),
+    1.5px   2px rgb(116, 23, 204),
+    2px     2px rgb(116, 23, 204),
+    2px   1.5px rgb(116, 23, 204),
+    2px     1px rgb(116, 23, 204),
+    2px   0.5px rgb(116, 23, 204),
+    2px     0px rgb(116, 23, 204),
+    2px  -0.5px rgb(116, 23, 204),
+    2px    -1px rgb(116, 23, 204),
+    2px  -1.5px rgb(116, 23, 204),
+    2px    -2px rgb(116, 23, 204),
+    1.5px  -2px rgb(116, 23, 204),
+    1px    -2px rgb(116, 23, 204),
+    0.5px  -2px rgb(116, 23, 204),
+    0px    -2px rgb(116, 23, 204),
+    -0.5px -2px rgb(116, 23, 204),
+    -1px   -2px rgb(116, 23, 204),
+    -1.5px -2px rgb(116, 23, 204);
+    padding-top: 10px;
+    padding-left: 10px;
+    text-align: center;
+    border-color: rgb(0, 0, 0);
+    border-style: solid;
+    border-width: 3px;
+    border-left: 0px;
+    border-right: 0px;
+    border-bottom: 0px;
+    height: 1.5em;
+    white-space: nowrap;
+    word-wrap: break-word;
+}
+.navBar{
+    width: 100%;
+    background-color: rgb(0, 0, 0);
+    color:rgb(116, 23, 204);
+    white-space: nowrap;
+    font-size: 2em;
+    justify-content: space-between;
+    display: flex;
+
+    border-color: rgb(0, 0, 0);
+    border-style: solid;
+    border-width: 3px;
+    border-left: 0px;
+    border-right: 0px;
+}
+.btnHolder{
+    height: 100%;
+    border-radius: 25px;
+    background-color: rgb(157, 123, 175);
+    color:rgb(116, 23, 204);
+    width: 18%;
+    margin-left: 0%;
+    margin-right: 0%;
+    font-size: 30px;
+    float: left;
+    display: inline;
+    text-align: center;
+    border-color: rgb(95, 86, 86);
+    border-style: solid;
+    border-width: 4px;
+    border-top: 0px;
+    border-bottom: 0px;
+}
+
+.navBar a{
+    margin: auto;
+}
+
+.navBar a:link {
+    color: rgb(116, 23, 204);
+}
+.navBar a:visited {
+    color: rgb(116, 23, 204);
+}
+.navBar a:hover {
+    color: rgb(255, 255, 255);
+}
+.navBar a:active {
+    color: rgb(116, 23, 204);
+}
+
+img{
+    border-radius: 10px;
+}
+.ImageContainer{
+    background-color: green;
+    float: left;
+    text-align: center;
+    display: flex;
+    border-radius: 10px;
+}
+.ImageContainer a{
+    display: flex;
+    bottom: 0;
+}
+.ImageContainer:hover {
+    border-radius: 10px;
+    transform: scale(1.5);
+}
+.ListContainer{
+    margin: 30px;
+    background-color: blue;
+}
