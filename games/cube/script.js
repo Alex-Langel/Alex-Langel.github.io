@@ -853,7 +853,8 @@ noStroke();
         } else if (faceAry[i][j] == "yellow") {
             fill('yellow');
         } else if (faceAry[i][j] == "orange") {
-            fill('orange');
+            fill(240,120,0);
+            //fill('orange');
         } else if (faceAry[i][j] == "green") {
             fill('green');
         } else if (faceAry[i][j] == "white") {
