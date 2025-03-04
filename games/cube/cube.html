@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="styles.css">
+<head>
+    <title>TTN - Cube</title>
+</head>
+<body>
+<div class="myHdr">
+     The Rubik Zone
+</div>
+
+<div class="navBar">
+    <div class="btnHolder">
+    <a href="/index.html">Home</a>
+    </div><div class="btnHolder">
+    <a href="/games/games.html">Games</a>
+    </div><div class="btnHolder">
+    <a href="/animations/animations.html">Animations</a>
+    </div><div class="btnHolder">
+    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Blog</a>
+    </div><div class="btnHolder">
+    <a href="/other/other.html">Other</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.js"></script>
+<div class="CubeButtonContainer">
+
+<canvas id="cubeCanv" width=500% height=500%></canvas>
+<script src="script.js"></script>
+<div id = "colSplit" class="ButtonContainer"> <button class="invisBtn">O</button></div>
+    <div class="ButtonContainer">
+        <button id="lBtn" class = "cubeBtn" onclick="leftTurn()">L</button>
+        <button id="rBtn" class = "cubeBtn" onclick="rightTurn()">R</button>
+        <button id="uBtn" class = "cubeBtn" onclick="upTurn()">U</button>
+        <button id="dBtn" class = "cubeBtn" onclick="downTurn()">D</button>
+        <button id="fBtn" class = "cubeBtn" onclick="frontTurn()">F</button>
+        <button id="bBtn" class = "cubeBtn" onclick="backTurn()">B</button>
+    </div><div class="ButtonContainer">
+        <button id="lpBtn" class = "cubeBtn" onclick="leftPTurn()">L`</button>
+        <button id="rpBtn" class = "cubeBtn" onclick="rightPTurn()">R`</button>
+        <button id="upBtn" class = "cubeBtn" onclick="upPTurn()">U`</button>
+        <button id="dpBtn" class = "cubeBtn" onclick="downPTurn()">D`</button>
+        <button id="fpBtn" class = "cubeBtn" onclick="frontPTurn()">F`</button>
+        <button id="bpBtn" class = "cubeBtn" onclick="backPTurn()">B`</button>
+    </div><div class="ButtonContainer">
+        <button id="lpBtn" class = "cubeBtn" onclick="leftDTurn()">l</button>
+        <button id="rpBtn" class = "cubeBtn" onclick="rightDTurn()">r</button>
+        <button id="upBtn" class = "cubeBtn" onclick="upDTurn()">u</button>
+        <button id="dpBtn" class = "cubeBtn" onclick="downDTurn()">d</button>
+        <button id="fpBtn" class = "cubeBtn" onclick="frontDTurn()">f</button>
+        <button id="bpBtn" class = "cubeBtn" onclick="backDTurn()">b</button>
+    </div>
+    <div id = "colSplit" class="ButtonContainer"> <button class="invisBtn">.</button></div>
+    <div class="ButtonContainer">
+        <button id="mBtn" class = "cubeBtn" onclick="middleTurn()">M</button>
+        <button id="eBtn" class = "cubeBtn" onclick="equatorTurn()">E</button>
+        <button id="sBtn" class = "cubeBtn" onclick="standingTurn()">S</button>
+        <button id="xBtn" class = "cubeBtn" onclick="xTurn()">X</button>
+        <button id="yBtn" class = "cubeBtn" onclick="yTurn()">Y</button>
+        <button id="zBtn" class = "cubeBtn" onclick="zTurn()">Z</button>
+        </div><div class="ButtonContainer">
+        <button id="mpBtn" class = "cubeBtn" onclick="middlePTurn()">M`</button>
+        <button id="epBtn" class = "cubeBtn" onclick="equatorPTurn()">E`</button>
+        <button id="spBtn" class = "cubeBtn" onclick="standingPTurn()">S`</button>
+        <button id="xpBtn" class = "cubeBtn" onclick="xPTurn()">X`</button>
+        <button id="ypBtn" class = "cubeBtn" onclick="yPTurn()">Y`</button>
+        <button id="zpBtn" class = "cubeBtn" onclick="zPTurn()">Z`</button>
+        </div><div class="ButtonContainer"></div>
+</div></div>
+</body>
+</html>

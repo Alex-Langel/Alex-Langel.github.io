@@ -1,0 +1,33 @@
+.myHdr{
+    text-align: center;
+}
+
+p {
+    color:blueviolet;
+    font-size: 6em;
+    font-weight: bold;
+    text-align: center;
+    text-wrap: balance;
+}
+.output{
+    color:white;
+}
+
+.cubeBtn {
+    aspect-ratio: 20/1;
+    flex-grow: 1;
+    font-size: 3em;
+    border-radius: 10px;
+}
+.ButtonContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+}
+.CubeButtonContainer{
+    display: flex;
+}
+.invisBtn{
+    visibility: hidden;
+}

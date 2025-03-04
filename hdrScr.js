@@ -1,4 +1,4 @@
-var outStr = "Welcome to my website thing. Enjoy :)";
+var outStr = "Welcome to my website thing. Hope you like it :)";
 var pntStr = "";
 var curStr = "";
 var frmCnt = 0;
