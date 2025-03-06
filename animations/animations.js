@@ -88,7 +88,6 @@ var radarAnim = function(p) {
             p.fill(c);
             //draw circle
             p.circle(blipX, blipY, 10);
-            //debugOut(xVal, yVal, alphaVal);
         }
     };
     p.drawTrail = function() {
@@ -188,7 +187,6 @@ var lineAnim = function(p) {
             if (brX < 0)   {brX = 0;}
             if (brY < 0)   {brY = 0;}
         }
-        debugOut(Math.round(brX) + " | " + Math.round(brY));
     };
 };
 //||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||RUN ANIMATIONS|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
