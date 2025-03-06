@@ -3,10 +3,12 @@ const canvName2 = "canv2";
 
 //===========================================================================RADAR ANIMATION========================================================================================
 var radarAnim = function(p) {
+    var cW = 300;
+    var cH = 300;
+    var originX = (cW/2);
+    var originY = (cH/2);
     p.setup = function() {
         var canvas = document.getElementById(canvName1);
-        var cW = canvas.width;
-        var cH = canvas.height;
         p.createCanvas(300,300,canvas)
         p.drawBlank();
     };
@@ -19,8 +21,6 @@ var radarAnim = function(p) {
     };
     p.drawBlank = function() {
         var canvas = document.getElementById(canvName1)
-        var cW = canvas.width;
-        var cH = canvas.height;
         //main circle
         p.stroke(0,0,0);
         p.fill(45,100,75);
@@ -50,15 +50,6 @@ var radarAnim = function(p) {
         p.drawOutline();
     };
     p.blip = function() {
-        var canvas = document.getElementById(canvName1)
-        var cW = canvas.width;
-        var cH = canvas.height;
-        var originX = (cW/2);
-        var originY = (cH/2);
-        var unitCircleX = Math.cos(degToRad(p.frameCount));
-        var unitCircleY = Math.sin(degToRad(p.frameCount));
-        var xVal = originX + (unitCircleX * originX);
-        var yVal = originY + (unitCircleY * originY);
         var alphaVal;
         var c = p.color(255, 255, 255);
         var frameLoop = p.frameCount;
@@ -70,11 +61,8 @@ var radarAnim = function(p) {
                 frameLoop = frameLoop - 360;
             }
         }
-    
         if (frameLoop > 90) {
-    
-    
-            //for first 20 frames of blipTime
+            //for first 120 frames of blipTime
             if (frameLoop < 120) {
                 var aMod = frameLoop - 90;
                 alphaVal = aMod*9;
@@ -104,11 +92,6 @@ var radarAnim = function(p) {
         }
     };
     p.drawTrail = function() {
-        var canvas = document.getElementById(canvName1)
-        var cW = canvas.width;
-        var cH = canvas.height;
-        var originX = (cW/2);
-        var originY = (cH/2);
         var unitCircleX;
         var unitCircleY;
         var xVal;
@@ -145,35 +128,22 @@ var radarAnim = function(p) {
         }
     };
     p.drawMainLine = function() {
-        var canvas = document.getElementById(canvName1);
-        var cW = canvas.width;
-        var cH = canvas.height;
-        var originX = (cW/2);
-        var originY = (cH/2);
         var unitCircleX = Math.cos(degToRad(p.frameCount));
         var unitCircleY = Math.sin(degToRad(p.frameCount));
         var xVal = originX + (unitCircleX * originX);
         var yVal = originY + (unitCircleY * originY);
-    
         // Style the line.
         p.strokeWeight(2);
         p.stroke(255, 0, 0);
         p.line(originX, originY, xVal, yVal);
     };
-
     p.drawOutline = function() {
-        var canvas = document.getElementById(canvName1);
-        var cW = canvas.width;
-        var cH = canvas.height;
         p.stroke(0,0,0);
         p.noFill();
         p.strokeWeight(7);
         p.circle(cW/2, cH/2, cW);
     };
-
 };
-
-
 //===========================================================================NEXT ANIMATION========================================================================================
 var lineAnim = function(p) {
     var tlX = 0;
