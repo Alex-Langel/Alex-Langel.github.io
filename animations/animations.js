@@ -1,6 +1,13 @@
 const canvName1 = "canv1";
 const canvName2 = "canv2";
-
+const canvName3 = "canv3";
+const canvName4 = "canv4";
+const canvName5 = "canv5";
+const canvName6 = "canv6";
+const canvName7 = "canv7";
+const canvName8 = "canv8";
+const canvName9 = "canv9";
+const canvName10 = "canv10";
 //===========================================================================RADAR ANIMATION========================================================================================
 var radarAnim = function(p) {
     var cW = 300;
