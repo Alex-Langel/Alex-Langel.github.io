@@ -150,7 +150,7 @@ var radarAnim = function(p) {
         p.circle(cW/2, cH/2, cW);
     };
 };
-//===========================================================================NEXT ANIMATION========================================================================================
+//===========================================================================LINE ANIMATION========================================================================================
 var lineAnim = function(p) {
     //line position coords
     //tl=TopLeft | br = BottomRight | tr = TopRight | bl = BottomLeft
@@ -195,7 +195,6 @@ var lineAnim = function(p) {
             p.line(trX,trY,blX, blY);
         }
 
-        debugOut(Math.round(blX) + "|" + Math.round(blY), Math.round(trX) + "|" + Math.round(trY));
         //calculate line position
         if (frameLoop <=45) {  //grow from top left to bottom right
             brX = brX+6.67;
@@ -249,16 +248,29 @@ var bounceAnim = function(p) {
     var circDia = circRad*2;
     var posX = 80;
     var posY = 20;
-    //var posX = Math.floor(Math.random() * (cW-circRad)) + circRad;
-    //var posY = Math.floor(Math.random() * (cH-circRad)) + circRad;
+    
+    var posY = Math.floor(Math.random() * ((cH-circRad)/20-circRad/20+1)) * 20 + circRad;
+    var posX = Math.floor(Math.random() * ((cW-circRad)/20-circRad/20+1)) * 20 + circRad;
+    var randVert = Math.floor(Math.random() * 2);
+    var randHori = Math.floor(Math.random() * 2);
 
-    var vertMov = "down";
-    var horiMov = "right";
+    var vertMov;
+    var horiMov;
+    if (randVert == 1) {
+        vertMov = "down";
+    } else {
+        vertMov = "up";
+    }
+    if (randHori == 1) {
+        horiMov = "left";
+    } else {
+        horiMov = "right";
+    }
+    
     var vMovChange = false;
     var hMovChange = false;
     var circAry = [255, 255, 255];
     var bgAry = [255, 255, 255];
-
 
     p.setup = function() {
         var canvas = document.getElementById(canvName3);
