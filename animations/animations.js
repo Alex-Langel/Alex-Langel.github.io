@@ -856,11 +856,11 @@ var myp5 = new p5(radarAnim, canvName1);
 var myp5 = new p5(lineAnim, canvName2);
 var myp5 = new p5(bounceAnim, canvName3);
 
-var myp5 = new p5(radarAnim, canvName6);
-var myp5 = new p5(lineAnim, canvName7);
-var myp5 = new p5(bounceAnim, canvName8);
-var myp5 = new p5(radarAnim, canvName9);
-var myp5 = new p5(lineAnim, canvName10);
+var myp5 = new p5(insertSortAnim, canvName6);
+var myp5 = new p5(bubbleSortAnim, canvName7);
+var myp5 = new p5(mergeSortAnim, canvName8);
+var myp5 = new p5(selectSortAnim, canvName9);
+var myp5 = new p5(quickSortAnim, canvName10);
 
 
 //-----------------------------------------------------------------------------MATH/UTILS-------------------------------------------------------------------------------------------
