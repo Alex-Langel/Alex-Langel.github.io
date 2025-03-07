@@ -947,6 +947,21 @@ function shuffleArray(array) {
     }
     return array;
   }
+  function returnTrueXoverY(x,y) {
+    return Math.random() < (x/y); // Math.random() returns a number between 0 and 1
+  }
+  function getRandColorArray() {
+      var r,g, b;
+      r = Math.floor(Math.random() * 256);
+      g = Math.floor(Math.random() * 256);
+      b = Math.floor(Math.random() * 256);
+      return [r,g,b];
+  }
+  function getRandBetween(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
 //-----------------------------------------------------------------------------Debug-------------------------------------------------------------------------------------------
 function debugOut(outputVal1, outputVal2){
     if (outputVal1) {
