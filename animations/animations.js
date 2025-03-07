@@ -405,6 +405,71 @@ var rainAnim = function(p) {
         }
     };
 };
+//=====================================================================RANDOM LINES ANIMATION=========================================================================================
+var randLinesAnim = function(p) {
+    const allSides = [1,2,3,4];
+    var remSides = [];
+    var lnCol = [];
+    var fSide;
+    var sSide;
+    var randNum;
+    var fRandCoord, sRandCoord;
+    var fX, fY, sX, sY;
+
+    p.setup = function() {
+        var canvas = document.getElementById(canvName5);
+        p.createCanvas(300,300,canvas);
+    };
+    p.draw = function() {
+        randNum = Math.floor(Math.random() * allSides.length);
+        fSide = allSides[randNum];
+        remSides = [...allSides];
+        remSides.splice(randNum,1);
+        randNum = Math.floor(Math.random() * remSides.length);
+        sSide = remSides[randNum];
+        fRandCoord = getRandBetween(0,300);
+        sRandCoord = getRandBetween(0,300);
+        switch (fSide) {
+            case 1: //top
+                fX = fRandCoord;
+                fY = 0;
+            break;
+            case 2:
+                fX = fRandCoord;
+                fY = 300;
+            break;
+            case 3: //left
+                fX = 0;
+                fY = fRandCoord;
+            break;
+            case 4:
+                fX = 300;
+                fY = fRandCoord;
+            break;
+        }
+        switch (sSide) {
+            case 1: //top
+                sX = sRandCoord;
+                sY = 0;
+            break;
+            case 2:
+                sX = sRandCoord;
+                sY = 300;
+            break;
+            case 3: //left
+                sX = 0;
+                sY = sRandCoord;
+            break;
+            case 4:
+                sX = 300;
+                sY = sRandCoord;
+            break;
+        }
+        lnCol = getRandColorArray();
+        p.stroke(lnCol[0], lnCol[1], lnCol[2]);
+        p.line(fX,fY,sX,sY);
+    };
+};
 //=========================================================================INSERTION SORT ANIMATION=====================================================================================
 var insertSortAnim = function(p) {
     var offset = 22;
@@ -908,7 +973,7 @@ var myp5 = new p5(radarAnim, canvName1);
 var myp5 = new p5(lineAnim, canvName2);
 var myp5 = new p5(bounceAnim, canvName3);
 var myp5 = new p5(rainAnim, canvName4);
-
+var myp5 = new p5(randLinesAnim, canvName5);
 var myp5 = new p5(insertSortAnim, canvName6);
 var myp5 = new p5(bubbleSortAnim, canvName7);
 var myp5 = new p5(mergeSortAnim, canvName8);
