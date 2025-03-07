@@ -353,6 +353,59 @@ var bounceAnim = function(p) {
         //custom functions
     }
 };
+//===========================================================================RAIN ANIMATION=========================================================================================
+var rainAnim = function(p) {
+    var rainX;
+    var rainColor = [];
+    var rainDrop = [];
+    var rain = [];
+    var rainSpeed;
+    p.setup = function() {
+        var canvas = document.getElementById(canvName4);
+        p.createCanvas(300,300,canvas);
+        //setup 
+    };
+    p.draw = function() {
+        //one in 5
+        if(returnTrueXoverY(1,20)) {
+            rainX = Math.floor(Math.random() * (294 - 6 + 1)) + 6;
+            rainColor = getRandColorArray();
+            rainSpeed = getRandBetween(1,4) / 2;
+            rainDrop = [rainX,0,rainColor, rainSpeed];
+            rain.push(rainDrop);
+        }
+
+        p.drawRain();
+        p.rainFall();
+        
+    };
+    p.rainFall = function() {
+        if (rain.length > 0) {
+            for (var i = 0; i < rain.length; i++) {
+                if (rain[i][1] >= 311) {
+                    rain.splice(i,1);
+                } else {
+                    rain[i][1] = rain[i][1] + rain[i][3];
+                    debugOut(rain.length);
+                }
+            }
+        }
+    };
+    p.drawRain = function() {
+        if (rain.length > 0) {
+            for (var i = 0; i < rain.length; i++)
+            {
+                var rR = rain[i][2][0];
+                var rG = rain[i][2][1];
+                var rB = rain[i][2][2];
+
+                p.strokeWeight(0);
+                p.fill(rR,rG,rB);
+                p.circle(rain[i][0], rain[i][1], 10);
+            }
+        }
+    };
+};
 //=========================================================================INSERTION SORT ANIMATION=====================================================================================
 var insertSortAnim = function(p) {
     var offset = 22;
@@ -855,6 +908,7 @@ var quickSortAnim = function(p) {
 var myp5 = new p5(radarAnim, canvName1);
 var myp5 = new p5(lineAnim, canvName2);
 var myp5 = new p5(bounceAnim, canvName3);
+var myp5 = new p5(rainAnim, canvName4);
 
 var myp5 = new p5(insertSortAnim, canvName6);
 var myp5 = new p5(bubbleSortAnim, canvName7);
