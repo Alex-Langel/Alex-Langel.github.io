@@ -260,7 +260,7 @@ function chkWin(row, col) {
         } else {//p2 win
             stroke('red');
             strokeWeight(10);
-            line(((col*100)+50), ((row*100)+150), ((col*100)+50), ((row*100)+450));
+            line(((col*100)+50), ((row*100)+150), ((col-3*100)+50), ((row-3*100)+150));
             endGame(2);
         }
     }// --Check DR diag
@@ -311,7 +311,7 @@ function chkWin(row, col) {
         } else {//p2 win
             stroke('red');
             strokeWeight(10);
-            line(((col*100)+50), ((row*100)+150), ((col*100)+50), ((row*100)+450));
+            line(((col*100)+50), ((row*100)+150), ((col+3*100)+50), ((row-3*100)+150));
             endGame(2);
         }
     }// --Check DL diag
