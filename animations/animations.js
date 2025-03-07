@@ -386,7 +386,6 @@ var rainAnim = function(p) {
                     rain.splice(i,1);
                 } else {
                     rain[i][1] = rain[i][1] + rain[i][3];
-                    debugOut(rain.length);
                 }
             }
         }
