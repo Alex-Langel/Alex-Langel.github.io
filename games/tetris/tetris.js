@@ -292,7 +292,7 @@ function getRows() {
     for (let i = 0; i < droppingCells.length; i++) {
         uniqueY.add(droppingCells[i][0]); // Store only unique Y-values
     }
-    return Array.from(uniqueY); // Convert Set to an array
+    return Array.from(uniqueY).sort((a, b) => a - b); // Convert Set to an array
 }
 function clearRows() {
     console.log("Checking rows" + rowsToCheck);
