@@ -40,6 +40,11 @@ const UIendX = canvasWidth-1;
         var adlNxtT = nxtHldHi;
         var adlNxtW = UIendX-UIstartX + 1;
         var adlNxtH = (canvasHeight) * (3/20);
+    //UI ELEMENT -- CLEAR STRING
+        var clrStrL = UIstartX;
+        var clrStrT = adlNxtT + adlNxtH;
+        var clrStrW = UIendX-UIstartX + 1;
+        var clrStrH = (canvasHeight) * (2/20);
     //UI ELEMENT --COMBO & LINES
         //COMBO
 
@@ -75,7 +80,6 @@ let combo = 0;
 let score = 0;
 let clears = 0;
 let clearsToLevel = 20;
-let gridBGColor = [0,0,0];
 let level = 1;
 
 function setup(){
@@ -113,7 +117,6 @@ function draw(){
                 }
             } else  if (gameRunning == true) {
                 curTetro = getFromBag();
-                //nextTetro = getRandBetween(1,7);
                 //curTetro = 1;
                 drawNextPiece(curBag[0]);
                 drawAdtlNext();
@@ -166,8 +169,13 @@ function resetFunc() {
     rowsToCheck = [];
     simulClears = 0;
     score = 0;
+    heldTetro = 0;
     grid = initGrid(grid);
-    drawScore();
+    drawGrid();
+    drawUI();
+    clears = 0;
+    clearsToLevel = 20;
+    level = 1;
 }
 function spawnTetro(letter) {
 //|1 = I|2 = O|3 = T|4 = J|5 = L|6 = S|7 = Z|
@@ -232,10 +240,10 @@ function spawnTetro(letter) {
     case 4:
         if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[2][5][2] == "white"  && grid[2][4][2] == "white" ) { //if there is room for tetronimo
             grid[0][5][2] = "blue";
-            grid[2][5][2] = "blue";
             grid[1][5][2] = "blue";
+            grid[2][5][2] = "blue";
             grid[2][4][2] = "blue";
-            droppingCells = [[0,5],[1,5],[2,5],[2,4]];
+            droppingCells = [[0,5],[2,5],[1,5],[2,4]];
         } else {
             if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[1][4][2] == "white") {
                 grid[0][5][2] = "blue"
@@ -253,10 +261,10 @@ function spawnTetro(letter) {
     case 5:
         if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[2][5][2] == "white"  && grid[2][6][2] == "white" ) { //if there is room for tetronimo
             grid[0][5][2] = "orange";
-            grid[2][5][2] = "orange";
             grid[1][5][2] = "orange";
+            grid[2][5][2] = "orange";
             grid[2][6][2] = "orange";
-            droppingCells = [[0,5],[1,5],[2,5],[2,6]];
+            droppingCells = [[0,5],[2,5],[1,5],[2,6]];
         } else {
             if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[1][6][2] == "white") {
                 grid[0][5][2] = "orange";
@@ -385,6 +393,7 @@ function addScore() {
     }
     if (simulClears > 0) {
         combo = combo + 1;
+        drawClearText(getClearString());
     } else {
         combo = 0;
     }
@@ -416,6 +425,28 @@ function getFromBag() {
         retVal = curBag.shift();
     }
     return retVal;
+}
+//-----------------------------------------------------------------------------OTHER  ---------------------------------------------------------------------------------------------
+function getClearString() {
+    var outString
+    if (simulClears > 0) {
+        if (simulClears == 1) {
+            if (combo > 1) {
+                outString = combo + "x Combo!";
+            } else {
+                outString = "Single Clear";
+            }
+        } else if (simulClears == 2) {
+            outString = "Double Clear!";
+        } else if (simulClears == 3) {
+            outString = "Triple Clear!";
+        } else if (simulClears == 4) {
+            outString = "!!TETRIS!!";
+        }
+    } else {
+        outString = "";
+    }
+    return outString;
 }
 //-----------------------------------------------------------------------------MOVEMENT---------------------------------------------------------------------------------------------
 function onGround() {
@@ -701,19 +732,21 @@ function drawGrid(){
 function drawUI() {
 
     drawNextHold(nxtHldTop, nxtHldLeft, nxtHldWid, nxtHldHi);
-
     drawAdtlNext();
+    drawClearText();
+
+
 
     drawScore();
     drawLevel();
     drawSpeed();
 
 
+    
 
     //drawClears();
     //drawCombo();
-    //drawClearText();
-
+    
     //stroke(0,0,0);
     //rect(spdL, infoSecS, UIendX-spdL, infoSecE - infoSecS);
 
@@ -882,6 +915,17 @@ function drawEmptyMiniGrid(left, top, width, height) {
     fill(255,255,255);
     rect(left,top, width, height);
 }
+function drawClearText(clearString) {
+    fill(255);
+    rect(clrStrL, clrStrT, clrStrW, clrStrH);
+    if (clearString != "" ) {
+        fill(0);
+        stroke(0);
+        textSize(24);
+        textAlign(CENTER, CENTER);
+        text(clearString, clrStrL + clrStrW / 2, clrStrT + clrStrH / 2);
+    }
+}
 function drawScore() {
     //score Text (label)
     let scTextT = ((gridHeight+1) * (8/10));
@@ -913,8 +957,7 @@ function drawClears() {
 }
 function drawCombo() {
 }
-function drawClearText() {
-}
+
 function drawLevel() {
     let infoSecS = (gridHeight+1) * (19/20);
     let infoSecE = gridHeight;
