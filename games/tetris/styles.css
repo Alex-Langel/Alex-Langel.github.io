@@ -1,3 +1,7 @@
+body{
+    background-color: rgb(30, 30, 40);
+}
+
 #canvCont { 
     width: 900px;
     height: 900px;
