@@ -96,7 +96,6 @@ function draw(){
     if (gameRunning == true) {
         if (frameCount % gameSpeed == 0) {
             if (droppingPiece == true) {
-                debugOut(onGround());
                 if (onGround() ==  true) {
                     rowsToCheck = getRows();
                     droppingPiece = false
@@ -1029,8 +1028,3 @@ function shuffleArray(array) {
     }
   }
 //-------------------------------------------------------------------------------DEBUG----------------------------------------------------------------------------------------------
-function debugOut(outputVal){
-    if (outputVal) {
-        document.getElementById("debugOut").innerText= outputVal;
-    }
-}
