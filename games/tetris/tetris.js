@@ -1,52 +1,104 @@
-//THERE IS SOME KIND OF ERROR WITH LINE CLEARING
-//LINES ARE SOMETIMES CLEARED INCORRECTLY, ESPECIALLY WITH MULTIPLE AT ONCE
-//ROTATION NEEDS IMPLEMENTED
+//!!!!!IMPLEMENTING UI!!!!!
+//WALLKICK NEEDS IMPLEMENTED
+//NEEDS BETTER RANDOMIZTION
+//BETTER SCORE CALCULATION
+//PIVOT POINTS NEED FIXED 
+//    SPECIFICALLY ORANGE PIECE
+//
+//
+//
 //====================================================================================GLOBAL VARIABLES=================================================================================================================
 //GET CANVAS SIZE
 let container = document.getElementById("canvCont");
 let canvasWidth = container.clientWidth;
 let canvasHeight = container.clientHeight;
 
+//Grid Size
+const gridWidth = (canvasWidth/2)-1;
+const gridHeight = canvasHeight -1;
+
+//UI POSITIONS
+const UIstartX = gridWidth + 1;
+const UIendX = canvasWidth-1;
+    //TOP UI ELEMENT -- NEXT PIECE AND HOLD PIECE
+    var nxtHldTop = 0;
+    var nxtHldLeft = UIstartX;
+    var nxtHldWid = UIendX-UIstartX + 1;
+    var nxtHldHi = (canvasHeight) * (4/20);
+        //NEXT PIECE LOCATION AND SIZE
+        var nxtGrdL = nxtHldLeft + (nxtHldWid/10);
+        var nxtGrdT = canvasHeight * (1/20);
+        var nxtGrdW = nxtHldWid * (2/10);
+        var nxtGrdH = nxtHldHi * (1/2);
+        //HOLD PIECE LOCATION AND SIZE
+        var hldGrdL = UIstartX + (nxtHldWid/2)+ ((nxtHldWid/2) * 2/5);
+        var hldGrdT = nxtGrdT;
+        var hldGrdW = nxtHldWid * (2/10);
+        var hldGrdH = nxtHldHi * (1/2);
+    //UI ELEMENT -- ADDITIONAL NEXT PIECES
+        var adlNxtL = UIstartX;
+        var adlNxtT = nxtHldHi;
+        var adlNxtW = UIendX-UIstartX + 1;
+        var adlNxtH = (canvasHeight) * (3/20);
+    //UI ELEMENT --COMBO & LINES
+        //COMBO
+
+        //LINES
+
+    //UI ELEMENT -- SCORE
+
+    //BOTTOM UI ELEMENT -- LEVEL AND SPEED
+
 //GRID SIZE
 const gridRows = 20;
 const gridCols = 10;
 
-//COORDINATE DATA  
-const gridWidth = (canvasWidth/2)-1;
-const gridHeight = canvasHeight -1;
-const UIstartX = gridWidth + 1;
-const UIendX = canvasWidth-1;
-let grid = [];
-
 //GAME DATA
 let frameLength = 20; //lower to speed up
+let gameSpeed = frameLength;
+let grid = [];
 
 //GAME VARIABLES
+const fullBag = [1,2,3,4,5,6,7];
 let droppingPiece = false;
 let curTetro = 0;
+let curBag = [];
+let nxtBag = [];
 let nextTetro = 0;
+let heldTetro = 0;
 let droppingCells = [];
 let gameRunning = true;
+let holdLock = false;
 let rowsToCheck = [];
 let simulClears = 0;
+let combo = 0;
 let score = 0;
 let clears = 0;
+let clearsToLevel = 20;
+let gridBGColor = [0,0,0];
+let level = 1;
 
 function setup(){
     let canvas = createCanvas(canvasWidth, canvasHeight);
     canvas.parent("canvCont");
     grid = initGrid(grid);
-    drawScore();
+    curBag = [...fullBag];
+    shuffleArray(curBag);
+    nxtBag = [...fullBag];
+    shuffleArray(nxtBag);
+    //curTetro = getFromBag();
+    drawUI();
+    //drawScore();
+    //drawEmptyTetroBox();
 }
 function draw(){
     //background(0);
     if (gameRunning == true) {
-        if (frameCount % frameLength == 0) {
+        if (frameCount % gameSpeed == 0) {
             if (droppingPiece == true) {
                 debugOut(onGround());
                 if (onGround() ==  true) {
                     rowsToCheck = getRows();
-                    console.log("Checking rows" + rowsToCheck);
                     droppingPiece = false
                     droppingCells = [];
                     clearRows();
@@ -61,13 +113,12 @@ function draw(){
                     moveDown();
                 }
             } else  if (gameRunning == true) {
-                if (nextTetro == 0) {
-                    nextTetro = getRandBetween(1,7);
-                }
-                curTetro = nextTetro;
-                nextTetro = getRandBetween(1,7);
+                curTetro = getFromBag();
+                //nextTetro = getRandBetween(1,7);
                 //curTetro = 1;
-                drawNextTetro(nextTetro);
+                drawNextPiece(curBag[0]);
+                drawAdtlNext();
+                //drawUI();
                 spawnTetro(curTetro);
                 droppingPiece = true;
             }
@@ -121,6 +172,8 @@ function resetFunc() {
 }
 function spawnTetro(letter) {
 //|1 = I|2 = O|3 = T|4 = J|5 = L|6 = S|7 = Z|
+    droppingCells = [];
+    holdLock = false;
     switch (letter) {
     case 1: 
         if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[2][5][2] == "white"  && grid[3][5][2] == "white" ) { //if there is room for tetronimo
@@ -180,8 +233,8 @@ function spawnTetro(letter) {
     case 4:
         if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[2][5][2] == "white"  && grid[2][4][2] == "white" ) { //if there is room for tetronimo
             grid[0][5][2] = "blue";
-            grid[1][5][2] = "blue";
             grid[2][5][2] = "blue";
+            grid[1][5][2] = "blue";
             grid[2][4][2] = "blue";
             droppingCells = [[0,5],[1,5],[2,5],[2,4]];
         } else {
@@ -201,8 +254,8 @@ function spawnTetro(letter) {
     case 5:
         if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[2][5][2] == "white"  && grid[2][6][2] == "white" ) { //if there is room for tetronimo
             grid[0][5][2] = "orange";
-            grid[1][5][2] = "orange";
             grid[2][5][2] = "orange";
+            grid[1][5][2] = "orange";
             grid[2][6][2] = "orange";
             droppingCells = [[0,5],[1,5],[2,5],[2,6]];
         } else {
@@ -257,7 +310,6 @@ function spawnTetro(letter) {
         console.error("INVALID TETRONIMO ATTEMPTED TO SPAWN");
         break;
     }
-    console.log(droppingCells)
 }
 function topRowEmpty() {
     var activeTet = false;
@@ -293,6 +345,7 @@ function getRows() {
         uniqueY.add(droppingCells[i][0]); // Store only unique Y-values
     }
     return Array.from(uniqueY).sort((a, b) => a - b); // Convert Set to an array
+
 }
 function clearRows() {
     console.log("Checking rows" + rowsToCheck);
@@ -301,6 +354,11 @@ function clearRows() {
             deleteAndPushRow(rowsToCheck[i]);
             simulClears++;
             clears++;
+            if (clearsToLevel == 0) {
+                levelUp();
+            } else {
+                clearsToLevel--;
+            }
         }
     }
     console.log("ROWS CLEARED AT ONCE:" + simulClears);
@@ -326,7 +384,39 @@ function addScore() {
     } else if (simulClears == 4) {
         score = score + 800;
     }
+    if (simulClears > 0) {
+        combo = combo + 1;
+    } else {
+        combo = 0;
+    }
+    if (combo > 1) {
+        score = score + (combo * 50);
+    }
     simulClears = 0;
+}
+function levelUp() {
+    clearsToLevel = 20;
+    level++;
+    if (gameSpeed > 1) {
+        gameSpeed--;
+    }
+    drawLevel();
+    drawSpeed();
+}
+function getFromBag() {
+    //console.log(curBag);
+    //console.log(curBag.length);
+    //console.log(nxtBag);
+    var retVal = 0;
+    if (curBag.length == 1) {
+        retVal = curBag.shift();
+        curBag = [...nxtBag];
+        nxtBag = [...fullBag];
+        shuffleArray(nxtBag);
+    } else {
+        retVal = curBag.shift();
+    }
+    return retVal;
 }
 //-----------------------------------------------------------------------------MOVEMENT---------------------------------------------------------------------------------------------
 function onGround() {
@@ -385,7 +475,6 @@ function moveDown() {
         let col = droppingCells[i][1];
         grid[row][col][2] = shapeColor; // Mark new position (adjust as needed)
     }
-    console.log(droppingCells)
 }
 function bonkLeft() {
     for (let i = 0; i < 4; i++) {
@@ -493,7 +582,7 @@ function moveRight() {
         grid[row][col][2] = shapeColor; // Mark new position (adjust as needed)
     }
 }
-function rotateLeft() {
+function rotateRight() {
     const pivot = droppingCells[2]; // Use the 3rd cell as pivot
     let newPositions = [];
     if (curTetro == 2) {
@@ -533,7 +622,7 @@ function rotateLeft() {
     }
 
 }
-function rotateRight() {
+function rotateLeft() {
     const pivot = droppingCells[2]; // Use the 3rd cell as pivot
     let newPositions = [];
     if (curTetro == 2) {
@@ -572,6 +661,32 @@ function rotateRight() {
         grid[r][c][2] = shapeColor; // Restore color
     }   
 }
+function holdPiece() {
+    var newPiece;
+    console.log(curBag);
+    console.log(heldTetro);
+    if (heldTetro == 0) {       //if no piece held already
+        heldTetro = curTetro;       //set hold to current tetro
+        curTetro = getFromBag();    //get current tetro from bag
+        drawNextPiece(curBag[0]);
+        drawAdtlNext();
+    } else {                    //if piece held
+        newPiece = heldTetro;       //put held piece in temp
+        heldTetro = curTetro;       //set the hold to the current tetro
+        curTetro = newPiece;        //set the current to the new piece
+        console.log(heldTetro);
+        console.log(curTetro);
+    }
+    //clear current piece from screen
+    console.log(curBag);
+    droppingCells.forEach(([r, c]) => grid[r][c][2] = "white");
+    droppingCells = [];
+
+    spawnTetro(curTetro);
+    drawGrid();
+    drawHoldPiece(heldTetro);
+
+}
 //------------------------------------------------------------------------------DRAWING---------------------------------------------------------------------------------------------
 function drawGrid(){
     for (var i = 0; i < grid.length; i++) {
@@ -584,16 +699,125 @@ function drawGrid(){
         }
     }
 }
-function drawNextTetro() {
+function drawUI() {
+
+    drawNextHold(nxtHldTop, nxtHldLeft, nxtHldWid, nxtHldHi);
+
+    drawAdtlNext();
+
+    drawScore();
+    drawLevel();
+    drawSpeed();
+
+
+
+    //drawClears();
+    //drawCombo();
+    //drawClearText();
+
+    //stroke(0,0,0);
+    //rect(spdL, infoSecS, UIendX-spdL, infoSecE - infoSecS);
+
+
+}
+function drawNextHold(top, left, width, height) {
+    //NEXT textbox
+    var nxtTxtL = left;
+    var nxtTxtT = top;
+    var nxtTxtW = width / 2;
+    var nxtTxtH = height / 4;
+    fill(0);
+    stroke(0);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text("NEXT", nxtTxtL + nxtTxtW * (2/5), nxtTxtT + nxtTxtH / 2);
+    //NEXT grid
+    drawNextPiece(nextTetro); 
+
+    //HOLD textbox
+    var hldTxtL = left + nxtTxtW;
+    var hldTxtT = top;
+    var hldTxtW = width / 2;
+    var hldTxtH = height / 4;
+    fill(0);
+    stroke(0);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text("HOLD", hldTxtL + hldTxtW * (3/5), hldTxtT + hldTxtH / 2);
+    //HOLD grid
+    drawHoldPiece(heldTetro);
+}
+function drawNextPiece(tetNum) {
+    drawMiniGrid(tetNum, nxtGrdL, nxtGrdT, nxtGrdW, nxtGrdH);
+}
+function drawHoldPiece(tetNum) {
+    drawMiniGrid(tetNum, hldGrdL, hldGrdT, hldGrdW, hldGrdH);
+}
+function drawAdtlNext() {
+    var nextTets = [];
+    var numRem;
+    if (curBag.length > 5) {
+        for (var i = 1; i < 6; i++) {
+            nextTets.push(curBag[i]);
+        }
+    } else {
+        numRem = 5;
+        for (var i = 1; i < curBag.length; i++)
+        {
+            nextTets.push(curBag[i]);
+            numRem--;
+        }
+        for (var i = 0; i < numRem; i++)
+        {
+            nextTets.push(nxtBag[i]);
+        }
+    }
+    //grid locations
+    var gridT = nxtHldHi + (canvasHeight * (3/80));
+    var gridL = adlNxtL + (adlNxtW * (1/40));
+    var gridW = (UIendX-UIstartX + 1) * (3/20);
+    var gridH = gridW;
+    drawMiniGrid(nextTets[0], gridL, gridT, gridW, gridH);
+
+    //gridLoc2
+    gridL = gridL + gridW + (adlNxtW * (1/20))
+    drawMiniGrid(nextTets[1], gridL, gridT, gridW, gridH);
+    //gridLoc3
+    gridL = gridL + gridW + (adlNxtW * (1/20))
+    drawMiniGrid(nextTets[2], gridL, gridT, gridW, gridH);
+    //gridLoc4
+    gridL = gridL + gridW + (adlNxtW * (1/20))
+    drawMiniGrid(nextTets[3], gridL, gridT, gridW, gridH);
+    //gridLoc5
+    gridL = gridL + gridW + (adlNxtW * (1/20))
+    drawMiniGrid(nextTets[4], gridL, gridT, gridW, gridH);
+}
+function drawMiniGrid(tetNum, left, top, width, height) {
+    let nxtGrid = [];
+    var cellWidth = ((width) / 4) - 1;
+    var cellHeight = ((height) / 4) - 1;
+    var cellX = left;
+    var cellY = top;
+    var tCell = [];
+    var tRow = [];
+
+    //drawEmptyTetroBox();
+    drawEmptyMiniGrid(left, top, width, height);
 
     var c = "white";
-    nxtGrid = [[[[700,100],[724,124],[c]],[[725,100],[749,124],[c]],[[750,100],[774,124],[c]],[[775,100],[799,124],[c]]],
-               [[[700,125],[724,149],[c]],[[725,125],[749,149],[c]],[[750,125],[774,149],[c]],[[775,125],[799,149],[c]]],
-               [[[700,150],[724,174],[c]],[[725,150],[749,174],[c]],[[750,150],[774,174],[c]],[[775,150],[799,174],[c]]],
-               [[[700,175],[724,199],[c]],[[725,175],[749,199],[c]],[[750,175],[774,199],[c]],[[775,175],[799,199],[c]]]]
-
-//|1 = I|2 = O|3 = T|4 = J|5 = L|6 = S|7 = Z|
-switch (nextTetro) {
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            tCell = [[cellX, cellY],[cellX+cellWidth, cellY+cellWidth],[c]];
+            cellX = cellX + cellWidth + 1;
+            tRow.push(tCell);
+        }
+        cellX = left;
+        cellY = cellY + cellHeight + 1;
+        nxtGrid.push(tRow);
+        tRow = [];
+    }
+    //|1 = I|2 = O|3 = T|4 = J|5 = L|6 = S|7 = Z|
+    switch (tetNum) {
     case 1:
        nxtGrid[0][2][2] = "aqua";
        nxtGrid[1][2][2] = "aqua";
@@ -637,13 +861,9 @@ switch (nextTetro) {
        nxtGrid[2][3][2] = "red";
         break;
     default:
-        console.error("INVALID TETRONIMO ATTEMPTED TO SPAWN");
         break;
     }
 
-    strokeWeight(0);
-    fill(255,255,255);
-    rect(699,99,102,102);
     for (var i = 0; i < nxtGrid.length; i++) {
         for (var j = 0; j < nxtGrid[0].length; j++) {
             if (nxtGrid[i][j][2] != "white") {
@@ -656,15 +876,74 @@ switch (nextTetro) {
         }
     }
 }
-function drawScore() {
+function drawEmptyMiniGrid(left, top, width, height) {
+
+    stroke (0,0,0);
+    strokeWeight(1);
     fill(255,255,255);
-    strokeWeight(0);
-    rect(700,300,200,100);
-    rect(700,400,200,100);
+    rect(left,top, width, height);
+}
+function drawScore() {
+    //score Text (label)
+    let scTextT = ((gridHeight+1) * (8/10));
+    let scTextB = ((gridHeight+1) * (17/20)) - 1;
+    //border rectangle
+    fill(150,150,150);
+    rect(UIstartX, scTextT, UIendX-UIstartX, scTextB-scTextT);
+    //Text
+    fill(0);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text("SCORE", UIstartX + (UIendX-UIstartX) / 2, scTextT + (scTextB-scTextT) / 2);
+
+
+    //score box (actual score)
+    let scBoxT = scTextB + 1;
+    let scBoxB = ((gridHeight+1) * (19/20)) - 1;
+    //border rectangle
+    fill(200,200,200);
+    rect(UIstartX, scBoxT, UIendX-UIstartX, scBoxB-scBoxT);
+    //Text
+    fill(0);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text(score, UIstartX + (UIendX-UIstartX) / 2, scBoxT + (scBoxB-scBoxT) / 2);
+
+}
+function drawClears() {
+}
+function drawCombo() {
+}
+function drawClearText() {
+}
+function drawLevel() {
+    let infoSecS = (gridHeight+1) * (19/20);
+    let infoSecE = gridHeight;
+    let lvlR = (UIendX+UIstartX-1)/2;
+
+    strokeWeight(1);
+    stroke(0,0,0);
+    fill(0);
+    rect(UIstartX, infoSecS, lvlR-UIstartX, infoSecE - infoSecS); //draw box
+    stroke(255,255,255);
+    fill(255,255,255);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text("Level " + level, UIstartX + (lvlR-UIstartX) / 2, infoSecS + (infoSecE - infoSecS) / 2);
+}
+function drawSpeed() {
+    let infoSecS = (gridHeight) * (19/20);
+    let infoSecE = gridHeight;
+    let spdL = (UIendX+UIstartX+1)/2;
+    
+    strokeWeight(1);
+    stroke(0,0,0);
+    fill(255,255,255);
+    rect(spdL, infoSecS, UIendX-spdL, infoSecE - infoSecS); //draw box
     fill(0,0,0);
-    textSize(18);
-    text("Score:  " + score, 700, 300, 200, 100);
-    text("Clears: " + clears, 700, 400, 200, 100);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text("Speed: " + (21 - gameSpeed), spdL + (UIendX-spdL) / 2, infoSecS + (infoSecE - infoSecS) / 2);
 }
 //------------------------------------------------------------------------------KEYPRESS--------------------------------------------------------------------------------------------
 function keyPressed() {
@@ -687,7 +966,7 @@ function keyPressed() {
     } else if (key === 'S' || key === 's') { 
         if (droppingPiece) {
             console.log(onGround())
-            frameLength = frameLength / 2;
+            gameSpeed = gameSpeed / 2;
             console.log("A key was pressed!" + key);
         }
     } else if (key === 'W' || key === 'w') { 
@@ -714,11 +993,18 @@ function keyPressed() {
         rotateRight();
         drawGrid();
         console.log("A key was pressed!" + key);
+    } else if (keyCode === SHIFT) {
+        console.log("Shift key was pressed!");
+        if (holdLock != true) {
+            holdPiece();
+            holdLock = true;
+        }
+        console.log("Shift key was pressed!");
     }
 }
 function keyReleased() {
     if (key === 'S' || key === 's') {
-        frameLength = frameLength * 2
+        gameSpeed = gameSpeed * 2
     }
 }
 //-----------------------------------------------------------------------------MATH/UTILS-------------------------------------------------------------------------------------------
@@ -727,6 +1013,21 @@ function getRandBetween(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+function shuffleArray(array) {
+    let currentIndex = array.length;
+  
+    // While there remain elements to shuffle...
+    while (currentIndex != 0) {
+  
+      // Pick a remaining element...
+      let randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+  
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+  }
 //-------------------------------------------------------------------------------DEBUG----------------------------------------------------------------------------------------------
 function debugOut(outputVal){
     if (outputVal) {
