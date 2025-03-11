@@ -128,11 +128,11 @@ function setup(){
     //drawEmptyTetroBox();
 }
 function draw(){
-    elapsedTime = millis() - startTimer;
     console.log(elapsedTime);
     drawTimer();
     //background(0);
     if (gameRunning == true) {
+        elapsedTime = millis() - startTimer;
         if (frameCount % effSpeed == 0) {
             if (droppingPiece == true) {
                 if (onGround() ==  true) {
