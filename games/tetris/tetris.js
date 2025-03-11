@@ -109,7 +109,12 @@ let clears = 0;
 let clearsToLevel = 20;
 let level = 1;
 
+//TIME
+let startTimer;
+let elapsedTime
+
 function setup(){
+    startTimer = millis();
     let canvas = createCanvas(canvasWidth, canvasHeight);
     canvas.parent("canvCont");
     grid = initGrid(grid);
@@ -123,6 +128,9 @@ function setup(){
     //drawEmptyTetroBox();
 }
 function draw(){
+    elapsedTime = millis() - startTimer;
+    console.log(elapsedTime);
+    drawTimer();
     //background(0);
     if (gameRunning == true) {
         if (frameCount % effSpeed == 0) {
@@ -961,6 +969,13 @@ function drawTimer() {
     rect(tmrLocL, tmrLocT, tmrLocW, tmrLocH);
 
 
+    fill(255);
+    stroke(255);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text(msToMinuteSecondTime(elapsedTime), tmrLocL + tmrLocW / 2, tmrLocT + tmrLocH / 2);
+
+
 }
 function drawClearsCombos() {
     var txtcclrT = (tmrLocT  + tmrLocH);
@@ -1185,5 +1200,49 @@ function shuffleArray(array) {
       [array[currentIndex], array[randomIndex]] = [
         array[randomIndex], array[currentIndex]];
     }
-  }
+}
+function msToMinuteSecondTime(millisecondsIn) {
+    var outString;
+    var sString;
+    var mString;
+    var msString;
+    var seconds = 0;
+    var minutes = 0;
+    var milliseconds = floor(millisecondsIn); 
+
+    seconds = Math.floor(milliseconds/1000);
+    milliseconds = milliseconds % 1000;
+    minutes = Math.floor(seconds/60);
+    seconds = seconds % 60;
+
+    if (minutes == 0) {
+        mString = "00"
+    }else if (minutes < 9) {
+        mString = "0" + minutes;
+    }
+    else {
+        mString = minutes
+    }
+    if (seconds == 0) {
+        sString = "00"
+    }else if (seconds < 9) {
+        sString = "0" + seconds;
+    } else {
+        sString = seconds;
+    }
+    
+    if (milliseconds == 0) {
+        msString = "000"
+    }else if (milliseconds < 9) {
+        msString = "00" + milliseconds;
+    }else if (milliseconds < 90) {
+        msString = "0" + milliseconds;
+    } else {
+        msString = milliseconds;
+    }
+
+    outString = mString + ":" + sString + ":" +msString;
+    return outString;
+
+}
 //-------------------------------------------------------------------------------DEBUG----------------------------------------------------------------------------------------------
