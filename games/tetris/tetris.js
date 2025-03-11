@@ -24,17 +24,17 @@ const UIendX = canvasWidth-1;
     var nxtHldTop = 0;
     var nxtHldLeft = UIstartX;
     var nxtHldWid = UIendX-UIstartX + 1;
-    var nxtHldHi = (canvasHeight) * (4/20);
+    var nxtHldHi = (canvasHeight) * (5/20);
         //NEXT PIECE LOCATION AND SIZE
         var nxtGrdL = nxtHldLeft + (nxtHldWid/10);
         var nxtGrdT = canvasHeight * (1/20);
-        var nxtGrdW = nxtHldWid * (2/10);
-        var nxtGrdH = nxtHldHi * (1/2);
+        var nxtGrdW = nxtHldWid * (6/20);
+        var nxtGrdH = nxtHldHi * (12/20);
         //HOLD PIECE LOCATION AND SIZE
         var hldGrdL = UIstartX + (nxtHldWid/2)+ ((nxtHldWid/2) * 2/5);
         var hldGrdT = nxtGrdT;
         var hldGrdW = nxtHldWid * (2/10);
-        var hldGrdH = nxtHldHi * (1/2);
+        var hldGrdH = nxtHldHi * (2/5);
     //UI ELEMENT -- ADDITIONAL NEXT PIECES
         var adlNxtL = UIstartX;
         var adlNxtT = nxtHldHi;
@@ -44,11 +44,28 @@ const UIendX = canvasWidth-1;
         var clrStrL = UIstartX;
         var clrStrT = adlNxtT + adlNxtH;
         var clrStrW = UIendX-UIstartX + 1;
-        var clrStrH = (canvasHeight) * (2/20);
-    //UI ELEMENT --COMBO & LINES
-        //COMBO
-
+        var clrStrH = (canvasHeight) * (3/20);
+    //UI ELEMENT -- TIMER
+        var tmrLocL = UIstartX;
+        var tmrLocT = clrStrT + clrStrH;
+        var tmrLocW = UIendX-UIstartX + 1;
+        var tmrLocH = (canvasHeight) * (2/20);
+    //UI ELEMENT -- COMBO & LINES
         //LINES
+        var curLineL = UIstartX;
+        var curLineT = (tmrLocT  + tmrLocH) + (canvasHeight) * (1/20);
+        var curLineW = (UIendX-UIstartX + 1) /3;
+        var curLineH = (canvasHeight) * (2/20);
+        var lvlLineL = curLineL + curLineW
+        var lvlLineT = curLineT;
+        var lvlLineW = curLineW
+        var lvlLineH = curLineH;
+
+        //COMBO
+        var comLineL = lvlLineL + lvlLineW;
+        var comLineT = lvlLineT;
+        var comLineW = lvlLineW;
+        var comLineH = lvlLineH;
 
     //UI ELEMENT -- SCORE
 
@@ -61,7 +78,17 @@ const gridCols = 10;
 //GAME DATA
 let frameLength = 20; //lower to speed up
 let gameSpeed = frameLength;
+let effSpeed = gameSpeed;
 let grid = [];
+let bgColor = [5,5,5];
+let gridColor = [255,255,255];
+let lightUIColor = [200,200,200];
+let lilLightUIColor = [170,170,170];
+let veryLightUIColor = [230,230,230];
+let darkUIColor = [50,50,50];
+let lilDarkUIColor = [80,80,80];
+let veryDarkUIColor = [20,20,20];
+let midUIColor = [125,125,125];
 
 //GAME VARIABLES
 const fullBag = [1,2,3,4,5,6,7];
@@ -98,7 +125,7 @@ function setup(){
 function draw(){
     //background(0);
     if (gameRunning == true) {
-        if (frameCount % gameSpeed == 0) {
+        if (frameCount % effSpeed == 0) {
             if (droppingPiece == true) {
                 if (onGround() ==  true) {
                     rowsToCheck = getRows();
@@ -355,7 +382,6 @@ function getRows() {
 
 }
 function clearRows() {
-    console.log("Checking rows" + rowsToCheck);
     for (var i = 0; i < rowsToCheck.length; i++) {
         if (rowIsFull(rowsToCheck[i]) == true) {
             deleteAndPushRow(rowsToCheck[i]);
@@ -394,6 +420,7 @@ function addScore() {
     if (simulClears > 0) {
         combo = combo + 1;
         drawClearText(getClearString());
+        drawClearsCombos();
     } else {
         combo = 0;
     }
@@ -405,16 +432,13 @@ function addScore() {
 function levelUp() {
     clearsToLevel = 20;
     level++;
-    if (gameSpeed > 1) {
+    if (gameSpeed > 2) {
         gameSpeed--;
     }
     drawLevel();
     drawSpeed();
 }
 function getFromBag() {
-    //console.log(curBag);
-    //console.log(curBag.length);
-    //console.log(nxtBag);
     var retVal = 0;
     if (curBag.length == 1) {
         retVal = curBag.shift();
@@ -454,20 +478,15 @@ function onGround() {
         let row = droppingCells[i][0];
         let col = droppingCells[i][1];
 
-        //console.log(`Checking cell [${row}, ${col}]`); // Debugging
-
         // If any part is at the bottom of the entire grid (including hidden rows)
         if (row >= gridRows - 1) {
-            //console.log("Tetromino reached bottom of grid.");
             return true;
         }
 
         // Check if the next row is occupied
         let nextCellColor = grid[row + 1][col][2];
-        //console.log("Next cell color: " + nextCellColor);
 
         if (nextCellColor != "white") {
-            //console.log("Non-Empty Cell Detected: " + row + ", " + col + "|" + nextCellColor);
             let isPartOfTetromino = false;
 
             // Make sure it's not falsely detecting its own cells
@@ -477,14 +496,11 @@ function onGround() {
                     break;
                 }
             }
-            //console.log("Detected own Tetromino: " + isPartOfTetromino);
             if (!isPartOfTetromino) {
-                //console.log("Tetromino is resting on another block.");
                 return true;
             }
         }
     }
-    //console.log("Tetromino can still fall.");
     return false;
 }
 function moveDown() {
@@ -693,8 +709,6 @@ function rotateLeft() {
 }
 function holdPiece() {
     var newPiece;
-    console.log(curBag);
-    console.log(heldTetro);
     if (heldTetro == 0) {       //if no piece held already
         heldTetro = curTetro;       //set hold to current tetro
         curTetro = getFromBag();    //get current tetro from bag
@@ -723,7 +737,11 @@ function drawGrid(){
         for (var j = 0; j < grid[0].length; j++) {
             stroke(0,0,0);
             strokeWeight(1);
-            fill(grid[i][j][2]);
+            if (grid[i][j][2] == "white") {
+                fill(veryDarkUIColor);
+            } else {
+                fill(grid[i][j][2]);
+            }
             //fill("white");
             rect(grid[i][j][0][0], grid[i][j][0][1], grid[i][j][1][0]-grid[i][j][0][0], grid[i][j][1][1]-grid[i][j][0][1]);
         }
@@ -734,15 +752,12 @@ function drawUI() {
     drawNextHold(nxtHldTop, nxtHldLeft, nxtHldWid, nxtHldHi);
     drawAdtlNext();
     drawClearText();
-
-
-
+    drawTimer();
+    drawClearsCombos();
     drawScore();
     drawLevel();
     drawSpeed();
 
-
-    
 
     //drawClears();
     //drawCombo();
@@ -754,28 +769,34 @@ function drawUI() {
 }
 function drawNextHold(top, left, width, height) {
     //NEXT textbox
-    var nxtTxtL = left;
+    var nxtTxtL = nxtGrdL;
     var nxtTxtT = top;
-    var nxtTxtW = width / 2;
+    var nxtTxtW = nxtGrdW;
     var nxtTxtH = height / 4;
-    fill(0);
-    stroke(0);
+
+    fill(bgColor);
+    strokeWeight(0);
+    rect(left, top, width, height);
+    strokeWeight(1);
+
+    fill(255);
+    stroke(255);
     textSize(24);
     textAlign(CENTER, CENTER);
-    text("NEXT", nxtTxtL + nxtTxtW * (2/5), nxtTxtT + nxtTxtH / 2);
+    text("NEXT", nxtTxtL + nxtTxtW * (1/2), nxtTxtT + nxtTxtH / 2);
     //NEXT grid
     drawNextPiece(nextTetro); 
 
     //HOLD textbox
-    var hldTxtL = left + nxtTxtW;
+    var hldTxtL = hldGrdL
     var hldTxtT = top;
-    var hldTxtW = width / 2;
+    var hldTxtW = hldGrdW;
     var hldTxtH = height / 4;
-    fill(0);
-    stroke(0);
+    fill(255);
+    stroke(255);
     textSize(24);
     textAlign(CENTER, CENTER);
-    text("HOLD", hldTxtL + hldTxtW * (3/5), hldTxtT + hldTxtH / 2);
+    text("HOLD", hldTxtL + hldTxtW * (1/2), hldTxtT + hldTxtH / 2);
     //HOLD grid
     drawHoldPiece(heldTetro);
 }
@@ -786,6 +807,7 @@ function drawHoldPiece(tetNum) {
     drawMiniGrid(tetNum, hldGrdL, hldGrdT, hldGrdW, hldGrdH);
 }
 function drawAdtlNext() {
+    //get 6 next tetriminos
     var nextTets = [];
     var numRem;
     if (curBag.length > 5) {
@@ -804,6 +826,13 @@ function drawAdtlNext() {
             nextTets.push(nxtBag[i]);
         }
     }
+    //bounding rectangle
+    fill(bgColor);
+    strokeWeight(0);
+    rect(adlNxtL, adlNxtT, adlNxtW, adlNxtH)
+    strokeWeight(1);
+
+
     //grid locations
     var gridT = nxtHldHi + (canvasHeight * (3/80));
     var gridL = adlNxtL + (adlNxtW * (1/40));
@@ -910,13 +939,13 @@ function drawMiniGrid(tetNum, left, top, width, height) {
 }
 function drawEmptyMiniGrid(left, top, width, height) {
 
-    stroke (0,0,0);
+    stroke (veryDarkUIColor);
     strokeWeight(1);
-    fill(255,255,255);
+    fill(veryDarkUIColor);
     rect(left,top, width, height);
 }
 function drawClearText(clearString) {
-    fill(255);
+    fill(lightUIColor[0], lightUIColor[1], lightUIColor[2]);
     rect(clrStrL, clrStrT, clrStrW, clrStrH);
     if (clearString != "" ) {
         fill(0);
@@ -926,16 +955,106 @@ function drawClearText(clearString) {
         text(clearString, clrStrL + clrStrW / 2, clrStrT + clrStrH / 2);
     }
 }
+function drawTimer() {
+    stroke(5);
+    fill(darkUIColor);
+    rect(tmrLocL, tmrLocT, tmrLocW, tmrLocH);
+
+
+}
+function drawClearsCombos() {
+    var txtcclrT = (tmrLocT  + tmrLocH);
+    var txtcclrL = UIstartX;
+    var txtcclrW = (UIendX-UIstartX + 1) /3;
+    var txtcclrH = (canvasHeight) * (1/20);
+
+    //header text
+    fill(lightUIColor[0], lightUIColor[1], lightUIColor[2]);
+    stroke(0);
+    rect(txtcclrL, txtcclrT, txtcclrW, txtcclrH);
+
+    fill(0);
+    stroke(0);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Lines Cleared:", txtcclrL + txtcclrW * (1/2), txtcclrT + txtcclrH / 2);
+    txtcclrL = txtcclrL + txtcclrW;
+
+    fill(lilLightUIColor[0], lilLightUIColor[1], lilLightUIColor[2]);
+    stroke(0);
+    rect(txtcclrL, txtcclrT, txtcclrW, txtcclrH);
+
+    fill(0);
+    stroke(0);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Lines to Level:", txtcclrL + txtcclrW * (1/2), txtcclrT + txtcclrH / 2);
+    txtcclrL = txtcclrL + txtcclrW;
+    
+    fill(lightUIColor[0], lightUIColor[1], lightUIColor[2]);
+    stroke(0);
+    rect(txtcclrL, txtcclrT, txtcclrW, txtcclrH);
+
+    fill(0);
+    stroke(0);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Combo:", txtcclrL + txtcclrW * (1/2), txtcclrT + txtcclrH / 2);
+
+    drawClears();
+    drawCombos();
+}
+function drawClears() {
+    //draw bounding rectangle
+    fill(midUIColor);
+    stroke(0);
+    rect(curLineL, curLineT, curLineW, curLineH);
+    //text
+    fill(0);
+    stroke(0);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text(clears, curLineL + curLineW * (1/2), curLineT + curLineH / 2);
+    //draw bounding rectangle
+    fill(lilDarkUIColor);
+    stroke(0);
+    rect(lvlLineL, lvlLineT, lvlLineW, lvlLineH);
+    //text
+    fill(0);
+    stroke(0);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text(clearsToLevel, lvlLineL + lvlLineW * (1/2), lvlLineT + lvlLineH / 2);
+
+
+
+}
+function drawCombos() {
+    fill(midUIColor);
+    rect(comLineL, comLineT, comLineW, comLineH);
+
+        //draw bounding rectangle
+        fill(midUIColor);
+        stroke(0);
+        rect(comLineL, comLineT, comLineW, comLineH);
+        //text
+        fill(0);
+        stroke(0);
+        textSize(24);
+        textAlign(CENTER, CENTER);
+        text(combo, comLineL + comLineW * (1/2), comLineT + comLineH / 2);
+}
 function drawScore() {
     //score Text (label)
     let scTextT = ((gridHeight+1) * (8/10));
     let scTextB = ((gridHeight+1) * (17/20)) - 1;
     //border rectangle
     fill(150,150,150);
+    stroke(0);
     rect(UIstartX, scTextT, UIendX-UIstartX, scTextB-scTextT);
     //Text
     fill(0);
-    textSize(24);
+    textSize(30);
     textAlign(CENTER, CENTER);
     text("SCORE", UIstartX + (UIendX-UIstartX) / 2, scTextT + (scTextB-scTextT) / 2);
 
@@ -944,7 +1063,7 @@ function drawScore() {
     let scBoxT = scTextB + 1;
     let scBoxB = ((gridHeight+1) * (19/20)) - 1;
     //border rectangle
-    fill(200,200,200);
+    fill(midUIColor);
     rect(UIstartX, scBoxT, UIendX-UIstartX, scBoxB-scBoxT);
     //Text
     fill(0);
@@ -953,11 +1072,6 @@ function drawScore() {
     text(score, UIstartX + (UIendX-UIstartX) / 2, scBoxT + (scBoxB-scBoxT) / 2);
 
 }
-function drawClears() {
-}
-function drawCombo() {
-}
-
 function drawLevel() {
     let infoSecS = (gridHeight+1) * (19/20);
     let infoSecE = gridHeight;
@@ -965,7 +1079,7 @@ function drawLevel() {
 
     strokeWeight(1);
     stroke(0,0,0);
-    fill(0);
+    fill(veryDarkUIColor);
     rect(UIstartX, infoSecS, lvlR-UIstartX, infoSecE - infoSecS); //draw box
     stroke(255,255,255);
     fill(255,255,255);
@@ -980,7 +1094,7 @@ function drawSpeed() {
     
     strokeWeight(1);
     stroke(0,0,0);
-    fill(255,255,255);
+    fill(veryLightUIColor);
     rect(spdL, infoSecS, UIendX-spdL, infoSecE - infoSecS); //draw box
     fill(0,0,0);
     textSize(24);
@@ -1007,8 +1121,10 @@ function keyPressed() {
         console.log("A key was pressed!" + key);
     } else if (key === 'S' || key === 's') { 
         if (droppingPiece) {
-            console.log(onGround())
-            gameSpeed = gameSpeed / 2;
+            console.log(onGround());
+            if (effSpeed == gameSpeed) {
+                effSpeed = gameSpeed/2;
+            }
             console.log("A key was pressed!" + key);
         }
     } else if (key === 'W' || key === 'w') { 
@@ -1046,7 +1162,7 @@ function keyPressed() {
 }
 function keyReleased() {
     if (key === 'S' || key === 's') {
-        gameSpeed = gameSpeed * 2
+        effSpeed = gameSpeed;
     }
 }
 //-----------------------------------------------------------------------------MATH/UTILS-------------------------------------------------------------------------------------------
