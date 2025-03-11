@@ -1,9 +1,5 @@
-//!!!!!IMPLEMENTING UI!!!!!
-//WALLKICK NEEDS IMPLEMENTED
 //NEEDS BETTER RANDOMIZTION
 //BETTER SCORE CALCULATION
-//PIVOT POINTS NEED FIXED 
-//    SPECIFICALLY ORANGE PIECE
 //
 //
 //
@@ -36,20 +32,20 @@ const UIendX = canvasWidth-1;
         var hldGrdW = nxtHldWid * (2/10);
         var hldGrdH = nxtHldHi * (2/5);
     //UI ELEMENT -- ADDITIONAL NEXT PIECES
-        var adlNxtL = UIstartX;
-        var adlNxtT = nxtHldHi;
-        var adlNxtW = UIendX-UIstartX + 1;
-        var adlNxtH = (canvasHeight) * (3/20);
+    var adlNxtL = UIstartX;
+    var adlNxtT = nxtHldHi;
+    var adlNxtW = UIendX-UIstartX + 1;
+    var adlNxtH = (canvasHeight) * (3/20);
     //UI ELEMENT -- CLEAR STRING
-        var clrStrL = UIstartX;
-        var clrStrT = adlNxtT + adlNxtH;
-        var clrStrW = UIendX-UIstartX + 1;
-        var clrStrH = (canvasHeight) * (3/20);
+    var clrStrL = UIstartX;
+    var clrStrT = adlNxtT + adlNxtH;
+    var clrStrW = UIendX-UIstartX + 1;
+    var clrStrH = (canvasHeight) * (3/20);
     //UI ELEMENT -- TIMER
-        var tmrLocL = UIstartX;
-        var tmrLocT = clrStrT + clrStrH;
-        var tmrLocW = UIendX-UIstartX + 1;
-        var tmrLocH = (canvasHeight) * (2/20);
+    var tmrLocL = UIstartX;
+    var tmrLocT = clrStrT + clrStrH;
+    var tmrLocW = UIendX-UIstartX + 1;
+    var tmrLocH = (canvasHeight) * (2/20);
     //UI ELEMENT -- COMBO & LINES
         //LINES
         var curLineL = UIstartX;
@@ -60,15 +56,12 @@ const UIendX = canvasWidth-1;
         var lvlLineT = curLineT;
         var lvlLineW = curLineW
         var lvlLineH = curLineH;
-
         //COMBO
         var comLineL = lvlLineL + lvlLineW;
         var comLineT = lvlLineT;
         var comLineW = lvlLineW;
         var comLineH = lvlLineH;
-
     //UI ELEMENT -- SCORE
-
     //BOTTOM UI ELEMENT -- LEVEL AND SPEED
 
 //GRID SIZE
@@ -99,6 +92,7 @@ let nxtBag = [];
 let nextTetro = 0;
 let heldTetro = 0;
 let droppingCells = [];
+let ghostCells = [];
 let gameRunning = true;
 let holdLock = false;
 let rowsToCheck = [];
@@ -112,6 +106,9 @@ let level = 1;
 //TIME
 let startTimer;
 let elapsedTime
+
+//workaround
+//let shiftTimeout = 0;
 
 function setup(){
     startTimer = millis();
@@ -128,14 +125,13 @@ function setup(){
     //drawEmptyTetroBox();
 }
 function draw(){
-    console.log(elapsedTime);
     drawTimer();
     //background(0);
     if (gameRunning == true) {
         elapsedTime = millis() - startTimer;
         if (frameCount % effSpeed == 0) {
             if (droppingPiece == true) {
-                if (onGround() ==  true) {
+                if (onGround(droppingCells) ==  true) {
                     rowsToCheck = getRows();
                     droppingPiece = false
                     droppingCells = [];
@@ -144,9 +140,8 @@ function draw(){
                     drawScore();
                     if  (topRowEmpty() == false)
                     {
-                        gameRunning = false;
+                        gameEnd();
                     }
-
                 } else {
                     moveDown();
                 }
@@ -156,11 +151,14 @@ function draw(){
                 drawNextPiece(curBag[0]);
                 drawAdtlNext();
                 //drawUI();
+                holdLock = false;
                 spawnTetro(curTetro);
                 droppingPiece = true;
             }
-            drawGrid();
         }
+    }
+    if (gameRunning == true) {
+        drawGrid();
     }
 }
 function initGrid() {
@@ -211,12 +209,11 @@ function resetFunc() {
     clears = 0;
     clearsToLevel = 20;
     level = 1;
-    startTimer = millis();
 }
 function spawnTetro(letter) {
 //|1 = I|2 = O|3 = T|4 = J|5 = L|6 = S|7 = Z|
     droppingCells = [];
-    holdLock = false;
+    
     switch (letter) {
     case 1: 
         if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[2][5][2] == "white"  && grid[3][5][2] == "white" ) { //if there is room for tetronimo
@@ -235,9 +232,7 @@ function spawnTetro(letter) {
             if (grid[2][5][2] == "white"){
                 grid[2][5][2] = "aqua";
             }
-            gameRunning = false;
-            droppingPiece = false;
-            droppingCells = [];
+            gameEnd();
         }
         break;
     case 2:
@@ -252,9 +247,7 @@ function spawnTetro(letter) {
                 grid[0][4][2] = "yellow";
                 grid[0][5][2] = "yellow";
             } 
-            gameRunning = false;
-            droppingPiece = false;
-            droppingCells = [];
+            gameEnd();
         }
         break;
     case 3:
@@ -268,9 +261,7 @@ function spawnTetro(letter) {
                 if (grid[0][5][2] == "white") {
                     grid[0][5][2] = "magenta";
                 }
-            gameRunning = false;
-            droppingPiece = false;
-            droppingCells = [];
+            gameEnd();
         }
         break;
     case 4:
@@ -289,9 +280,7 @@ function spawnTetro(letter) {
                 grid[0][5][2] = "blue"
                 grid[0][4][2] = "blue"
             }
-            gameRunning = false;
-            droppingPiece = false;
-            droppingCells = [];
+            gameEnd();
         }
         break;
     case 5:
@@ -310,9 +299,7 @@ function spawnTetro(letter) {
                 grid[0][5][2] = "orange";
                 grid[0][6][2] = "orange";
             }
-            gameRunning = false;
-            droppingPiece = false;
-            droppingCells = [];
+            gameEnd();
         }
         break;
     case 6:
@@ -327,9 +314,7 @@ function spawnTetro(letter) {
                 grid[0][5][2] = "green"
                 grid[0][4][2] = "green"
             }
-            gameRunning = false;
-            droppingPiece = false;
-            droppingCells = [];
+            gameEnd();
         }
         break;
     case 7:
@@ -344,9 +329,7 @@ function spawnTetro(letter) {
                 grid[0][5][2] == "red"
                 grid[0][6][2] == "red"
             }
-            gameRunning = false;
-            droppingPiece = false;
-            droppingCells = [];
+            gameEnd();
         }
         break;
     default:
@@ -459,6 +442,28 @@ function getFromBag() {
     }
     return retVal;
 }
+function getGhostPosition(activePiece) {
+    // Copy the active piece's positions
+    let ghostPiece = activePiece.map(cell => [...cell]);
+    // Keep lowering the ghost until it collides with the floor or another block
+    if (onGround(ghostPiece) == false) {
+        while (onGround(ghostPiece) == false) {
+            for (var i = 0; i < ghostPiece.length; i++) {
+                ghostPiece[i][0] = ghostPiece[i][0] + 1;
+            }
+        }
+    }
+    console.log(ghostPiece);
+    return ghostPiece;
+
+}
+function gameEnd() {
+    console.log("GAME OVER");
+    gameRunning = false;
+    droppingPiece = false;
+    droppingCells = [];
+    drawScoreboard();
+}
 //-----------------------------------------------------------------------------OTHER  ---------------------------------------------------------------------------------------------
 function getClearString() {
     var outString
@@ -482,12 +487,13 @@ function getClearString() {
     return outString;
 }
 //-----------------------------------------------------------------------------MOVEMENT---------------------------------------------------------------------------------------------
-function onGround() {
+function onGround(cells) {
+    //console.log(cells);
     for (let i = 0; i < 4; i++) {
-        let row = droppingCells[i][0];
-        let col = droppingCells[i][1];
+        let row = cells[i][0];
+        let col = cells[i][1];
 
-        // If any part is at the bottom of the entire grid (including hidden rows)
+        // If any part is at the bottom of the entire grid
         if (row >= gridRows - 1) {
             return true;
         }
@@ -640,83 +646,126 @@ function moveRight() {
 function rotateRight() {
     const pivot = droppingCells[2]; // Use the 3rd cell as pivot
     let newPositions = [];
-    if (curTetro == 2) {
+
+    if (curTetro == 2) { // Skip rotation for square piece
         return;
     }
-    // Remove current piece from grid to prevent self-intersection issues
+
     let shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
-    droppingCells.forEach(([r, c]) => grid[r][c][2] = "white");
+    droppingCells.forEach(([r, c]) => grid[r][c][2] = "white"); // Clear existing piece
 
     for (let i = 0; i < 4; i++) {
         let x = droppingCells[i][0] - pivot[0];
         let y = droppingCells[i][1] - pivot[1];
 
-        // Apply 90-degree counterclockwise rotation
+        // Apply 90-degree clockwise rotation
         let newX = pivot[0] + y;
         let newY = pivot[1] - x;
 
-        // Check boundaries and collisions
-        if (
-            newX < 0 || newX >= grid.length ||
-            newY < 0 || newY >= grid[0].length ||
-            (grid[newX][newY][2] != "white") // Ensure new cell is empty
-        ) {
-            // Restore original positions if rotation is invalid
-            droppingCells.forEach(([r, c]) => grid[r][c][2] = shapeColor);
-            return; // Cancel rotation
-        }
-        
         newPositions.push([newX, newY]);
     }
 
-    // Apply new positions if all checks passed
-    for (let i = 0; i < 4; i++) {
-        droppingCells[i] = newPositions[i];
-        let [r, c] = droppingCells[i];
-        grid[r][c][2] = shapeColor; // Restore color
+    // Try the rotated position directly
+    if (isValidPosition(newPositions)) {
+        applyRotation(newPositions, shapeColor);
+        return;
     }
 
+    // If invalid, try wall kicks
+    let kickedPositions = tryWallKick(droppingCells, newPositions);
+    if (kickedPositions) {
+        applyRotation(kickedPositions, shapeColor);
+    } else {
+        // Restore original if all attempts fail
+        droppingCells.forEach(([r, c]) => grid[r][c][2] = shapeColor);
+    }
 }
 function rotateLeft() {
     const pivot = droppingCells[2]; // Use the 3rd cell as pivot
     let newPositions = [];
-    if (curTetro == 2) {
+
+    if (curTetro == 2) { // Skip rotation for square piece
         return;
     }
-    // Remove current piece from grid to prevent self-intersection issues
+
     let shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
-    droppingCells.forEach(([r, c]) => grid[r][c][2] = "white");
+    droppingCells.forEach(([r, c]) => grid[r][c][2] = "white"); // Clear existing piece
 
     for (let i = 0; i < 4; i++) {
         let x = droppingCells[i][0] - pivot[0];
         let y = droppingCells[i][1] - pivot[1];
 
-        // Apply 90-degree counterclockwise rotation
+        // Apply 90-degree clockwise rotation
         let newX = pivot[0] - y;
         let newY = pivot[1] + x;
 
-        // Check boundaries and collisions
-        if (
-            newX < 0 || newX >= grid.length ||
-            newY < 0 || newY >= grid[0].length ||
-            (grid[newX][newY][2] != "white") // Ensure new cell is empty
-        ) {
-            // Restore original positions if rotation is invalid
-            droppingCells.forEach(([r, c]) => grid[r][c][2] = shapeColor);
-            return; // Cancel rotation
-        }
-        
         newPositions.push([newX, newY]);
     }
 
-    // Apply new positions if all checks passed
+    // Try the rotated position directly
+    if (isValidPosition(newPositions)) {
+        applyRotation(newPositions, shapeColor);
+        return;
+    }
+
+    // If invalid, try wall kicks
+    let kickedPositions = tryWallKick(droppingCells, newPositions);
+    if (kickedPositions) {
+        applyRotation(kickedPositions, shapeColor);
+    } else {
+        // Restore original if all attempts fail
+        droppingCells.forEach(([r, c]) => grid[r][c][2] = shapeColor);
+    }
+}
+function isValidPosition(cells) {
+    for (let i = 0; i < 4; i++) {
+        let row = cells[i][0];
+        let col = cells[i][1];
+
+        if (row < 0 || row >= grid.length || col < 0 || col >= grid[0].length) {
+            return false; // Out of bounds
+        }
+        if (grid[row][col][2] !== "white") {
+            return false; // Collision with another block
+        }
+    }
+    return true;
+}
+function tryWallKick(originalCells, rotatedCells) {
+    const kicks = [
+        [0, -1], // Left
+        [0, 1],  // Right
+        [-1, 0], // Up
+        [1, 0]   // Down (less common, but sometimes needed)
+    ];
+
+    for (let i = 0; i < kicks.length; i++) {
+        let offsetRow = kicks[i][0];
+        let offsetCol = kicks[i][1];
+
+        let kickedCells = rotatedCells.map(([row, col]) => [
+            row + offsetRow,
+            col + offsetCol
+        ]);
+
+        if (isValidPosition(kickedCells)) {
+            return kickedCells;
+        }
+    }
+
+    return null; // No successful kick
+}
+function applyRotation(newPositions, shapeColor) {
     for (let i = 0; i < 4; i++) {
         droppingCells[i] = newPositions[i];
         let [r, c] = droppingCells[i];
-        grid[r][c][2] = shapeColor; // Restore color
-    }   
+        grid[r][c][2] = shapeColor;
+    }
 }
 function holdPiece() {
+    console.log(curTetro);
+    console.log(holdLock);
+    console.log(heldTetro);
     var newPiece;
     if (heldTetro == 0) {       //if no piece held already
         heldTetro = curTetro;       //set hold to current tetro
@@ -738,7 +787,6 @@ function holdPiece() {
     spawnTetro(curTetro);
     drawGrid();
     drawHoldPiece(heldTetro);
-
 }
 //------------------------------------------------------------------------------DRAWING---------------------------------------------------------------------------------------------
 function drawGrid(){
@@ -754,6 +802,29 @@ function drawGrid(){
             //fill("white");
             rect(grid[i][j][0][0], grid[i][j][0][1], grid[i][j][1][0]-grid[i][j][0][0], grid[i][j][1][1]-grid[i][j][0][1]);
         }
+    }
+    if (droppingPiece == true) {
+        if (onGround(droppingCells) == false) {
+        ghostCells = getGhostPosition(droppingCells);
+        drawGhost();
+        drawFallingPiece();
+        }
+    }
+}
+function drawGhost() {
+    for (var i = 0; i < ghostCells.length; i++) {
+        var row = ghostCells[i][0];
+        var col = ghostCells[i][1];
+        fill(veryLightUIColor);
+        rect(grid[row][col][0][0],grid[row][col][0][1],grid[row][col][1][0]-grid[row][col][0][0],grid[row][col][1][1]-grid[row][col][0][1]);
+    }
+}
+function drawFallingPiece() {
+    for (var i = 0; i < droppingCells.length; i++) {
+        var row = droppingCells[i][0];
+        var col = droppingCells[i][1];
+        fill(grid[row][col][2]);
+        rect(grid[row][col][0][0],grid[row][col][0][1],grid[row][col][1][0]-grid[row][col][0][0],grid[row][col][1][1]-grid[row][col][0][1]);
     }
 }
 function drawUI() {
@@ -1117,9 +1188,45 @@ function drawSpeed() {
     textAlign(CENTER, CENTER);
     text("Speed: " + (21 - gameSpeed), spdL + (UIendX-spdL) / 2, infoSecS + (infoSecE - infoSecS) / 2);
 }
+function drawScoreboard() {
+    var SBLeft = gridWidth * (1/10);
+    var SBTop = gridHeight * (1/10);
+    var SBWidth = gridWidth * (8/10);
+    var SBHeight = gridHeight * (8/10);
+
+    fill(255);
+    rect(SBLeft, SBTop, SBWidth, SBHeight);
+
+    var SBTXLeft = SBLeft + (SBWidth * (1/10));
+    var SBTXTop = SBTop + (SBHeight * (1/20));
+    var SBTXWidth = SBWidth * (8/10);
+    var SBTXHeight = SBHeight * (2/10);
+
+    stroke(0,0,0);
+    fill(0,0,0);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    //rect(SBTXLeft, SBTXTop, SBTXWidth, SBTXHeight);
+    text("GAME OVER", SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
+
+    SBTXTop = SBTXTop + (SBHeight * (3/20));
+    SBTXHeight = SBHeight * (1/10);
+
+    text("Score: " + score, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
+    console.log(score);
+
+    SBTXTop = SBTXTop + (SBHeight * (1/20));
+    SBTXHeight = SBHeight * (1/10);
+
+    text("Clears: " + clears, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
+    console.log(score);
+
+}
 //------------------------------------------------------------------------------KEYPRESS--------------------------------------------------------------------------------------------
 function keyPressed() {
     if (!droppingCells) {
+        console.log("Stop mashing fucker");
+        console.log(!droppingCells);
         return; 
     }
     if (key === 'A' || key === 'a') { 
@@ -1140,7 +1247,7 @@ function keyPressed() {
         console.log("A key was pressed!" + key);
     } else if (key === 'S' || key === 's') { 
         if (droppingPiece) {
-            console.log(onGround());
+            console.log(onGround(droppingCells));
             if (effSpeed == gameSpeed) {
                 effSpeed = gameSpeed/2;
             }
@@ -1148,8 +1255,8 @@ function keyPressed() {
         }
     } else if (key === 'W' || key === 'w') { 
         if (droppingPiece) {
-            if (!onGround()) {
-                while (!onGround()) {
+            if (!onGround(droppingCells)) {
+                while (!onGround(droppingCells)) {
                     moveDown();
                 }
                     rowsToCheck = getRows();
@@ -1171,12 +1278,11 @@ function keyPressed() {
         drawGrid();
         console.log("A key was pressed!" + key);
     } else if (keyCode === SHIFT) {
-        console.log("Shift key was pressed!");
-        if (holdLock != true) {
-            holdPiece();
-            holdLock = true;
-        }
-        console.log("Shift key was pressed!");
+            console.log("Shift key was pressed!");
+            if (holdLock !== true && droppingPiece == true) {
+                holdLock = true;
+                holdPiece();
+            }
     }
 }
 function keyReleased() {
