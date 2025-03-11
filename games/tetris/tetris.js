@@ -211,6 +211,7 @@ function resetFunc() {
     clears = 0;
     clearsToLevel = 20;
     level = 1;
+    startTimer = millis();
 }
 function spawnTetro(letter) {
 //|1 = I|2 = O|3 = T|4 = J|5 = L|6 = S|7 = Z|
