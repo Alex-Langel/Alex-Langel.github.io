@@ -1963,6 +1963,7 @@ function drawMainMenu() {
                 drawMenuSection(mainMenuOptions[i][1], bBGC, bOLC, bTXC, btnRSubLeft, butTop, btnSubWid, mMenuButtonHeight);
             } else {
                 drawMenuSection(mainMenuOptions[i], bBGC, bOLC, bTXC, mMenuLeft + mMenuLMarg, butTop, mMenuWBase, mMenuButtonHeight);
+
             }
         }
         butTop = butTop + mMenuButtonHeight + mMenuButtonSpacing;
@@ -1987,7 +1988,9 @@ function drawMainMenuButtons(prevPosition) {
     var bOLC;
     var bTXC;
     var NbutTop = mMenuButtonTopTop + ((mMenuButtonHeight + mMenuButtonSpacing) * curMenuPosition[1])
-    var ObutTop = mMenuButtonTopTop + ((mMenuButtonHeight + mMenuButtonSpacing) * prevPosition[1])
+    var NbutLeft = mMenuLeft + mMenuLMarg;
+    var NbutWid = mMenuWBase;
+
     bBGC = lightUIColor
     bOLC = veryDarkUIColor
     bTXC = "black";
@@ -1995,28 +1998,37 @@ function drawMainMenuButtons(prevPosition) {
     console.log(prevPosition)
     //draw new
     if (mainMenuOptions[curMenuPosition[1]].length > 1) {
+        NbutWid = (mMenuWBase - (mMenuLMarg * 2)) / 2;
+        NbutLeft = NbutLeft + (((2 * mMenuLMarg) + NbutWid) * curMenuPosition[2])
 
-        var btnSubWid = (mMenuWBase - (mMenuLMarg * 2)) / 2;
-        var btnLSubLeft = mMenuLeft + mMenuLMarg;
-        var btnRSubLeft = mMenuLMarg + btnLSubLeft + btnSubWid + mMenuLMarg
-        drawMenuSection(mainMenuOptions[curMenuPosition[1]][curMenuPosition[2]], bBGC, bOLC, bTXC, btnLSubLeft, NbutTop, btnSubWid, mMenuButtonHeight);
+        drawMenuSection(mainMenuOptions[curMenuPosition[1]][curMenuPosition[2]], bBGC, bOLC, bTXC, NbutLeft, NbutTop, NbutWid, mMenuButtonHeight);
     } else {
-        drawMenuSection(mainMenuOptions[curMenuPosition[1]], bBGC, bOLC, bTXC, mMenuLeft + mMenuLMarg, NbutTop, mMenuWBase, mMenuButtonHeight);
+        drawMenuSection(mainMenuOptions[curMenuPosition[1]], bBGC, bOLC, bTXC, NbutLeft, NbutTop, NbutWid, mMenuButtonHeight);
     }
     //draw old
+    NbutLeft = mMenuLeft + mMenuLMarg;
+    NbutWid = mMenuWBase;
+    NbutTop = mMenuButtonTopTop + ((mMenuButtonHeight + mMenuButtonSpacing) * prevPosition[1])
+
 
     bBGC = darkUIColor
     bOLC = darkUIColor
     bTXC = "white"
 
-
-
+    if (mainMenuOptions[prevPosition[1]].length > 1) {
+        NbutWid = (mMenuWBase - (mMenuLMarg * 2)) / 2;
+        NbutLeft = NbutLeft + (((2 * mMenuLMarg) + NbutWid) * prevPosition[2])
+        console.log("Split time")
+        drawMenuSection(mainMenuOptions[prevPosition[1]][curMenuPosition[2]], bBGC, bOLC, bTXC, NbutLeft, NbutTop, NbutWid, mMenuButtonHeight);
+    } else {
+        drawMenuSection(mainMenuOptions[prevPosition[1]], bBGC, bOLC, bTXC, NbutLeft, NbutTop, NbutWid, mMenuButtonHeight);
+    }
 
     //drawold
     //drawnew
 }
 function moveMenuCursorUp() {
-    var prevCursorPosition = curMenuPosition;
+    var prevCursorPosition = [...curMenuPosition];
     if (curMenuPosition[0] == 0) {//main menu specifically
         if (mainMenuOptions.length > 1) {//if multiple rows
             if (curMenuPosition[1] == 0){ //on top row
@@ -2032,7 +2044,7 @@ function moveMenuCursorUp() {
     }
 }
 function moveMenuCursorDown() {
-    var prevCursorPosition = curMenuPosition;
+    var prevCursorPosition = [...curMenuPosition];
     if (curMenuPosition[0] == 0) {//main menu specifically
         if (mainMenuOptions.length > 1) {//if multiple rows
             if (curMenuPosition[1] == mainMenuOptions.length - 1){ //on top row
@@ -2048,7 +2060,7 @@ function moveMenuCursorDown() {
     }
 }
 function moveMenuCursorLeft() {
-    var prevCursorPosition = curMenuPosition;
+    var prevCursorPosition = [...curMenuPosition];
     if (curMenuPosition[0] == 0) {//main menu specifically
         if (mainMenuOptions[curMenuPosition[1]].length > 1) {//if two cols
             if (curMenuPosition[2] == 0){ //on first col
@@ -2056,12 +2068,12 @@ function moveMenuCursorLeft() {
             } else {
                 curMenuPosition[2]--;
             }
-        }
-        drawMainMenuButtons(prevCursorPosition);
+            drawMainMenuButtons(prevCursorPosition);
+        }  
     }
 }
 function moveMenuCursorRight() {
-    var prevCursorPosition = curMenuPosition;
+    var prevCursorPosition = [...curMenuPosition];
     if (curMenuPosition[0] == 0) {//main menu specifically
         if (mainMenuOptions[curMenuPosition[1]].length > 1) {//if two cols
             if (curMenuPosition[2] == (mainMenuOptions[curMenuPosition[1]].length - 1)){ //on final col
@@ -2069,8 +2081,8 @@ function moveMenuCursorRight() {
             } else {
                 curMenuPosition[2]++;
             }
+            drawMainMenuButtons(prevCursorPosition);
         }
-        drawMainMenuButtons(prevCursorPosition);
     }
 }
 //------------------------------------------------------------------------------KEYPRESS--------------------------------------------------------------------------------------------
