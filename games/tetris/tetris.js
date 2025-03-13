@@ -2019,7 +2019,7 @@ function drawMainMenuButtons(prevPosition) {
         NbutWid = (mMenuWBase - (mMenuLMarg * 2)) / 2;
         NbutLeft = NbutLeft + (((2 * mMenuLMarg) + NbutWid) * prevPosition[2])
         console.log("Split time")
-        drawMenuSection(mainMenuOptions[prevPosition[1]][curMenuPosition[2]], bBGC, bOLC, bTXC, NbutLeft, NbutTop, NbutWid, mMenuButtonHeight);
+        drawMenuSection(mainMenuOptions[prevPosition[1]][prevPosition[2]], bBGC, bOLC, bTXC, NbutLeft, NbutTop, NbutWid, mMenuButtonHeight);
     } else {
         drawMenuSection(mainMenuOptions[prevPosition[1]], bBGC, bOLC, bTXC, NbutLeft, NbutTop, NbutWid, mMenuButtonHeight);
     }
