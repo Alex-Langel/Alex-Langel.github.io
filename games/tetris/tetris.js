@@ -68,6 +68,26 @@ const UIendX = canvasWidth-1;
 const gridRows = 20;
 const gridCols = 10;
 
+//Main Menu Stuff
+var mMenuLeft = canvasWidth * (1/10);
+var mMenuTop = canvasHeight * (1/10);
+var mMenuWidth = canvasWidth * (8/10);
+var mMenuHeight = canvasHeight * (8/10);
+
+var mMenuLMarg = mMenuWidth * (1/20);
+var mMenuWBase = mMenuWidth - mMenuLMarg * 2;
+var titleTop = mMenuTop + mMenuHeight * (1/20)
+var titleHeight = mMenuHeight * (2/10);
+
+var mMenuTitleSpacing = mMenuHeight * (1/10);
+var mMenuButtonTopTop = titleTop + titleHeight + mMenuTitleSpacing
+var mMenuButtonHeight = mMenuHeight * (1/10);
+var mMenuButtonSpacing = mMenuHeight * (1/20);
+
+let mainMenuOptions = [["Play Game"], ["Options", "Settings"], ["Testing", "Controls"]];
+let curMenuPosition = [0,0,0];
+
+
 //GAME DATA
 let dasCounter = 0; //delayed-auto shifting
 let lastKeyHeld = null;
@@ -75,6 +95,10 @@ let holdingLeft = false;
 let holdingRight = false;
 const DAS_DELAY = 16; // Initial delay before moving
 const DAS_REPEAT_RATE = 5; // Speed of continuous movement
+const areDelay = 30;
+let areCount = areDelay;
+let preJackedLeftRoto = false;
+let preJackedRightRoto = false;
 let frameLength = 20; //lower to speed up
 let gameSpeed = frameLength;
 let effSpeed = gameSpeed;
@@ -92,8 +116,8 @@ let midUIColor = [125,125,125];
 //GAME VARIABLES
 let gameState = 0;
 
+let pieceGend = false;
 let droppingPiece = false;
-let gameRunning = true;
 let holdLock = false;
 
 let curTetro = 0;
@@ -115,6 +139,7 @@ let totTetris = 0;
 let totTriple = 0;
 let totDouble = 0;
 let totBtoB = 0;
+let totAllClears = 0;
 let prevTetris = false;
 let combo = 0;
 let score = 0;
@@ -130,53 +155,39 @@ let elapsedTime;
 //let shiftTimeout = 0;
 
 function setup(){
-    startTimer = millis();
     let canvas = createCanvas(canvasWidth, canvasHeight);
     canvas.parent("canvCont");
-    grid = initGrid(grid);
-    curBag = [...fullBag];
-    shuffleArray(curBag);
-    nxtBag = [...fullBag];
-    shuffleArray(nxtBag);
-    //curTetro = getFromBag();
+    grid = initGrid();
+    initBags();
+    drawGrid();
+    drawUI();
     drawMainMenu();
-    //drawUI();
-    //drawScore();
-    //drawEmptyTetroBox();
 }
 function draw(){
     if (gameState == 0) {
 
     } else if (gameState == 1) {//game running
-        if (gameRunning == true) {
-            elapsedTime = millis() - startTimer;
-            drawTimer();
-            updateDAS();
+        elapsedTime = millis() - startTimer;
+        drawTimer();
+        updateDAS();
+        if (droppingPiece == true) {
             if (frameCount % effSpeed == 0) {
-                if (droppingPiece == true) {
-                    if (onGround(droppingCells) ==  true) {
-                        addCellsToGrid(droppingCells);
-                        rowsToCheck = getRows();
-                        droppingPiece = false
-                        droppingCells = [];
-                        clearRows();
-                        addScore();
-                        drawScore();
-                    } else {
-                        moveDown();
-                    }
-                    drawGrid();
+                if (onGround(droppingCells) ==  true) {
+                    addCellsToGrid(droppingCells);
+                    rowsToCheck = getRows();
+                    droppingPiece = false
+                    droppingCells = [];
+                    areCount = frameCount + areDelay;
+                    clearRows();
+                    addScore();
+                    drawScore();
                 } else {
-                    curTetro = getFromBag();
-                    //curTetro = 5;
-                    drawNextPiece(curBag[0]);
-                    drawAdtlNext();
-                    //drawUI();
-                    spawnTetro(curTetro);
-                    holdLock = false;
+                    moveDown();
                 }
+                drawGrid();
             }
-            //drawGrid();
+        } else {
+            genNewTetro();
         }
     } else if (gameState == 2) {//game ended
 
@@ -219,32 +230,84 @@ function initGrid() {
     }
     return tempGrid;
 }
-function resetFunc() {
-    grid = [];
-
-    //GAME DATA
-    frameLength = 20; //lower to speed up
-    
-    //GAME VARIABLES
-    droppingPiece = false;
-    curTetro = 0;
-    nextTetro = 0;
-    droppingCells = [];
-    gameRunning = true;
-    rowsToCheck = [];
-    simulClears = 0;
-    score = 0;
-    heldTetro = 0;
-    grid = initGrid(grid);
+function initBags() {
+    curBag = [...fullBag];
+    shuffleArray(curBag);
+    nxtBag = [...fullBag];
+    shuffleArray(nxtBag);
+}
+function beginGame() {
+    resetGameVars();
+    grid = initGrid();
+    initBags();
     drawGrid();
     drawUI();
-    clears = 0;
-    clearsToLevel = 20;
-    level = 1;
     startTimer = millis();
     gameState = 1;
 }
-function spawnTetro(letter) {
+function resetGameVars() {
+    gameState = 0;
+
+    pieceGend = false;
+    droppingPiece = false;
+    holdLock = false;
+
+    curTetro = 0;
+    curTetroColor = "lime"
+    curTetroRotationState = 0;
+    nextTetro = 0;
+    heldTetro = 0;
+
+    curBag = [];
+    nxtBag = [];
+
+    droppingCells = [];
+    ghostCells = [];
+    rowsToCheck = [];
+
+    simulClears = 0;
+    allClear = false;
+    totTetris = 0;
+    totTriple = 0;
+    totDouble = 0;
+    totBtoB = 0;
+    totAllClears = 0;
+    prevTetris = false;
+    combo = 0;
+    score = 0;
+    clears = 0;
+    clearsToLevel = 20;
+    level = 1;
+
+    startTimer = 0;
+    elapsedTime = 0;
+
+}
+function genNewTetro() {
+    var preSpawnRot = 0;
+    if (pieceGend == false) {
+        curTetro = getFromBag();
+        drawNextPiece(curBag[0]);
+        drawAdtlNext();
+        pieceGend = true;
+    } else {
+        if (frameCount >= areCount) { //wait for are
+            if (preJackedLeftRoto) {    //if key was pressed during are
+                preJackedLeftRoto = false; //rotate on spawn
+                preSpawnRot = -1;
+            }
+            if (preJackedRightRoto) { //wait for are
+                preJackedRightRoto = false; //if key was pressed during are
+                preSpawnRot = 1; //rotate on spawn
+            }
+            spawnTetro(curTetro, preSpawnRot); //spawn piece
+            preSpawnRot = 0;    //reset spawn rotation
+            holdLock = false;   //unlock hold piece
+            pieceGend = false;  //reset piece generation flag
+        }
+    }
+}
+function spawnTetro(letter, rotDir) {
 //|1 = I|2 = O|3 = T|4 = J|5 = L|6 = S|7 = Z|
     var spawnFail = false;
     droppingCells = [];
@@ -364,29 +427,17 @@ function spawnTetro(letter) {
         console.error("INVALID TETRONIMO ATTEMPTED TO SPAWN");
         break;
     }
+    if (rotDir != 0) {
+        if (rotDir > 0) {
+            rotateRight();
+        } else {
+            rotateLeft();
+        }
+    }
     drawGrid();
     if (spawnFail == true) {
         endGame();
     }
-}
-function topRowEmpty() {
-    var activeTet = false;
-    for (var i = 0; i < gridCols; i++) {
-        if (grid[0][i][2] != "white") {
-            for (let j = 0; j < 4; j++) {
-                if (droppingCells.length > 0) {
-                    if (droppingCells[j][0] == 0 && droppingCells[j][1] == i) {
-                        activeTet = true;
-                        break;
-                    }
-                }
-            }
-            if (!activeTet) {
-                return false;
-            }
-        }
-    }
-    return true;
 }
 function rowIsFull(rowNum) {
     var noWhite = true;
@@ -466,10 +517,18 @@ function addScore() {
     if (simulClears > 0) {
         //increment combo
         combo = combo + 1;
+        if (wasAllClear() == true) {
+            totAllClears ++;
+            allClear = true;
+        }
         //tell user what clear they had
         drawClearText(getClearString());
         //draw the combo
         drawClearsCombos();
+        //get all clears
+        if (wasAllClear() == true) {
+            totAllClears ++;
+        }
     } else { //reset combo if no clear
         combo = 0;
     }
@@ -477,6 +536,17 @@ function addScore() {
         score = score + (combo * 50);
     }   //reset line clear variable
     simulClears = 0;
+    allClear = false;
+}
+function wasAllClear() {
+    for (let i = 0; i < grid.length; i++) {  // Outer loop for each row
+        for (let j = 0; j < grid[i].length; j++) {  // Inner loop for each element in the row
+            if (grid[i][j][2] != "white") {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 function levelUp() {
     clearsToLevel = 20;
@@ -516,7 +586,6 @@ function getGhostPosition(activePiece) {
 function endGame(){
     console.log("GAME OVER");
     gameState = 2;
-    gameRunning = false;
     droppingPiece = false;
     droppingCells = [];
     drawScoreboard();
@@ -525,7 +594,10 @@ function endGame(){
 function getClearString() {
     var outString
     if (simulClears > 0) {
-        if (simulClears == 1) {
+        if (allClear == true) {
+            return "All Clear!";
+        } else if (simulClears == 1) {
+            
             if (combo > 1) {
                 outString = combo + "x Combo!";
             } else {
@@ -582,7 +654,7 @@ function moveDown() {
 
 }
 function moveLeft() {
-    if (droppingPiece && gameRunning) {
+    if (droppingPiece && gameState == 1) {
         if (tryMovement(droppingCells, 0, -1) == true) {
             console.log("Moving Left!");
             for (let i = 0; i < 4; i++) {
@@ -593,7 +665,7 @@ function moveLeft() {
     }
 }
 function moveRight() {
-    if (droppingPiece && gameRunning) {
+    if (droppingPiece && gameState == 1) {
         if (tryMovement(droppingCells, 0, 1) == true) {
             console.log("Moving Right!");
             for (let i = 0; i < 4; i++) {
@@ -1855,21 +1927,46 @@ function drawScoreboard() {
     text("Time: " + msToMinuteSecondTime(elapsedTime), SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
     console.log(msToMinuteSecondTime(elapsedTime));
 }
-    //Main menu
+    //Main menu================================================
 function drawMainMenu() {
-    var mMenuLeft = canvasWidth * (1/10);
-    var mMenuTop = canvasHeight * (1/10);
-    var mMenuWidth = canvasWidth * (8/10);
-    var mMenuHeight = canvasHeight * (8/10);
+
+    var butTop = mMenuButtonTopTop
+    var bBGC;
+    var bOLC;
+    var bTXC;
+
     console.log(mMenuWidth);
     console.log(mMenuLeft);
     fill(midUIColor);
     rect(mMenuLeft,mMenuTop, mMenuWidth, mMenuHeight);
     //Game name
-    drawMenuSection("* * * TETRIS  * * *", lilDarkUIColor, lilDarkUIColor, "white", mMenuLeft + (mMenuWidth * (1/20)), mMenuTop + (mMenuHeight * (1/20)), (mMenuWidth * (18/20)), (mMenuHeight * (2/10)));
+    drawMenuSection("* * * TETRIS  * * *", lilDarkUIColor, lilDarkUIColor, "white", mMenuLeft + mMenuLMarg, titleTop, mMenuWBase, titleHeight);
 
-    //game info
-    drawMenuSection("[Press ENTER to start game]", midUIColor, "black", veryDarkUIColor, mMenuLeft + (mMenuWidth * (1/20)), mMenuTop + (mMenuHeight * (18/20)), (mMenuWidth * (18/20)), (mMenuHeight * (1/20)));
+    //PLAY BUTTON + OPTIONS BUTTON
+    for (var i = 0; i < mainMenuOptions.length; i++) {
+        if (i == 0) {
+            bBGC = lightUIColor
+            bOLC = veryDarkUIColor
+            bTXC = "black";
+        } else {
+            bBGC = darkUIColor
+            bOLC = darkUIColor
+            bTXC = "white"
+
+        }
+        if (Array.isArray(mainMenuOptions[i])) {//
+            if (mainMenuOptions[i].length > 1) {
+                var btnSubWid = (mMenuWBase - (mMenuLMarg * 2)) / 2;
+                var btnLSubLeft = mMenuLeft + mMenuLMarg;
+                var btnRSubLeft = mMenuLMarg + btnLSubLeft + btnSubWid + mMenuLMarg
+                drawMenuSection(mainMenuOptions[i][0], bBGC, bOLC, bTXC, btnLSubLeft, butTop, btnSubWid, mMenuButtonHeight);
+                drawMenuSection(mainMenuOptions[i][1], bBGC, bOLC, bTXC, btnRSubLeft, butTop, btnSubWid, mMenuButtonHeight);
+            } else {
+                drawMenuSection(mainMenuOptions[i], bBGC, bOLC, bTXC, mMenuLeft + mMenuLMarg, butTop, mMenuWBase, mMenuButtonHeight);
+            }
+        }
+        butTop = butTop + mMenuButtonHeight + mMenuButtonSpacing;
+    }
 }
 function drawMenuSection(txt, bgcolor, outlinecolor, txtcolor, left, top, width, height) {
     stroke (outlinecolor);
@@ -1885,72 +1982,184 @@ function drawMenuSection(txt, bgcolor, outlinecolor, txtcolor, left, top, width,
     text(txt, left + width / 2, top + height / 2);
 
 }
+function drawMainMenuButtons(prevPosition) {
+    var bBGC;
+    var bOLC;
+    var bTXC;
+    var NbutTop = mMenuButtonTopTop + ((mMenuButtonHeight + mMenuButtonSpacing) * curMenuPosition[1])
+    var ObutTop = mMenuButtonTopTop + ((mMenuButtonHeight + mMenuButtonSpacing) * prevPosition[1])
+    bBGC = lightUIColor
+    bOLC = veryDarkUIColor
+    bTXC = "black";
+    console.log(curMenuPosition);
+    console.log(prevPosition)
+    //draw new
+    if (mainMenuOptions[curMenuPosition[1]].length > 1) {
 
+        var btnSubWid = (mMenuWBase - (mMenuLMarg * 2)) / 2;
+        var btnLSubLeft = mMenuLeft + mMenuLMarg;
+        var btnRSubLeft = mMenuLMarg + btnLSubLeft + btnSubWid + mMenuLMarg
+        drawMenuSection(mainMenuOptions[curMenuPosition[1]][curMenuPosition[2]], bBGC, bOLC, bTXC, btnLSubLeft, NbutTop, btnSubWid, mMenuButtonHeight);
+    } else {
+        drawMenuSection(mainMenuOptions[curMenuPosition[1]], bBGC, bOLC, bTXC, mMenuLeft + mMenuLMarg, NbutTop, mMenuWBase, mMenuButtonHeight);
+    }
+    //draw old
+
+    bBGC = darkUIColor
+    bOLC = darkUIColor
+    bTXC = "white"
+
+
+
+
+    //drawold
+    //drawnew
+}
+function moveMenuCursorUp() {
+    var prevCursorPosition = curMenuPosition;
+    if (curMenuPosition[0] == 0) {//main menu specifically
+        if (mainMenuOptions.length > 1) {//if multiple rows
+            if (curMenuPosition[1] == 0){ //on top row
+                curMenuPosition[1] = mainMenuOptions.length - 1;
+            } else {
+                curMenuPosition[1]--;
+                    if (mainMenuOptions[curMenuPosition[1]].length < 2) {
+                        curMenuPosition[2] = 0;
+                }
+            }
+        }
+        drawMainMenuButtons(prevCursorPosition);
+    }
+}
+function moveMenuCursorDown() {
+    var prevCursorPosition = curMenuPosition;
+    if (curMenuPosition[0] == 0) {//main menu specifically
+        if (mainMenuOptions.length > 1) {//if multiple rows
+            if (curMenuPosition[1] == mainMenuOptions.length - 1){ //on top row
+                curMenuPosition[1] = 0;
+            } else {
+                curMenuPosition[1]++;
+                if (mainMenuOptions[curMenuPosition[1]].length < 2) {
+                    curMenuPosition[2] = 0;
+                }
+            }
+        }
+        drawMainMenuButtons(prevCursorPosition);
+    }
+}
+function moveMenuCursorLeft() {
+    var prevCursorPosition = curMenuPosition;
+    if (curMenuPosition[0] == 0) {//main menu specifically
+        if (mainMenuOptions[curMenuPosition[1]].length > 1) {//if two cols
+            if (curMenuPosition[2] == 0){ //on first col
+                curMenuPosition[2] = (mainMenuOptions[curMenuPosition[1]].length - 1);
+            } else {
+                curMenuPosition[2]--;
+            }
+        }
+        drawMainMenuButtons(prevCursorPosition);
+    }
+}
+function moveMenuCursorRight() {
+    var prevCursorPosition = curMenuPosition;
+    if (curMenuPosition[0] == 0) {//main menu specifically
+        if (mainMenuOptions[curMenuPosition[1]].length > 1) {//if two cols
+            if (curMenuPosition[2] == (mainMenuOptions[curMenuPosition[1]].length - 1)){ //on final col
+                curMenuPosition[2]= 0;
+            } else {
+                curMenuPosition[2]++;
+            }
+        }
+        drawMainMenuButtons(prevCursorPosition);
+    }
+}
 //------------------------------------------------------------------------------KEYPRESS--------------------------------------------------------------------------------------------
 function keyPressed() {
-    if (!droppingCells) {
-        console.log("Stop mashing fucker");
-        console.log(!droppingCells);
-        return; 
-    }
-    if (key === 'A' || key === 'a') { 
-        lastKeyHeld = 'left';
-        holdingLeft = true;
-        moveLeft(); // Initial move
-        dasCounter = 0;
-        console.log("A key was pressed!" + key);
-    } else if (key === 'D' || key === 'd') { 
-        lastKeyHeld = 'right';
-        holdingRight = true;
-        moveRight(); // Initial move
-        dasCounter = 0;
-        console.log("A key was pressed!" + key);
-    } else if (key === 'S' || key === 's') { 
-        if (droppingPiece) {
-            console.log(onGround(droppingCells));
-            if (effSpeed == gameSpeed) {
-                effSpeed = gameSpeed/2;
-            }
-            console.log("A key was pressed!" + key);
+    if (gameState == 0) {
+        if (key === "ArrowLeft") {
+            moveMenuCursorLeft();
+        } else if (key === "ArrowRight"){
+            moveMenuCursorRight();
+        } else if (key === "ArrowUp"){
+            moveMenuCursorUp();
+        } else if (key === "ArrowDown"){
+            moveMenuCursorDown();
+        } else if (keyCode === ENTER){
+            beginGame();
         }
-    } else if (key === 'W' || key === 'w') { 
-        if (droppingPiece) {
-            if (!onGround(droppingCells)) {
-                while (!onGround(droppingCells)) {
-                    moveDown();
+    } else {
+        if (!droppingCells) {
+            console.log("Stop mashing fucker");
+            console.log(!droppingCells);
+            return; 
+        }
+        if (key === 'A' || key === 'a') { 
+            lastKeyHeld = 'left';
+            holdingLeft = true;
+            moveLeft(); // Initial move
+            dasCounter = 0;
+            console.log("A key was pressed!" + key);
+        } else if (key === 'D' || key === 'd') { 
+            lastKeyHeld = 'right';
+            holdingRight = true;
+            moveRight(); // Initial move
+            dasCounter = 0;
+            console.log("A key was pressed!" + key);
+        } else if (key === 'S' || key === 's') { 
+            if (droppingPiece) {
+                console.log(onGround(droppingCells));
+                if (effSpeed == gameSpeed) {
+                    effSpeed = gameSpeed/2;
                 }
+                console.log("A key was pressed!" + key);
+            }
+        } else if (key === 'W' || key === 'w') { 
+            if (droppingPiece) {
+                if (!onGround(droppingCells)) {
+                    while (!onGround(droppingCells)) {
+                        moveDown();
+                    }
                     addCellsToGrid(droppingCells);
                     rowsToCheck = getRows();
                     droppingPiece = false
                     droppingCells = [];
+                    areCount = frameCount + areDelay;
                     clearRows();
                     addScore();
                     drawScore();
+                }
+                drawGrid();
+            }
+            console.log("A key was pressed!" + key);
+        } else if (key === 'Q' || key === 'q') { 
+            if (gameState == 1) {
+                if (droppingPiece == true) {
+                    rotateLeft();
                     drawGrid();
+                } else if (pieceGend == true) {
+                    preJackedLeftRoto = true;
+                }
             }
-        }
         console.log("A key was pressed!" + key);
-    } else if (key === 'Q' || key === 'q') { 
-        if (gameRunning == true && droppingPiece == true) {
-            rotateLeft();
-            drawGrid();
-        }
-
-        console.log("A key was pressed!" + key);
-    } else if (key === 'E' || key === 'e') { 
-        if (gameRunning == true && droppingPiece == true) {
-            rotateRight();
-            drawGrid();
-        }
-        console.log("A key was pressed!" + key);
-    } else if (keyCode === SHIFT) {
-            console.log("Shift key was pressed!");
-            if (holdLock !== true && droppingPiece == true) {
-                holdLock = true;
-                holdPiece();
+        } else if (key === 'E' || key === 'e') { 
+            if (gameState == 1) {
+                if (droppingPiece == true) {
+                    rotateRight();
+                    drawGrid();
+                } else if (pieceGend == true) {
+                    preJackedRightRoto = true;
+                }
             }
-    } else if (keyCode === ENTER) {
-        resetFunc();
+            console.log("A key was pressed!" + key);
+        } else if (keyCode === SHIFT) {
+                console.log("Shift key was pressed!");
+                if (holdLock !== true && droppingPiece == true) {
+                    holdLock = true;
+                    holdPiece();
+                }
+        } else if (keyCode === ENTER) {
+            beginGame();
+        }
     }
 }
 function keyReleased() {
