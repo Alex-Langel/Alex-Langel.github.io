@@ -69,6 +69,12 @@ const gridRows = 20;
 const gridCols = 10;
 
 //GAME DATA
+let dasCounter = 0; //delayed-auto shifting
+let lastKeyHeld = null;
+let holdingLeft = false;
+let holdingRight = false;
+const DAS_DELAY = 16; // Initial delay before moving
+const DAS_REPEAT_RATE = 5; // Speed of continuous movement
 let frameLength = 20; //lower to speed up
 let gameSpeed = frameLength;
 let effSpeed = gameSpeed;
@@ -143,6 +149,7 @@ function draw(){
     if (gameRunning == true) {
         drawGrid();
         elapsedTime = millis() - startTimer;
+        updateDAS();
         if (frameCount % effSpeed == 0) {
             if (droppingPiece == true) {
                 if (onGround(droppingCells) ==  true) {
@@ -526,25 +533,21 @@ function onGround(cells) {
     for (let i = 0; i < 4; i++) {
         let row = cells[i][0];
         let col = cells[i][1];
-
         // If any part is at the bottom of the entire grid
         if (row >= gridRows - 1) {
             return true;
         }
-
         // Check if the next row is occupied
         let nextCellColor = grid[row + 1][col][2];
-
         if (nextCellColor != "white") {
             let isPartOfTetromino = false;
-
             // Make sure it's not falsely detecting its own cells
-            for (let j = 0; j < 4; j++) {
-                if (droppingCells[j][0] === row + 1 && droppingCells[j][1] === col) {
-                    isPartOfTetromino = true;
-                    break;
-                }
-            }
+            //for (let j = 0; j < 4; j++) {
+                //if (droppingCells[j][0] === row + 1 && droppingCells[j][1] === col) {
+                    //isPartOfTetromino = true;
+                    //break;
+                //}
+            //}
             if (!isPartOfTetromino) {
                 return true;
             }
@@ -553,129 +556,30 @@ function onGround(cells) {
     return false;
 }
 function moveDown() {
-    //var shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
-    // Clear current positions from grid
-    // for (let i = 0; i < 4; i++) {
-    //     let row = droppingCells[i][0];
-    //     let col = droppingCells[i][1];
-    //     grid[row][col][2] = "white"; // Reset old position
-    // }
-    // Move each cell left
     for (let i = 0; i < 4; i++) {
         droppingCells[i][0] += 1; // Move left
     }
-    // Update grid with new positions
-    // for (let i = 0; i < 4; i++) {
-    //     let row = droppingCells[i][0];
-    //     let col = droppingCells[i][1];
-    //     grid[row][col][2] = shapeColor; // Mark new position (adjust as needed)
-    // }
-}
-function bonkLeft() {
-    for (let i = 0; i < 4; i++) {
-        let row = droppingCells[i][0];
-        let col = droppingCells[i][1];
 
-        // If any part is at the left of the entire grid (including hidden rows)
-        if (col <= 0) {
-            console.log("Tetromino reached left of grid.");
-            return true;
-        }
-
-        // Check if the prev col is occupied
-        let nextCellColor = grid[row ][col-1][2];
-
-        if (nextCellColor != "white") {
-            let isPartOfTetromino = false;
-
-            // Make sure it's not falsely detecting its own cells
-            for (let j = 0; j < 4; j++) {
-                if (droppingCells[j][0] === row && droppingCells[j][1] === col - 1) {
-                    isPartOfTetromino = true;
-                    break;
-                }
-            }
-            if (!isPartOfTetromino) {
-                console.log("Tetromino hit another block.");
-                return true;
-            }
-        }
-    }
-    console.log("Tetromino can move left.");
-    return false;
 }
 function moveLeft() {
-    console.log("Moving Left!");
-    //var shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
-    // Clear current positions from grid
-    // for (let i = 0; i < 4; i++) {
-    //     let row = droppingCells[i][0];
-    //     let col = droppingCells[i][1];
-    //     grid[row][col][2] = "white"; // Reset old position
-    // }
-    // Move each cell left
-    for (let i = 0; i < 4; i++) {
-        droppingCells[i][1] -= 1; // Move left
-    }
-    // Update grid with new positions
-    // for (let i = 0; i < 4; i++) {
-    //     let row = droppingCells[i][0];
-    //     let col = droppingCells[i][1];
-    //     grid[row][col][2] = shapeColor; // Mark new position (adjust as needed)
-    // }
-}
-function bonkRight() {
-    for (let i = 0; i < 4; i++) {
-        let row = droppingCells[i][0];
-        let col = droppingCells[i][1];
-
-        // If any part is at the left of the entire grid (including hidden rows)
-        if (col >= gridCols - 1 ){
-            console.log("Tetromino reached right of grid.");
-            return true;
-        }
-
-        // Check if the next col is occupied
-        let nextCellColor = grid[row][col+1][2];
-
-        if (nextCellColor != "white") {
-            let isPartOfTetromino = false;
-
-            // Make sure it's not falsely detecting its own cells
-            for (let j = 0; j < 4; j++) {
-                if (droppingCells[j][0] === row && droppingCells[j][1] === col + 1) {
-                    isPartOfTetromino = true;
-                    break;
-                }
-            }
-            if (!isPartOfTetromino) {
-                console.log("Tetromino hit another block.");
-                return true;
+    if (droppingPiece && gameRunning) {
+        if (tryMovement(droppingCells, 0, -1) == true) {
+            console.log("Moving Left!");
+            for (let i = 0; i < 4; i++) {
+                droppingCells[i][1] += -1; // Move left
             }
         }
     }
-    console.log("Tetromino can move right.");
-    return false;
 }
 function moveRight() {
-    console.log("Moving Right!");
-    //var shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
-    // Clear current positions from grid
-    // for (let i = 0; i < 4; i++) {
-    //     let row = droppingCells[i][0];
-    //     let col = droppingCells[i][1];
-    //     grid[row][col][2] = "white"; // Reset old position
-    // }
-    // Move each cell left
-    for (let i = 0; i < 4; i++) {
-        droppingCells[i][1] += 1; // Move left
+    if (droppingPiece && gameRunning) {
+        if (tryMovement(droppingCells, 0, 1) == true) {
+            console.log("Moving Right!");
+            for (let i = 0; i < 4; i++) {
+                droppingCells[i][1] += 1; // Move left
+            }
+        }
     }
-    // Update grid with new positions
-    // for (let i = 0; i < 4; i++) {
-    //     let row = droppingCells[i][0];
-    //     let col = droppingCells[i][1];
-    //     grid[row][col][2] = shapeColor; // Mark new position (adjust as needed)
-    // }
 }
 function rotateRight() {
     const pivot = droppingCells[2]; // Use the 3rd cell as pivot
@@ -726,7 +630,7 @@ function rotateRight() {
             switch (curTetroRotationState) {
                 case 0:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, -2)) { // Move left two
+                    if (tryMovement(newPositions, 0, -2)) { // Move left two
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += -2
                         }
@@ -734,7 +638,7 @@ function rotateRight() {
                         curTetroRotationState = 1;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, 0, 1)) { // Move right one
+                        if (tryMovement(newPositions, 0, 1)) { // Move right one
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][1] += 1
                             }
@@ -742,7 +646,7 @@ function rotateRight() {
                             curTetroRotationState = 1;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, 1, -2)) { // Move left two down one
+                            if (tryMovement(newPositions, 1, -2)) { // Move left two down one
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += 1
                                     newPositions[i][1] += -2
@@ -751,7 +655,7 @@ function rotateRight() {
                                 curTetroRotationState = 1;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, -2, 1)) { // Move up two right one
+                                if (tryMovement(newPositions, -2, 1)) { // Move up two right one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += -2
                                         newPositions[i][1] += 1
@@ -765,7 +669,7 @@ function rotateRight() {
                 break;
                 case 1:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, -1)) { // Move left one
+                    if (tryMovement(newPositions, 0, -1)) { // Move left one
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += -1
                         }
@@ -773,7 +677,7 @@ function rotateRight() {
                         curTetroRotationState = 2;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, 0, 2)) { // Move right two
+                        if (tryMovement(newPositions, 0, 2)) { // Move right two
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][1] += 2
                             }
@@ -781,7 +685,7 @@ function rotateRight() {
                             curTetroRotationState = 2;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, -1, 2)) { // Move left one up two
+                            if (tryMovement(newPositions, -1, 2)) { // Move left one up two
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += -1
                                     newPositions[i][1] += 2
@@ -790,7 +694,7 @@ function rotateRight() {
                                 curTetroRotationState = 2;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, 1, -2)) { // Move right two down one
+                                if (tryMovement(newPositions, 1, -2)) { // Move right two down one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 1
                                         newPositions[i][1] += -2
@@ -804,7 +708,7 @@ function rotateRight() {
                 break;
                 case 2:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, 2)) { // Move right two
+                    if (tryMovement(newPositions, 0, 2)) { // Move right two
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += 2
                         }
@@ -812,7 +716,7 @@ function rotateRight() {
                         curTetroRotationState = 3;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, 0, -1)) { // Move left one
+                        if (tryMovement(newPositions, 0, -1)) { // Move left one
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][1] += -1
                             }
@@ -820,7 +724,7 @@ function rotateRight() {
                             curTetroRotationState = 3;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, -1, 2)) { // Move right two up one
+                            if (tryMovement(newPositions, -1, 2)) { // Move right two up one
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += -1
                                     newPositions[i][1] += 2
@@ -829,7 +733,7 @@ function rotateRight() {
                                 curTetroRotationState = 3;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, -2, -1)) { // Move left one down two
+                                if (tryMovement(newPositions, -2, -1)) { // Move left one down two
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += -2
                                         newPositions[i][1] += -1
@@ -843,7 +747,7 @@ function rotateRight() {
                 break;
                 case 3:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, -1)) { // Move left one
+                    if (tryMovement(newPositions, 0, -1)) { // Move left one
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += -1
                         }
@@ -851,7 +755,7 @@ function rotateRight() {
                         curTetroRotationState = 0;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, 0, 2)) { // Move right two
+                        if (tryMovement(newPositions, 0, 2)) { // Move right two
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][1] += 2
                             }
@@ -859,7 +763,7 @@ function rotateRight() {
                             curTetroRotationState = 0;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, 2, 1)) { // Move right one down two
+                            if (tryMovement(newPositions, 2, 1)) { // Move right one down two
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += 2
                                     newPositions[i][1] += 1
@@ -868,7 +772,7 @@ function rotateRight() {
                                 curTetroRotationState = 0;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, -1, -2)) { // Move left two down one
+                                if (tryMovement(newPositions, -1, -2)) { // Move left two down one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += -1
                                         newPositions[i][1] += -2
@@ -886,7 +790,7 @@ function rotateRight() {
             switch (curTetroRotationState) {
                 case 0:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, -1)) { // Move one left
+                    if (tryMovement(newPositions, 0, -1)) { // Move one left
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += -1
                         }
@@ -894,7 +798,7 @@ function rotateRight() {
                         curTetroRotationState = 1;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, -1, -1)) { // Move one left and up
+                        if (tryMovement(newPositions, -1, -1)) { // Move one left and up
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += -1
                                 newPositions[i][1] += -1
@@ -903,7 +807,7 @@ function rotateRight() {
                             curTetroRotationState = 1;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, 2, 0)) { // Move down two
+                            if (tryMovement(newPositions, 2, 0)) { // Move down two
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += 2
                                 }
@@ -911,7 +815,7 @@ function rotateRight() {
                                 curTetroRotationState = 1;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, 2, -1)) { // Move down two left one
+                                if (tryMovement(newPositions, 2, -1)) { // Move down two left one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 2
                                         newPositions[i][1] += -1
@@ -925,7 +829,7 @@ function rotateRight() {
                 break;
                 case 1:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, 1)) { // Move one right
+                    if (tryMovement(newPositions, 0, 1)) { // Move one right
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += 1
                         }
@@ -933,7 +837,7 @@ function rotateRight() {
                         curTetroRotationState = 2;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, 1, 1)) { // Move one right and down
+                        if (tryMovement(newPositions, 1, 1)) { // Move one right and down
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += 1
                                 newPositions[i][1] += 1
@@ -942,7 +846,7 @@ function rotateRight() {
                             curTetroRotationState = 2;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, -2, 0)) { // Move up two
+                            if (tryMovement(newPositions, -2, 0)) { // Move up two
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] -= 2
                                 }
@@ -950,7 +854,7 @@ function rotateRight() {
                                 curTetroRotationState = 2;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, -2, 1)) { // Move up two right one
+                                if (tryMovement(newPositions, -2, 1)) { // Move up two right one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += -2
                                         newPositions[i][1] += 1
@@ -964,7 +868,7 @@ function rotateRight() {
                 break;
                 case 2:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, 1)) { // Move one right
+                    if (tryMovement(newPositions, 0, 1)) { // Move one right
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += 1
                         }
@@ -972,7 +876,7 @@ function rotateRight() {
                         curTetroRotationState = 3;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, -1, 1)) { // Move one right and up
+                        if (tryMovement(newPositions, -1, 1)) { // Move one right and up
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += -1
                                 newPositions[i][1] += 1
@@ -981,7 +885,7 @@ function rotateRight() {
                             curTetroRotationState = 3;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, 2, 0)) { // Move down two
+                            if (tryMovement(newPositions, 2, 0)) { // Move down two
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += 2
                                 }
@@ -989,7 +893,7 @@ function rotateRight() {
                                 curTetroRotationState = 3;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, 2, 1)) { // Move down two right one
+                                if (tryMovement(newPositions, 2, 1)) { // Move down two right one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 2
                                         newPositions[i][1] += 1
@@ -1003,7 +907,7 @@ function rotateRight() {
                 break;
                 case 3:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, -1)) { // Move one left
+                    if (tryMovement(newPositions, 0, -1)) { // Move one left
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += -1
                         }
@@ -1011,7 +915,7 @@ function rotateRight() {
                         curTetroRotationState = 0;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, 1, -1)) { // Move one left and down
+                        if (tryMovement(newPositions, 1, -1)) { // Move one left and down
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += 1
                                 newPositions[i][1] += -1
@@ -1020,7 +924,7 @@ function rotateRight() {
                             curTetroRotationState = 0;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, -2, 0)) { // Move up two
+                            if (tryMovement(newPositions, -2, 0)) { // Move up two
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] -= 2
                                 }
@@ -1028,7 +932,7 @@ function rotateRight() {
                                 curTetroRotationState = 0;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, 2, 1)) { // Move down two right one
+                                if (tryMovement(newPositions, 2, 1)) { // Move down two right one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 2
                                         newPositions[i][1] += 1
@@ -1096,7 +1000,7 @@ function rotateLeft() {
             switch (curTetroRotationState) {
                 case 0:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, -1)) { // Move left one
+                    if (tryMovement(newPositions, 0, -1)) { // Move left one
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += -1
                         }
@@ -1104,7 +1008,7 @@ function rotateLeft() {
                         curTetroRotationState = 3;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, 0, 2)) { // Move right two
+                        if (tryMovement(newPositions, 0, 2)) { // Move right two
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][1] += 2
                             }
@@ -1112,7 +1016,7 @@ function rotateLeft() {
                             curTetroRotationState = 3;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, -1, 2)) { // Move left one up two
+                            if (tryMovement(newPositions, -1, 2)) { // Move left one up two
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += -1
                                     newPositions[i][1] += 2
@@ -1121,7 +1025,7 @@ function rotateLeft() {
                                 curTetroRotationState = 3;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, 1, -2)) { // Move right two down one
+                                if (tryMovement(newPositions, 1, -2)) { // Move right two down one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 1
                                         newPositions[i][1] += -2
@@ -1135,7 +1039,7 @@ function rotateLeft() {
                 break;
                 case 1:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, 2)) { // Move right two
+                    if (tryMovement(newPositions, 0, 2)) { // Move right two
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += 2
                         }
@@ -1143,7 +1047,7 @@ function rotateLeft() {
                         curTetroRotationState = 0;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, 0, -1)) { // Move left one
+                        if (tryMovement(newPositions, 0, -1)) { // Move left one
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][1] += -1
                             }
@@ -1151,7 +1055,7 @@ function rotateLeft() {
                             curTetroRotationState = 0;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, -1, 2)) { // Move right two up one
+                            if (tryMovement(newPositions, -1, 2)) { // Move right two up one
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += -1
                                     newPositions[i][1] += 2
@@ -1160,7 +1064,7 @@ function rotateLeft() {
                                 curTetroRotationState = 0;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, -2, -1)) { // Move left one down two
+                                if (tryMovement(newPositions, -2, -1)) { // Move left one down two
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += -2
                                         newPositions[i][1] += -1
@@ -1174,7 +1078,7 @@ function rotateLeft() {
                 break;
                 case 2://
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, -1)) { // Move left one
+                    if (tryMovement(newPositions, 0, -1)) { // Move left one
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += -1
                         }
@@ -1182,7 +1086,7 @@ function rotateLeft() {
                         curTetroRotationState = 1;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, 0, 2)) { // Move right two
+                        if (tryMovement(newPositions, 0, 2)) { // Move right two
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][1] += 2
                             }
@@ -1190,7 +1094,7 @@ function rotateLeft() {
                             curTetroRotationState = 1;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, 2, 1)) { // Move right one down two
+                            if (tryMovement(newPositions, 2, 1)) { // Move right one down two
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += 2
                                     newPositions[i][1] += 1
@@ -1199,7 +1103,7 @@ function rotateLeft() {
                                 curTetroRotationState = 1;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, -1, -2)) { // Move left two down one
+                                if (tryMovement(newPositions, -1, -2)) { // Move left two down one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += -1
                                         newPositions[i][1] += -2
@@ -1213,7 +1117,7 @@ function rotateLeft() {
                 break;
                 case 3:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, -2)) { // Move left two
+                    if (tryMovement(newPositions, 0, -2)) { // Move left two
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += -2
                         }
@@ -1221,7 +1125,7 @@ function rotateLeft() {
                         curTetroRotationState = 2;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, 0, 1)) { // Move right one
+                        if (tryMovement(newPositions, 0, 1)) { // Move right one
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][1] += 1
                             }
@@ -1229,7 +1133,7 @@ function rotateLeft() {
                             curTetroRotationState = 2;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, 1, -2)) { // Move left two down one
+                            if (tryMovement(newPositions, 1, -2)) { // Move left two down one
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += 1
                                     newPositions[i][1] += -2
@@ -1238,7 +1142,7 @@ function rotateLeft() {
                                 curTetroRotationState = 2;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, -2, 1)) { // Move up two right one
+                                if (tryMovement(newPositions, -2, 1)) { // Move up two right one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += -2
                                         newPositions[i][1] += 1
@@ -1256,7 +1160,7 @@ function rotateLeft() {
             switch (curTetroRotationState) {
                 case 0:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, 1)) { // Move one right
+                    if (tryMovement(newPositions, 0, 1)) { // Move one right
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += 1
                         }
@@ -1264,7 +1168,7 @@ function rotateLeft() {
                         curTetroRotationState = 3;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, -1, 1)) { // Move one right and up
+                        if (tryMovement(newPositions, -1, 1)) { // Move one right and up
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += -1
                                 newPositions[i][1] += 1
@@ -1273,7 +1177,7 @@ function rotateLeft() {
                             curTetroRotationState = 3;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, 2, 0)) { // Move down two
+                            if (tryMovement(newPositions, 2, 0)) { // Move down two
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += 2
                                 }
@@ -1281,7 +1185,7 @@ function rotateLeft() {
                                 curTetroRotationState = 3;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, 2, 1)) { // Move down two right one
+                                if (tryMovement(newPositions, 2, 1)) { // Move down two right one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 2
                                         newPositions[i][1] += 1
@@ -1295,7 +1199,7 @@ function rotateLeft() {
                 break;
                 case 1:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, 1)) { // Move one right
+                    if (tryMovement(newPositions, 0, 1)) { // Move one right
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += 1
                         }
@@ -1303,7 +1207,7 @@ function rotateLeft() {
                         curTetroRotationState = 0;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, 1, 1)) { // Move one right and down
+                        if (tryMovement(newPositions, 1, 1)) { // Move one right and down
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += 1
                                 newPositions[i][1] += 1
@@ -1312,7 +1216,7 @@ function rotateLeft() {
                             curTetroRotationState = 0;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, -2, 0)) { // Move up two
+                            if (tryMovement(newPositions, -2, 0)) { // Move up two
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] -= 2
                                 }
@@ -1320,7 +1224,7 @@ function rotateLeft() {
                                 curTetroRotationState = 0;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, -2, 1)) { // Move up two right one
+                                if (tryMovement(newPositions, -2, 1)) { // Move up two right one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += -2
                                         newPositions[i][1] += 1
@@ -1334,7 +1238,7 @@ function rotateLeft() {
                 break;
                 case 2:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, -1)) { // Move one left
+                    if (tryMovement(newPositions, 0, -1)) { // Move one left
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += -1;
                         }
@@ -1342,7 +1246,7 @@ function rotateLeft() {
                         curTetroRotationState = 1;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, -1, -1)) { // Move one left and up
+                        if (tryMovement(newPositions, -1, -1)) { // Move one left and up
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += -1
                                 newPositions[i][1] += -1
@@ -1351,7 +1255,7 @@ function rotateLeft() {
                             curTetroRotationState = 1;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, 2, 0)) { // Move down two
+                            if (tryMovement(newPositions, 2, 0)) { // Move down two
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += 2
                                 }
@@ -1359,7 +1263,7 @@ function rotateLeft() {
                                 curTetroRotationState = 1;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, 2, -1)) { // Move down two left one
+                                if (tryMovement(newPositions, 2, -1)) { // Move down two left one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 2
                                         newPositions[i][1] += -1
@@ -1373,7 +1277,7 @@ function rotateLeft() {
                 break;
                 case 3:
                     //=================TEST 1================
-                    if (tryWallKick(newPositions, 0, -1)) { // Move one left
+                    if (tryMovement(newPositions, 0, -1)) { // Move one left
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += -1
                         }
@@ -1381,7 +1285,7 @@ function rotateLeft() {
                         curTetroRotationState = 2;
                     } else {
                         //=================TEST 2================
-                        if (tryWallKick(newPositions, 1, -1)) { // Move one left and down
+                        if (tryMovement(newPositions, 1, -1)) { // Move one left and down
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += 1
                                 newPositions[i][1] += -1
@@ -1390,7 +1294,7 @@ function rotateLeft() {
                             curTetroRotationState = 2;
                         } else {
                             //=================TEST 3================
-                            if (tryWallKick(newPositions, -2, 0)) { // Move up two
+                            if (tryMovement(newPositions, -2, 0)) { // Move up two
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] -= 2
                                 }
@@ -1398,7 +1302,7 @@ function rotateLeft() {
                                 curTetroRotationState = 2;
                             } else {
                                 //=================TEST 4================
-                                if (tryWallKick(newPositions, 2, 1)) { // Move down two right one
+                                if (tryMovement(newPositions, 2, 1)) { // Move down two right one
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 2
                                         newPositions[i][1] += 1
@@ -1435,7 +1339,7 @@ function holdPiece() {
     drawHoldPiece(heldTetro);
 }
 //-----------------------------------------------------------------------------MOVEMENT UTIL---------------------------------------------------------------------------------------------
-function tryWallKick(cellArray, offsetX, offsetY) {
+function tryMovement(cellArray, offsetX, offsetY) {
     let tempPositions = cellArray.map(cell => [...cell]);
     // Apply offset to all positions
     for (let i = 0; i < 4; i++) {
@@ -1466,6 +1370,20 @@ function positionIsValid(TestAry) {
     }
     return true;
 }
+function updateDAS() {
+    if (lastKeyHeld) {
+      dasCounter++;
+      if (dasCounter >= DAS_DELAY) {
+        if ((dasCounter - DAS_DELAY) % DAS_REPEAT_RATE === 0) {
+          if (lastKeyHeld === 'left') {
+            moveLeft();
+          } else if (lastKeyHeld === 'right') {
+            moveRight();
+          }
+        }
+      }
+    }
+  }
 //------------------------------------------------------------------------------DRAWING---------------------------------------------------------------------------------------------
 function drawGrid(){
     for (var i = 0; i < grid.length; i++) {
@@ -1922,18 +1840,18 @@ function keyPressed() {
     }
     if (key === 'A' || key === 'a') { 
         if (droppingPiece) {
-            if (!bonkLeft()) {
-                moveLeft();
-                drawGrid();
-            }
+            lastKeyHeld = 'left';
+            holdingLeft = true;
+            moveLeft(); // Initial move
+            dasCounter = 0;
         }
         console.log("A key was pressed!" + key);
     } else if (key === 'D' || key === 'd') { 
         if (droppingPiece) {
-            if (!bonkRight()) {
-                moveRight();
-                drawGrid();
-            }
+            keyHeld = 'right';
+            holdingRight = true;
+            moveRight(); // Initial move
+            dasCounter = 0;
         }
         console.log("A key was pressed!" + key);
     } else if (key === 'S' || key === 's') { 
@@ -1986,6 +1904,20 @@ function keyReleased() {
     if (key === 'S' || key === 's') {
         effSpeed = gameSpeed;
     }
+    if (key === 'a' || key === 'A') {
+        holdingLeft = false;
+        if (holdingRight) lastKeyHeld = 'right'; // Switch to right if still held
+      } 
+      if (key === 'd' || key === 'D') {
+        holdingRight = false;
+        if (holdingLeft) lastKeyHeld = 'left'; // Switch to left if still held
+      }
+    
+      // If neither key is held, reset DAS state
+      if (!holdingLeft && !holdingRight) {
+        lastKeyHeld = null;
+        dasCounter = 0;
+      }
 }
 //-----------------------------------------------------------------------------MATH/UTILS-------------------------------------------------------------------------------------------
 function getRandBetween(min, max) {
