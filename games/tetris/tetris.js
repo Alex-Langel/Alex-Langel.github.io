@@ -1,3 +1,4 @@
+
 //NEEDS BETTER RANDOMIZTION
 //BETTER SCORE CALCULATION
 //SRS NEEDS LOTS OF WORK
@@ -84,7 +85,8 @@ var mMenuButtonTopTop = titleTop + titleHeight + mMenuTitleSpacing
 var mMenuButtonHeight = mMenuHeight * (1/10);
 var mMenuButtonSpacing = mMenuHeight * (1/20);
 
-let mainMenuOptions = [["Play Game"], ["Options", "Settings"], ["Testing", "Controls"]];
+let mainMenuOptions = [["Play Game"], ["Settings", "Controls"], ["Display", "Sound"]];
+let controlsMenuOptions = [["Move Left", "Move Right"],["Soft Drop", "Hard Drop"], ["Rotate CW", "Rotate CCW"], ["Hold", "Restart"]];
 let curMenuPosition = [0,0,0];
 
 
@@ -1983,6 +1985,34 @@ function drawMenuSection(txt, bgcolor, outlinecolor, txtcolor, left, top, width,
     text(txt, left + width / 2, top + height / 2);
 
 }
+function drawSettingsMenu() {
+    var ctrTop = mMenuTop + mMenuHeight * (1/10);
+    var ctrLeft = mMenuLeft - mMenuWidth * (1/10);
+    var ctrHeight = mMenuHeight * (8/10);
+    var ctrWidth = mMenuWidth * (12/10);
+    drawMenuSection("GAME SETTINGS COMING SOON", darkUIColor, lightUIColor, "white", ctrTop, ctrLeft, ctrHeight, ctrWidth);
+}
+function drawControlsMenu() {
+    var ctrTop = mMenuTop + mMenuHeight * (1/10);
+    var ctrLeft = mMenuLeft - mMenuWidth * (1/10);
+    var ctrHeight = mMenuHeight * (8/10);
+    var ctrWidth = mMenuWidth * (12/10);
+    drawMenuSection("CONTROL REMAPPING COMING SOON", darkUIColor, lightUIColor, "white", ctrTop, ctrLeft, ctrHeight, ctrWidth);
+}
+function drawDisplayMenu() {
+    var ctrTop = mMenuTop + mMenuHeight * (1/10);
+    var ctrLeft = mMenuLeft - mMenuWidth * (1/10);
+    var ctrHeight = mMenuHeight * (8/10);
+    var ctrWidth = mMenuWidth * (12/10);
+    drawMenuSection("DISPLAY OPTIONS COMING SOON", darkUIColor, lightUIColor, "white", ctrTop, ctrLeft, ctrHeight, ctrWidth);
+}
+function drawSoundMenu() {
+    var ctrTop = mMenuTop + mMenuHeight * (1/10);
+    var ctrLeft = mMenuLeft - mMenuWidth * (1/10);
+    var ctrHeight = mMenuHeight * (8/10);
+    var ctrWidth = mMenuWidth * (12/10);
+    drawMenuSection("SOUND OPTIONS COMING SOON", darkUIColor, lightUIColor, "white", ctrTop, ctrLeft, ctrHeight, ctrWidth);
+}
 function drawMainMenuButtons(prevPosition) {
     var bBGC;
     var bOLC;
@@ -2087,17 +2117,66 @@ function moveMenuCursorRight() {
 }
 //------------------------------------------------------------------------------KEYPRESS--------------------------------------------------------------------------------------------
 function keyPressed() {
-    if (gameState == 0) {
-        if (key === "ArrowLeft") {
-            moveMenuCursorLeft();
-        } else if (key === "ArrowRight"){
-            moveMenuCursorRight();
-        } else if (key === "ArrowUp"){
-            moveMenuCursorUp();
-        } else if (key === "ArrowDown"){
-            moveMenuCursorDown();
-        } else if (keyCode === ENTER){
-            beginGame();
+    console.log(curMenuPosition);
+    if (gameState == 0) {//if in pre-game menus
+        if (curMenuPosition[0] == 0) {//in MAIN MENU
+            if (key === "ArrowLeft") {
+                moveMenuCursorLeft();
+            } else if (key === "ArrowRight"){
+                moveMenuCursorRight();
+            } else if (key === "ArrowUp"){
+                moveMenuCursorUp();
+            } else if (key === "ArrowDown"){
+                moveMenuCursorDown();
+            } else if (key === "Enter"){
+                if (curMenuPosition[1] == 0 && curMenuPosition[2] == 0) { //IF 'PLAY BUTTON' SELECTED
+                    beginGame();
+                } else if (curMenuPosition[1] == 1) {//second row of buttons
+                    if (curMenuPosition[2] == 0) {//left button - Game Settings
+                        drawSettingsMenu();//draw controls menu
+                        curMenuPosition = [1,0,0];//put cursor at home position
+                    } else if ((curMenuPosition[2] == 1)) {//right button - Controls
+                        drawControlsMenu();//draw controls menu
+                        curMenuPosition = [2,0,0];//put cursor at home position
+                    }
+                } else if (curMenuPosition[1] == 2) {//third row of buttons 
+                    if (curMenuPosition[2] == 0) {//left button - Display
+                        drawDisplayMenu();//draw controls menu
+                        curMenuPosition = [3,0,0];//put cursor at home position
+                    } else if ((curMenuPosition[2] == 1)) {//right button - Sound
+                        drawSoundMenu();
+                        curMenuPosition = [4,0,0];
+                    }
+                }
+            }
+        } else if (curMenuPosition[0] == 1) {//setting menu
+            if (key === "Enter") {
+                //
+            } else if ( key === "Escape") {
+                curMenuPosition = [0,0,0];//reset position to home of main menu
+                drawMainMenu();//return to main menu
+            }
+        } else if (curMenuPosition[0] == 2) {//controls menu
+            if (key === "Enter") {
+                //
+            } else if ( key === "Escape") {
+                curMenuPosition = [0,0,0];//reset position to home of main menu
+                drawMainMenu();//return to main menu
+            }
+        } else if (curMenuPosition[0] == 3) {//display menu
+            if (key === "Enter") {
+                //
+            } else if ( key === "Escape") {
+                curMenuPosition = [0,0,0];//reset position to home of main menu
+                drawMainMenu();//return to main menu
+            }
+        } else if (curMenuPosition[0] == 4) {//sound menu
+            if (key === "Enter") {
+                //
+            } else if ( key === "Escape") {
+                curMenuPosition = [0,0,0];//reset position to home of main menu
+                drawMainMenu();//return to main menu
+            }
         }
     } else {
         if (!droppingCells) {
@@ -2171,6 +2250,11 @@ function keyPressed() {
                 }
         } else if (keyCode === ENTER) {
             beginGame();
+        } else if ( key === "Escape") {
+            curMenuPosition = [0,0,0];//reset position to home of main menu
+            resetGameVars();
+            gameState = 0;
+            drawMainMenu();//return to main menu
         }
     }
 }
