@@ -1848,7 +1848,7 @@ function keyPressed() {
         console.log("A key was pressed!" + key);
     } else if (key === 'D' || key === 'd') { 
         if (droppingPiece) {
-            keyHeld = 'right';
+            lastKeyHeld = 'right';
             holdingRight = true;
             moveRight(); // Initial move
             dasCounter = 0;
