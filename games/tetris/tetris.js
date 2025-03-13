@@ -90,7 +90,7 @@ let veryDarkUIColor = [20,20,20];
 let midUIColor = [125,125,125];
 
 //GAME VARIABLES
-
+let gameState = 0;
 
 let droppingPiece = false;
 let gameRunning = true;
@@ -139,48 +139,61 @@ function setup(){
     nxtBag = [...fullBag];
     shuffleArray(nxtBag);
     //curTetro = getFromBag();
-    drawUI();
+    drawMainMenu();
+    //drawUI();
     //drawScore();
     //drawEmptyTetroBox();
 }
 function draw(){
-    drawTimer();
-    //background(0);
-    if (gameRunning == true) {
-        drawGrid();
-        elapsedTime = millis() - startTimer;
-        updateDAS();
-        if (frameCount % effSpeed == 0) {
-            if (droppingPiece == true) {
-                if (onGround(droppingCells) ==  true) {
-                    addCellsToGrid(droppingCells);
-                    rowsToCheck = getRows();
-                    droppingPiece = false
-                    droppingCells = [];
-                    clearRows();
-                    addScore();
-                    drawScore();
-                    if  (topRowEmpty() == false)
-                    {
-                        gameEnd();
+    if (gameState == 0) {
+
+    } else if (gameState == 1) {//game running
+        if (gameRunning == true) {
+            elapsedTime = millis() - startTimer;
+            drawTimer();
+            updateDAS();
+            if (frameCount % effSpeed == 0) {
+                if (droppingPiece == true) {
+                    if (onGround(droppingCells) ==  true) {
+                        addCellsToGrid(droppingCells);
+                        rowsToCheck = getRows();
+                        droppingPiece = false
+                        droppingCells = [];
+                        clearRows();
+                        addScore();
+                        drawScore();
+                    } else {
+                        moveDown();
                     }
+                    drawGrid();
                 } else {
-                    moveDown();
+                    curTetro = getFromBag();
+                    //curTetro = 5;
+                    drawNextPiece(curBag[0]);
+                    drawAdtlNext();
+                    //drawUI();
+                    spawnTetro(curTetro);
+                    holdLock = false;
                 }
-            } else  if (gameRunning == true) {
-                curTetro = getFromBag();
-                //curTetro = 5;
-                drawNextPiece(curBag[0]);
-                drawAdtlNext();
-                //drawUI();
-                holdLock = false;
-                spawnTetro(curTetro);
             }
+            //drawGrid();
         }
+    } else if (gameState == 2) {//game ended
+
     }
-    if (gameRunning == true) {
-        drawGrid();
-    }
+
+
+
+
+
+
+
+
+
+
+
+    //background(0);
+
 }
 function initGrid() {
     var tempGridItem = [];
@@ -229,9 +242,11 @@ function resetFunc() {
     clearsToLevel = 20;
     level = 1;
     startTimer = millis();
+    gameState = 1;
 }
 function spawnTetro(letter) {
 //|1 = I|2 = O|3 = T|4 = J|5 = L|6 = S|7 = Z|
+    var spawnFail = false;
     droppingCells = [];
     
     switch (letter) {
@@ -251,7 +266,7 @@ function spawnTetro(letter) {
             if (grid[2][5][2] == "white"){
                 grid[2][5][2] = curTetroColor;
             }
-            gameEnd();
+            spawnFail = true;
         }
         break;
     case 2:
@@ -265,7 +280,7 @@ function spawnTetro(letter) {
                 grid[0][4][2] = curTetroColor;
                 grid[0][5][2] = curTetroColor;
             } 
-            gameEnd();
+            spawnFail = true;
         }
         break;
     case 3:
@@ -278,7 +293,7 @@ function spawnTetro(letter) {
                 if (grid[0][5][2] == "white") {
                     grid[0][5][2] = curTetroColor;
                 }
-            gameEnd();
+            spawnFail = true;
         }
         break;
     case 4:
@@ -296,7 +311,7 @@ function spawnTetro(letter) {
                 grid[0][5][2] = curTetroColor;
                 grid[0][4][2] = curTetroColor;
             }
-            gameEnd();
+            spawnFail = true;
         }
         break;
     case 5:
@@ -314,7 +329,7 @@ function spawnTetro(letter) {
                 grid[0][5][2] = curTetroColor;
                 grid[0][6][2] = curTetroColor;
             }
-            gameEnd();
+            spawnFail = true;
         }
         break;
     case 6:
@@ -328,7 +343,7 @@ function spawnTetro(letter) {
                 grid[0][5][2] = curTetroColor;
                 grid[0][4][2] = curTetroColor;
             }
-            gameEnd();
+            spawnFail = true;
         }
         break;
     case 7:
@@ -342,12 +357,16 @@ function spawnTetro(letter) {
                 grid[0][5][2] == curTetroColor;
                 grid[0][6][2] == curTetroColor;
             }
-            gameEnd();
+            spawnFail = true;
         }
         break;
     default:
         console.error("INVALID TETRONIMO ATTEMPTED TO SPAWN");
         break;
+    }
+    drawGrid();
+    if (spawnFail == true) {
+        endGame();
     }
 }
 function topRowEmpty() {
@@ -494,8 +513,9 @@ function getGhostPosition(activePiece) {
     return ghostPiece;
 
 }
-function gameEnd() {
+function endGame(){
     console.log("GAME OVER");
+    gameState = 2;
     gameRunning = false;
     droppingPiece = false;
     droppingCells = [];
@@ -568,6 +588,7 @@ function moveLeft() {
             for (let i = 0; i < 4; i++) {
                 droppingCells[i][1] += -1; // Move left
             }
+            drawGrid();
         }
     }
 }
@@ -578,6 +599,7 @@ function moveRight() {
             for (let i = 0; i < 4; i++) {
                 droppingCells[i][1] += 1; // Move left
             }
+            drawGrid();
         }
     }
 }
@@ -1385,6 +1407,7 @@ function updateDAS() {
     }
   }
 //------------------------------------------------------------------------------DRAWING---------------------------------------------------------------------------------------------
+    //play area
 function drawGrid(){
     for (var i = 0; i < grid.length; i++) {
         for (var j = 0; j < grid[0].length; j++) {
@@ -1423,6 +1446,7 @@ function drawFallingPiece() {
         rect(grid[row][col][0][0],grid[row][col][0][1],grid[row][col][1][0]-grid[row][col][0][0],grid[row][col][1][1]-grid[row][col][0][1]);
     }
 }
+    //Right side UI
 function drawUI() {
 
     drawNextHold(nxtHldTop, nxtHldLeft, nxtHldWid, nxtHldHi);
@@ -1831,6 +1855,37 @@ function drawScoreboard() {
     text("Time: " + msToMinuteSecondTime(elapsedTime), SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
     console.log(msToMinuteSecondTime(elapsedTime));
 }
+    //Main menu
+function drawMainMenu() {
+    var mMenuLeft = canvasWidth * (1/10);
+    var mMenuTop = canvasHeight * (1/10);
+    var mMenuWidth = canvasWidth * (8/10);
+    var mMenuHeight = canvasHeight * (8/10);
+    console.log(mMenuWidth);
+    console.log(mMenuLeft);
+    fill(midUIColor);
+    rect(mMenuLeft,mMenuTop, mMenuWidth, mMenuHeight);
+    //Game name
+    drawMenuSection("* * * TETRIS  * * *", lilDarkUIColor, lilDarkUIColor, "white", mMenuLeft + (mMenuWidth * (1/20)), mMenuTop + (mMenuHeight * (1/20)), (mMenuWidth * (18/20)), (mMenuHeight * (2/10)));
+
+    //game info
+    drawMenuSection("[Press ENTER to start game]", midUIColor, "black", veryDarkUIColor, mMenuLeft + (mMenuWidth * (1/20)), mMenuTop + (mMenuHeight * (18/20)), (mMenuWidth * (18/20)), (mMenuHeight * (1/20)));
+}
+function drawMenuSection(txt, bgcolor, outlinecolor, txtcolor, left, top, width, height) {
+    stroke (outlinecolor);
+    fill(bgcolor);
+    rect(left, top, width, height);
+    console.log(width);
+    console.log(left);
+
+    fill(txtcolor);
+    stroke(txtcolor)
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text(txt, left + width / 2, top + height / 2);
+
+}
+
 //------------------------------------------------------------------------------KEYPRESS--------------------------------------------------------------------------------------------
 function keyPressed() {
     if (!droppingCells) {
@@ -1839,20 +1894,16 @@ function keyPressed() {
         return; 
     }
     if (key === 'A' || key === 'a') { 
-        if (droppingPiece) {
-            lastKeyHeld = 'left';
-            holdingLeft = true;
-            moveLeft(); // Initial move
-            dasCounter = 0;
-        }
+        lastKeyHeld = 'left';
+        holdingLeft = true;
+        moveLeft(); // Initial move
+        dasCounter = 0;
         console.log("A key was pressed!" + key);
     } else if (key === 'D' || key === 'd') { 
-        if (droppingPiece) {
-            lastKeyHeld = 'right';
-            holdingRight = true;
-            moveRight(); // Initial move
-            dasCounter = 0;
-        }
+        lastKeyHeld = 'right';
+        holdingRight = true;
+        moveRight(); // Initial move
+        dasCounter = 0;
         console.log("A key was pressed!" + key);
     } else if (key === 'S' || key === 's') { 
         if (droppingPiece) {
@@ -1898,6 +1949,8 @@ function keyPressed() {
                 holdLock = true;
                 holdPiece();
             }
+    } else if (keyCode === ENTER) {
+        resetFunc();
     }
 }
 function keyReleased() {
