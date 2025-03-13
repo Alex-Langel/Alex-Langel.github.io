@@ -1,7 +1,7 @@
 //NEEDS BETTER RANDOMIZTION
 //BETTER SCORE CALCULATION
-//
-//
+//SRS NEEDS LOTS OF WORK
+//WORK ON MODIFYIG CURRENT PIECE LOGIC TO NOT BE IN MAIN GRID UNTIL STOPPED -> EASIER TURNING LOGIC
 //
 //====================================================================================GLOBAL VARIABLES=================================================================================================================
 //GET CANVAS SIZE
@@ -84,19 +84,32 @@ let veryDarkUIColor = [20,20,20];
 let midUIColor = [125,125,125];
 
 //GAME VARIABLES
-const fullBag = [1,2,3,4,5,6,7];
+
+
 let droppingPiece = false;
-let curTetro = 0;
-let curBag = [];
-let nxtBag = [];
-let nextTetro = 0;
-let heldTetro = 0;
-let droppingCells = [];
-let ghostCells = [];
 let gameRunning = true;
 let holdLock = false;
+
+let curTetro = 0;
+let curTetroColor = "lime"
+let curTetroRotationState = 0;
+let nextTetro = 0;
+let heldTetro = 0;
+
+const fullBag = [1,2,3,4,5,6,7];
+let curBag = [];
+let nxtBag = [];
+
+let droppingCells = [];
+let ghostCells = [];
 let rowsToCheck = [];
+
 let simulClears = 0;
+let totTetris = 0;
+let totTriple = 0;
+let totDouble = 0;
+let totBtoB = 0;
+let prevTetris = false;
 let combo = 0;
 let score = 0;
 let clears = 0;
@@ -105,7 +118,7 @@ let level = 1;
 
 //TIME
 let startTimer;
-let elapsedTime
+let elapsedTime;
 
 //workaround
 //let shiftTimeout = 0;
@@ -128,10 +141,12 @@ function draw(){
     drawTimer();
     //background(0);
     if (gameRunning == true) {
+        drawGrid();
         elapsedTime = millis() - startTimer;
         if (frameCount % effSpeed == 0) {
             if (droppingPiece == true) {
                 if (onGround(droppingCells) ==  true) {
+                    addCellsToGrid(droppingCells);
                     rowsToCheck = getRows();
                     droppingPiece = false
                     droppingCells = [];
@@ -147,13 +162,12 @@ function draw(){
                 }
             } else  if (gameRunning == true) {
                 curTetro = getFromBag();
-                //curTetro = 1;
+                //curTetro = 5;
                 drawNextPiece(curBag[0]);
                 drawAdtlNext();
                 //drawUI();
                 holdLock = false;
                 spawnTetro(curTetro);
-                droppingPiece = true;
             }
         }
     }
@@ -162,8 +176,6 @@ function draw(){
     }
 }
 function initGrid() {
-    var rows = gridRows;
-    var cols = gridCols;
     var tempGridItem = [];
     var tempGridRow = [];
     var tempGrid = [];
@@ -209,6 +221,7 @@ function resetFunc() {
     clears = 0;
     clearsToLevel = 20;
     level = 1;
+    startTimer = millis();
 }
 function spawnTetro(letter) {
 //|1 = I|2 = O|3 = T|4 = J|5 = L|6 = S|7 = Z|
@@ -216,118 +229,111 @@ function spawnTetro(letter) {
     
     switch (letter) {
     case 1: 
+    curTetroColor = "aqua";
         if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[2][5][2] == "white"  && grid[3][5][2] == "white" ) { //if there is room for tetronimo
-            grid[0][5][2] = "aqua";
-            grid[1][5][2] = "aqua";
-            grid[2][5][2] = "aqua";
-            grid[3][5][2] = "aqua";
             droppingCells = [[0,5],[1,5],[2,5],[3,5]];
+            droppingPiece = true;
+            curTetroRotationState = 1;
         } else {
             if (grid[0][5][2] == "white"){
-                grid[0][5][2] = "aqua";
+                grid[0][5][2] = curTetroColor;
             }
             if (grid[1][5][2] == "white"){
-                grid[1][5][2] = "aqua";
+                grid[1][5][2] = curTetroColor;
             }
             if (grid[2][5][2] == "white"){
-                grid[2][5][2] = "aqua";
+                grid[2][5][2] = curTetroColor;
             }
             gameEnd();
         }
         break;
     case 2:
+        curTetroColor = "yellow";
         if (grid[0][4][2] == "white" && grid[0][5][2] == "white" && grid[1][4][2] == "white" && grid[1][5][2] == "white") { //if there is room for tetronimo
-            grid[0][4][2] = "yellow";
-            grid[0][5][2] = "yellow";
-            grid[1][4][2] = "yellow";
-            grid[1][5][2] = "yellow";
             droppingCells = [[0,4],[0,5],[1,4],[1,5]];
+            droppingPiece = true;
+            curTetroRotationState = 0;
         } else {
             if (grid[0][4][2] == "white" && grid[0][5][2] == "white") {
-                grid[0][4][2] = "yellow";
-                grid[0][5][2] = "yellow";
+                grid[0][4][2] = curTetroColor;
+                grid[0][5][2] = curTetroColor;
             } 
             gameEnd();
         }
         break;
     case 3:
+        curTetroColor = "magenta";
         if (grid[0][4][2] == "white" && grid[0][5][2] == "white" && grid[0][6][2] == "white"  && grid[1][5][2] == "white" ) { //if there is room for tetronimo
-            grid[0][4][2] = "magenta";
-            grid[0][5][2] = "magenta";
-            grid[0][6][2] = "magenta";
-            grid[1][5][2] = "magenta";
             droppingCells = [[0,4],[0,6],[0,5],[1,5]];
+            droppingPiece = true;
+            curTetroRotationState = 0;
             } else {
                 if (grid[0][5][2] == "white") {
-                    grid[0][5][2] = "magenta";
+                    grid[0][5][2] = curTetroColor;
                 }
             gameEnd();
         }
         break;
     case 4:
+        curTetroColor = "blue";
         if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[2][5][2] == "white"  && grid[2][4][2] == "white" ) { //if there is room for tetronimo
-            grid[0][5][2] = "blue";
-            grid[1][5][2] = "blue";
-            grid[2][5][2] = "blue";
-            grid[2][4][2] = "blue";
             droppingCells = [[0,5],[2,5],[1,5],[2,4]];
+            droppingPiece = true;
+            curTetroRotationState = 3;
         } else {
             if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[1][4][2] == "white") {
-                grid[0][5][2] = "blue"
-                grid[1][5][2] = "blue"
-                grid[1][4][2] = "blue"
+                grid[0][5][2] = curTetroColor;
+                grid[1][5][2] = curTetroColor;
+                grid[1][4][2] = curTetroColor;
             } else if (grid[0][5][2] == "white" && grid[0][4][2] == "white") {
-                grid[0][5][2] = "blue"
-                grid[0][4][2] = "blue"
+                grid[0][5][2] = curTetroColor;
+                grid[0][4][2] = curTetroColor;
             }
             gameEnd();
         }
         break;
     case 5:
+        curTetroColor = "orange";
         if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[2][5][2] == "white"  && grid[2][6][2] == "white" ) { //if there is room for tetronimo
-            grid[0][5][2] = "orange";
-            grid[1][5][2] = "orange";
-            grid[2][5][2] = "orange";
-            grid[2][6][2] = "orange";
             droppingCells = [[0,5],[2,5],[1,5],[2,6]];
+            droppingPiece = true;
+            curTetroRotationState = 1;
         } else {
             if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[1][6][2] == "white") {
-                grid[0][5][2] = "orange";
-                grid[1][5][2] = "orange";
-                grid[1][6][2] = "orange";
+                grid[0][5][2] = curTetroColor
+                grid[1][5][2] = curTetroColor;
+                grid[1][6][2] = curTetroColor;
             } else if (grid[0][5][2] == "white" && grid[0][6][2] == "white") {
-                grid[0][5][2] = "orange";
-                grid[0][6][2] = "orange";
+                grid[0][5][2] = curTetroColor;
+                grid[0][6][2] = curTetroColor;
             }
             gameEnd();
         }
         break;
     case 6:
+        curTetroColor = "green";
         if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[0][6][2] == "white"  && grid[1][4][2] == "white" ) { //if there is room for tetronimo
-            grid[0][5][2] = "green";
-            grid[1][5][2] = "green";
-            grid[0][6][2] = "green";
-            grid[1][4][2] = "green";
             droppingCells = [[0,5],[0,6],[1,5],[1,4]];
+            droppingPiece = true;
+            curTetroRotationState = 0;
         } else {
             if (grid[0][5][2] == "white" && grid[0][4][2] == "white"){
-                grid[0][5][2] = "green"
-                grid[0][4][2] = "green"
+                grid[0][5][2] = curTetroColor;
+                grid[0][4][2] = curTetroColor;
             }
             gameEnd();
         }
         break;
     case 7:
+        curTetroColor = "red";
         if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[1][6][2] == "white"  && grid[0][4][2] == "white" ) { //if there is room for tetronimo
-            grid[0][5][2] = "red";
-            grid[1][5][2] = "red";
-            grid[1][6][2] = "red";
-            grid[0][4][2] = "red";
             droppingCells = [[0,5],[1,6],[1,5],[0,4]];
+            droppingPiece = true;
+            curTetroRotationState = 0;
         } else {
             if (grid[0][5][2] == "white" && grid[0][6][2] == "white"){
-                grid[0][5][2] == "red"
-                grid[0][6][2] == "red"
+                grid[0][5][2] == curTetroColor;
+                grid[0][6][2] == curTetroColor;
             }
             gameEnd();
         }
@@ -399,26 +405,51 @@ function deleteAndPushRow(rowNum) {
         grid[0][j][2] = "white";
     }
 }
+function addCellsToGrid(cellsToAdd) {
+    for (var i = 0; i < cellsToAdd.length; i++) {
+        row = cellsToAdd[i][0];
+        col = cellsToAdd[i][1];
+        grid[row][col][2] = curTetroColor;
+    }
+}
 function addScore() {
+    //if not a tetris, clear previous tetris flag
+    if (simulClears != 4) {
+        prevTetris = false;
+    }
+    //single clear
     if (simulClears == 1) {
         score = score + 100;
+    //double clear
     } else if (simulClears == 2) {
         score = score + 300;
+    //triple clear
     } else if (simulClears == 3) {
         score = score + 500;
+        totTriple++;
+    //tetris
     } else if (simulClears == 4) {
+        if (prevTetris == true) {
+            totBtoB ++;
+        }
+        prevTetris = true;
+        totTetris++;
         score = score + 800;
     }
+    //if any lines cleared
     if (simulClears > 0) {
+        //increment combo
         combo = combo + 1;
+        //tell user what clear they had
         drawClearText(getClearString());
+        //draw the combo
         drawClearsCombos();
-    } else {
+    } else { //reset combo if no clear
         combo = 0;
     }
-    if (combo > 1) {
+    if (combo > 1) { //add score for combos >1
         score = score + (combo * 50);
-    }
+    }   //reset line clear variable
     simulClears = 0;
 }
 function levelUp() {
@@ -453,7 +484,6 @@ function getGhostPosition(activePiece) {
             }
         }
     }
-    console.log(ghostPiece);
     return ghostPiece;
 
 }
@@ -479,16 +509,20 @@ function getClearString() {
         } else if (simulClears == 3) {
             outString = "Triple Clear!";
         } else if (simulClears == 4) {
-            outString = "!!TETRIS!!";
+            if (prevTetris == true) {
+                outString = "Back to back TETRIS";
+            } else {
+                outString = "TETRIS!!";
+            }
         }
     } else {
         outString = "";
     }
     return outString;
 }
+
 //-----------------------------------------------------------------------------MOVEMENT---------------------------------------------------------------------------------------------
 function onGround(cells) {
-    //console.log(cells);
     for (let i = 0; i < 4; i++) {
         let row = cells[i][0];
         let col = cells[i][1];
@@ -519,23 +553,23 @@ function onGround(cells) {
     return false;
 }
 function moveDown() {
-    var shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
+    //var shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
     // Clear current positions from grid
-    for (let i = 0; i < 4; i++) {
-        let row = droppingCells[i][0];
-        let col = droppingCells[i][1];
-        grid[row][col][2] = "white"; // Reset old position
-    }
+    // for (let i = 0; i < 4; i++) {
+    //     let row = droppingCells[i][0];
+    //     let col = droppingCells[i][1];
+    //     grid[row][col][2] = "white"; // Reset old position
+    // }
     // Move each cell left
     for (let i = 0; i < 4; i++) {
         droppingCells[i][0] += 1; // Move left
     }
     // Update grid with new positions
-    for (let i = 0; i < 4; i++) {
-        let row = droppingCells[i][0];
-        let col = droppingCells[i][1];
-        grid[row][col][2] = shapeColor; // Mark new position (adjust as needed)
-    }
+    // for (let i = 0; i < 4; i++) {
+    //     let row = droppingCells[i][0];
+    //     let col = droppingCells[i][1];
+    //     grid[row][col][2] = shapeColor; // Mark new position (adjust as needed)
+    // }
 }
 function bonkLeft() {
     for (let i = 0; i < 4; i++) {
@@ -572,23 +606,23 @@ function bonkLeft() {
 }
 function moveLeft() {
     console.log("Moving Left!");
-    var shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
+    //var shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
     // Clear current positions from grid
-    for (let i = 0; i < 4; i++) {
-        let row = droppingCells[i][0];
-        let col = droppingCells[i][1];
-        grid[row][col][2] = "white"; // Reset old position
-    }
+    // for (let i = 0; i < 4; i++) {
+    //     let row = droppingCells[i][0];
+    //     let col = droppingCells[i][1];
+    //     grid[row][col][2] = "white"; // Reset old position
+    // }
     // Move each cell left
     for (let i = 0; i < 4; i++) {
         droppingCells[i][1] -= 1; // Move left
     }
     // Update grid with new positions
-    for (let i = 0; i < 4; i++) {
-        let row = droppingCells[i][0];
-        let col = droppingCells[i][1];
-        grid[row][col][2] = shapeColor; // Mark new position (adjust as needed)
-    }
+    // for (let i = 0; i < 4; i++) {
+    //     let row = droppingCells[i][0];
+    //     let col = droppingCells[i][1];
+    //     grid[row][col][2] = shapeColor; // Mark new position (adjust as needed)
+    // }
 }
 function bonkRight() {
     for (let i = 0; i < 4; i++) {
@@ -625,147 +659,762 @@ function bonkRight() {
 }
 function moveRight() {
     console.log("Moving Right!");
-    var shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
+    //var shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
     // Clear current positions from grid
-    for (let i = 0; i < 4; i++) {
-        let row = droppingCells[i][0];
-        let col = droppingCells[i][1];
-        grid[row][col][2] = "white"; // Reset old position
-    }
+    // for (let i = 0; i < 4; i++) {
+    //     let row = droppingCells[i][0];
+    //     let col = droppingCells[i][1];
+    //     grid[row][col][2] = "white"; // Reset old position
+    // }
     // Move each cell left
     for (let i = 0; i < 4; i++) {
         droppingCells[i][1] += 1; // Move left
     }
     // Update grid with new positions
-    for (let i = 0; i < 4; i++) {
-        let row = droppingCells[i][0];
-        let col = droppingCells[i][1];
-        grid[row][col][2] = shapeColor; // Mark new position (adjust as needed)
-    }
+    // for (let i = 0; i < 4; i++) {
+    //     let row = droppingCells[i][0];
+    //     let col = droppingCells[i][1];
+    //     grid[row][col][2] = shapeColor; // Mark new position (adjust as needed)
+    // }
 }
 function rotateRight() {
     const pivot = droppingCells[2]; // Use the 3rd cell as pivot
     let newPositions = [];
-
-    if (curTetro == 2) { // Skip rotation for square piece
-        return;
+    let collDet = false;
+    if (curTetro == 2) {
+        return; //o does not rotate
     }
-
-    let shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
-    droppingCells.forEach(([r, c]) => grid[r][c][2] = "white"); // Clear existing piece
-
     for (let i = 0; i < 4; i++) {
         let x = droppingCells[i][0] - pivot[0];
         let y = droppingCells[i][1] - pivot[1];
 
-        // Apply 90-degree clockwise rotation
+        // Apply 90-degree counterclockwise rotation
         let newX = pivot[0] + y;
         let newY = pivot[1] - x;
 
+        // Check boundaries and collisions
+        if (
+            newX < 0 || newX >= grid.length ||
+            newY < 0 || newY >= grid[0].length ||
+            (grid[newX][newY][2] != "white") // Ensure new cell is empty
+        ) {
+            collDet = true;//collision detected
+        }
         newPositions.push([newX, newY]);
     }
-
-    // Try the rotated position directly
-    if (isValidPosition(newPositions)) {
-        applyRotation(newPositions, shapeColor);
-        return;
-    }
-
-    // If invalid, try wall kicks
-    let kickedPositions = tryWallKick(droppingCells, newPositions);
-    if (kickedPositions) {
-        applyRotation(kickedPositions, shapeColor);
+    if (collDet == false) {//basic rotation is valid
+        //set rotation
+        if (curTetroRotationState == 3) {
+            curTetroRotationState = 0;
+        } else {
+            curTetroRotationState++;
+        }
+        if (curTetro == 1) {//swap pivot on line piece because it is whack
+            let Tpos = []
+            Tpos[0] = newPositions[1][0];
+            Tpos[1] = newPositions[1][1];
+            newPositions[1][0] = newPositions[2][0];
+            newPositions[1][1] = newPositions[2][1];
+            newPositions[2][0] = Tpos[0];
+            newPositions[2][1] = Tpos[1];
+        }
+        // Apply new positions
+        updateCurrentPosition(newPositions);
     } else {
-        // Restore original if all attempts fail
-        droppingCells.forEach(([r, c]) => grid[r][c][2] = shapeColor);
+        if (curTetro == 1) {
+            //do weird shit for line piece
+            switch (curTetroRotationState) {
+                case 0:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, -2)) { // Move left two
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += -2
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 1;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, 0, 1)) { // Move right one
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][1] += 1
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 1;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, 1, -2)) { // Move left two down one
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] += 1
+                                    newPositions[i][1] += -2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 1;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, -2, 1)) { // Move up two right one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += -2
+                                        newPositions[i][1] += 1
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 1;
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 1:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, -1)) { // Move left one
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += -1
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 2;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, 0, 2)) { // Move right two
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][1] += 2
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 2;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, -1, 2)) { // Move left one up two
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] += -1
+                                    newPositions[i][1] += 2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 2;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, 1, -2)) { // Move right two down one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += 1
+                                        newPositions[i][1] += -2
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 2;
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 2:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, 2)) { // Move right two
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += 2
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 3;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, 0, -1)) { // Move left one
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][1] += -1
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 3;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, -1, 2)) { // Move right two up one
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] += -1
+                                    newPositions[i][1] += 2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 3;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, -2, -1)) { // Move left one down two
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += -2
+                                        newPositions[i][1] += -1
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 3;
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 3:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, -1)) { // Move left one
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += -1
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 0;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, 0, 2)) { // Move right two
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][1] += 2
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 0;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, 2, 1)) { // Move right one down two
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] += 2
+                                    newPositions[i][1] += 1
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 0;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, -1, -2)) { // Move left two down one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += -1
+                                        newPositions[i][1] += -2
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 0;
+                                }
+                            }
+                        }
+                    }
+                break;
+            }
+        } else {
+            //normal wallkicks
+            switch (curTetroRotationState) {
+                case 0:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, -1)) { // Move one left
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += -1
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 1;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, -1, -1)) { // Move one left and up
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][0] += -1
+                                newPositions[i][1] += -1
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 1;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, 2, 0)) { // Move down two
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] += 2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 1;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, 2, -1)) { // Move down two left one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += 2
+                                        newPositions[i][1] += -1
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 1;
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 1:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, 1)) { // Move one right
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += 1
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 2;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, 1, 1)) { // Move one right and down
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][0] += 1
+                                newPositions[i][1] += 1
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 2;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, -2, 0)) { // Move up two
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] -= 2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 2;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, -2, 1)) { // Move up two right one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += -2
+                                        newPositions[i][1] += 1
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 2;
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 2:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, 1)) { // Move one right
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += 1
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 3;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, -1, 1)) { // Move one right and up
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][0] += -1
+                                newPositions[i][1] += 1
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 3;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, 2, 0)) { // Move down two
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] += 2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 3;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, 2, 1)) { // Move down two right one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += 2
+                                        newPositions[i][1] += 1
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 3;
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 3:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, -1)) { // Move one left
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += -1
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 0;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, 1, -1)) { // Move one left and down
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][0] += 1
+                                newPositions[i][1] += -1
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 0;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, -2, 0)) { // Move up two
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] -= 2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 0;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, 2, 1)) { // Move down two right one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += 2
+                                        newPositions[i][1] += 1
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 0;
+                                }
+                            }
+                        }
+                    }
+                break;
+            }
+        }
     }
 }
 function rotateLeft() {
-    const pivot = droppingCells[2]; // Use the 3rd cell as pivot
+    let pivot = droppingCells[2]; // Use the 3rd cell as pivot
     let newPositions = [];
-
-    if (curTetro == 2) { // Skip rotation for square piece
+    let collDet = false;
+    if (curTetro == 2) {
         return;
     }
-
-    let shapeColor = grid[droppingCells[0][0]][droppingCells[0][1]][2];
-    droppingCells.forEach(([r, c]) => grid[r][c][2] = "white"); // Clear existing piece
-
+    if (curTetro == 1) {
+        pivot = droppingCells[1];
+    }
     for (let i = 0; i < 4; i++) {
         let x = droppingCells[i][0] - pivot[0];
         let y = droppingCells[i][1] - pivot[1];
 
-        // Apply 90-degree clockwise rotation
+        // Apply 90-degree counterclockwise rotation
         let newX = pivot[0] - y;
         let newY = pivot[1] + x;
 
+        // Check boundaries and collisions
+        if (
+            newX < 0 || newX >= grid.length ||
+            newY < 0 || newY >= grid[0].length ||
+            (grid[newX][newY][2] != "white") // Ensure new cell is empty
+        ) {
+            collDet = true;//collision detected
+        }
         newPositions.push([newX, newY]);
     }
-
-    // Try the rotated position directly
-    if (isValidPosition(newPositions)) {
-        applyRotation(newPositions, shapeColor);
-        return;
-    }
-
-    // If invalid, try wall kicks
-    let kickedPositions = tryWallKick(droppingCells, newPositions);
-    if (kickedPositions) {
-        applyRotation(kickedPositions, shapeColor);
+    if (collDet == false) {//basic rotation is valid
+        //set rotation
+        if (curTetroRotationState == 0) {
+            curTetroRotationState = 3;
+        } else {
+            curTetroRotationState--;
+        }
+        if (curTetro == 1) {//swap pivot on line piece because it is whack
+            let Tpos = []
+            Tpos[0] = newPositions[1][0];
+            Tpos[1] = newPositions[1][1];
+            newPositions[1][0] = newPositions[2][0];
+            newPositions[1][1] = newPositions[2][1];
+            newPositions[2][0] = Tpos[0];
+            newPositions[2][1] = Tpos[1];
+        }
+        // Apply new positions
+        updateCurrentPosition(newPositions);
     } else {
-        // Restore original if all attempts fail
-        droppingCells.forEach(([r, c]) => grid[r][c][2] = shapeColor);
-    }
-}
-function isValidPosition(cells) {
-    for (let i = 0; i < 4; i++) {
-        let row = cells[i][0];
-        let col = cells[i][1];
-
-        if (row < 0 || row >= grid.length || col < 0 || col >= grid[0].length) {
-            return false; // Out of bounds
+        if (curTetro == 1) {
+            //do weird shit for line piece
+            switch (curTetroRotationState) {
+                case 0:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, -1)) { // Move left one
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += -1
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 3;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, 0, 2)) { // Move right two
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][1] += 2
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 3;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, -1, 2)) { // Move left one up two
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] += -1
+                                    newPositions[i][1] += 2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 3;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, 1, -2)) { // Move right two down one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += 1
+                                        newPositions[i][1] += -2
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 3;
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 1:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, 2)) { // Move right two
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += 2
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 0;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, 0, -1)) { // Move left one
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][1] += -1
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 0;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, -1, 2)) { // Move right two up one
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] += -1
+                                    newPositions[i][1] += 2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 0;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, -2, -1)) { // Move left one down two
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += -2
+                                        newPositions[i][1] += -1
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 0;
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 2://
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, -1)) { // Move left one
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += -1
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 1;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, 0, 2)) { // Move right two
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][1] += 2
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 1;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, 2, 1)) { // Move right one down two
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] += 2
+                                    newPositions[i][1] += 1
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 1;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, -1, -2)) { // Move left two down one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += -1
+                                        newPositions[i][1] += -2
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 1;
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 3:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, -2)) { // Move left two
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += -2
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 2;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, 0, 1)) { // Move right one
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][1] += 1
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 2;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, 1, -2)) { // Move left two down one
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] += 1
+                                    newPositions[i][1] += -2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 2;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, -2, 1)) { // Move up two right one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += -2
+                                        newPositions[i][1] += 1
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 2;
+                                }
+                            }
+                        }
+                    }
+                break;
+            }
+        } else {
+            //normal wallkicks
+            switch (curTetroRotationState) {
+                case 0:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, 1)) { // Move one right
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += 1
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 3;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, -1, 1)) { // Move one right and up
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][0] += -1
+                                newPositions[i][1] += 1
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 3;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, 2, 0)) { // Move down two
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] += 2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 3;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, 2, 1)) { // Move down two right one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += 2
+                                        newPositions[i][1] += 1
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 3;
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 1:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, 1)) { // Move one right
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += 1
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 0;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, 1, 1)) { // Move one right and down
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][0] += 1
+                                newPositions[i][1] += 1
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 0;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, -2, 0)) { // Move up two
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] -= 2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 0;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, -2, 1)) { // Move up two right one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += -2
+                                        newPositions[i][1] += 1
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 0;
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 2:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, -1)) { // Move one left
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += -1;
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 1;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, -1, -1)) { // Move one left and up
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][0] += -1
+                                newPositions[i][1] += -1
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 1;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, 2, 0)) { // Move down two
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] += 2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 1;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, 2, -1)) { // Move down two left one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += 2
+                                        newPositions[i][1] += -1
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 1;
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 3:
+                    //=================TEST 1================
+                    if (tryWallKick(newPositions, 0, -1)) { // Move one left
+                        for (var i = 0; i < 4; i++) { // Apply position change
+                            newPositions[i][1] += -1
+                        }
+                        updateCurrentPosition(newPositions);
+                        curTetroRotationState = 2;
+                    } else {
+                        //=================TEST 2================
+                        if (tryWallKick(newPositions, 1, -1)) { // Move one left and down
+                            for (var i = 0; i < 4; i++) { // Apply position change
+                                newPositions[i][0] += 1
+                                newPositions[i][1] += -1
+                            }
+                            updateCurrentPosition(newPositions);
+                            curTetroRotationState = 2;
+                        } else {
+                            //=================TEST 3================
+                            if (tryWallKick(newPositions, -2, 0)) { // Move up two
+                                for (var i = 0; i < 4; i++) { // Apply position change
+                                    newPositions[i][0] -= 2
+                                }
+                                updateCurrentPosition(newPositions);
+                                curTetroRotationState = 2;
+                            } else {
+                                //=================TEST 4================
+                                if (tryWallKick(newPositions, 2, 1)) { // Move down two right one
+                                    for (var i = 0; i < 4; i++) { // Apply position change
+                                        newPositions[i][0] += 2
+                                        newPositions[i][1] += 1
+                                    }
+                                    updateCurrentPosition(newPositions);
+                                    curTetroRotationState = 2;
+                                }
+                            }
+                        }
+                    }
+                break;
+            }
         }
-        if (grid[row][col][2] !== "white") {
-            return false; // Collision with another block
-        }
-    }
-    return true;
-}
-function tryWallKick(originalCells, rotatedCells) {
-    const kicks = [
-        [0, -1], // Left
-        [0, 1],  // Right
-        [-1, 0], // Up
-        [1, 0]   // Down (less common, but sometimes needed)
-    ];
-
-    for (let i = 0; i < kicks.length; i++) {
-        let offsetRow = kicks[i][0];
-        let offsetCol = kicks[i][1];
-
-        let kickedCells = rotatedCells.map(([row, col]) => [
-            row + offsetRow,
-            col + offsetCol
-        ]);
-
-        if (isValidPosition(kickedCells)) {
-            return kickedCells;
-        }
-    }
-
-    return null; // No successful kick
-}
-function applyRotation(newPositions, shapeColor) {
-    for (let i = 0; i < 4; i++) {
-        droppingCells[i] = newPositions[i];
-        let [r, c] = droppingCells[i];
-        grid[r][c][2] = shapeColor;
     }
 }
 function holdPiece() {
-    console.log(curTetro);
-    console.log(holdLock);
-    console.log(heldTetro);
     var newPiece;
     if (heldTetro == 0) {       //if no piece held already
         heldTetro = curTetro;       //set hold to current tetro
@@ -776,17 +1425,46 @@ function holdPiece() {
         newPiece = heldTetro;       //put held piece in temp
         heldTetro = curTetro;       //set the hold to the current tetro
         curTetro = newPiece;        //set the current to the new piece
-        console.log(heldTetro);
-        console.log(curTetro);
     }
     //clear current piece from screen
-    console.log(curBag);
     droppingCells.forEach(([r, c]) => grid[r][c][2] = "white");
     droppingCells = [];
 
     spawnTetro(curTetro);
     drawGrid();
     drawHoldPiece(heldTetro);
+}
+//-----------------------------------------------------------------------------MOVEMENT UTIL---------------------------------------------------------------------------------------------
+function tryWallKick(cellArray, offsetX, offsetY) {
+    let tempPositions = cellArray.map(cell => [...cell]);
+    // Apply offset to all positions
+    for (let i = 0; i < 4; i++) {
+        tempPositions[i][0] += offsetX;
+        tempPositions[i][1] += offsetY;
+    }
+    return positionIsValid(tempPositions);
+}
+function updateCurrentPosition(newPosition) {
+    for (let i = 0; i < 4; i++) {
+        droppingCells[i][0] = newPosition[i][0];
+        droppingCells[i][1] = newPosition[i][1];
+    }
+}
+function positionIsValid(TestAry) {
+    for (let i = 0; i < 4; i++) {
+        let x = TestAry[i][0]
+        let y = TestAry[i][1]
+
+        // Check boundaries and collisions
+        if (
+            x < 0 || x >= grid.length ||
+            y < 0 || y >= grid[0].length ||
+            (grid[x][y][2] != "white") // Ensure new cell is empty
+        ) {
+            return false;
+        }
+    }
+    return true;
 }
 //------------------------------------------------------------------------------DRAWING---------------------------------------------------------------------------------------------
 function drawGrid(){
@@ -807,8 +1485,8 @@ function drawGrid(){
         if (onGround(droppingCells) == false) {
         ghostCells = getGhostPosition(droppingCells);
         drawGhost();
-        drawFallingPiece();
         }
+    drawFallingPiece();
     }
 }
 function drawGhost() {
@@ -823,7 +1501,7 @@ function drawFallingPiece() {
     for (var i = 0; i < droppingCells.length; i++) {
         var row = droppingCells[i][0];
         var col = droppingCells[i][1];
-        fill(grid[row][col][2]);
+        fill(curTetroColor);
         rect(grid[row][col][0][0],grid[row][col][0][1],grid[row][col][1][0]-grid[row][col][0][0],grid[row][col][1][1]-grid[row][col][0][1]);
     }
 }
@@ -1008,17 +1686,25 @@ function drawMiniGrid(tetNum, left, top, width, height) {
     for (var i = 0; i < nxtGrid.length; i++) {
         for (var j = 0; j < nxtGrid[0].length; j++) {
             if (nxtGrid[i][j][2] != "white") {
+                if (nxtGrid[i][j][2] != "blue" && nxtGrid[i][j][2] != "orange" && nxtGrid[i][j][2] != "yellow") {
+                    nxtGrid[i][j][0][0] = nxtGrid[i][j][0][0] - (cellWidth / 2);
+                    nxtGrid[i][j][1][0] = nxtGrid[i][j][1][0] - (cellWidth / 2);
+                }
+                if ( nxtGrid[i][j][2] == "orange" || nxtGrid[i][j][2] == "blue") {
+                    nxtGrid[i][j][0][1] = nxtGrid[i][j][0][1] + (cellHeight / 2);
+                    nxtGrid[i][j][1][1] = nxtGrid[i][j][1][1] + (cellHeight / 2);
+                }
                 fill(nxtGrid[i][j][2]);
                 stroke(0,0,0);
                 strokeWeight(1);
                 fill(nxtGrid[i][j][2]);
                 rect(nxtGrid[i][j][0][0], nxtGrid[i][j][0][1], nxtGrid[i][j][1][0]-nxtGrid[i][j][0][0], nxtGrid[i][j][1][1]-nxtGrid[i][j][0][1]);
             }
+
         }
     }
 }
 function drawEmptyMiniGrid(left, top, width, height) {
-
     stroke (veryDarkUIColor);
     strokeWeight(1);
     fill(veryDarkUIColor);
@@ -1219,8 +1905,13 @@ function drawScoreboard() {
     SBTXHeight = SBHeight * (1/10);
 
     text("Clears: " + clears, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
-    console.log(score);
+    console.log(clears);
 
+    SBTXTop = SBTXTop + (SBHeight * (1/20));
+    SBTXHeight = SBHeight * (1/10);
+
+    text("Time: " + msToMinuteSecondTime(elapsedTime), SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
+    console.log(msToMinuteSecondTime(elapsedTime));
 }
 //------------------------------------------------------------------------------KEYPRESS--------------------------------------------------------------------------------------------
 function keyPressed() {
@@ -1259,6 +1950,7 @@ function keyPressed() {
                 while (!onGround(droppingCells)) {
                     moveDown();
                 }
+                    addCellsToGrid(droppingCells);
                     rowsToCheck = getRows();
                     droppingPiece = false
                     droppingCells = [];
@@ -1270,12 +1962,17 @@ function keyPressed() {
         }
         console.log("A key was pressed!" + key);
     } else if (key === 'Q' || key === 'q') { 
-        rotateLeft();
-        drawGrid();
+        if (gameRunning == true && droppingPiece == true) {
+            rotateLeft();
+            drawGrid();
+        }
+
         console.log("A key was pressed!" + key);
     } else if (key === 'E' || key === 'e') { 
-        rotateRight();
-        drawGrid();
+        if (gameRunning == true && droppingPiece == true) {
+            rotateRight();
+            drawGrid();
+        }
         console.log("A key was pressed!" + key);
     } else if (keyCode === SHIFT) {
             console.log("Shift key was pressed!");
