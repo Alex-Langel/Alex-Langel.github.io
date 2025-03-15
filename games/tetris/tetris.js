@@ -710,7 +710,7 @@ function levelUp() {
             level9PMusic.loop(); // Start and loop the music
         }
     }
-    if (gameSpeed > 2) {
+    if (gameSpeed > 1) {
         gameSpeed--;
     }
     drawLevel();
@@ -2164,9 +2164,6 @@ function unhighlightMenuOption(posAry) {
         drawUIBoxWithText(controlMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 2, 20, left, top, width, height);
     }
 }
-function drawUIBox(bgCol, olCol, olSize, left, top, width, height) {
-
-}
 function drawUIBoxWithText(dispText, bgCol, olCol, txtCol, olSize, txtSize, left, top, width, height) {
     let maxWidth = width * 0.9; // 90% of the box width
     let maxHeight = height * 0.9; // 90% of the box height
@@ -2502,23 +2499,22 @@ function keyPressed() {
     }
 }
 function keyReleased() {
-    if (key === 'S' || key === 's') {
+    if (key.toUpperCase() === playControls[1][0]) {
         effSpeed = gameSpeed;
     }
-    if (key === 'a' || key === 'A') {
+    if (key.toUpperCase() === playControls[0][0]) {
         holdingLeft = false;
         if (holdingRight) lastKeyHeld = 'right'; // Switch to right if still held
-      } 
-      if (key === 'd' || key === 'D') {
+    } 
+    if (key.toUpperCase() === playControls[0][1]) {
         holdingRight = false;
         if (holdingLeft) lastKeyHeld = 'left'; // Switch to left if still held
-      }
-    
+    }
       // If neither key is held, reset DAS state
-      if (!holdingLeft && !holdingRight) {
+    if (!holdingLeft && !holdingRight) {
         lastKeyHeld = null;
         dasCounter = 0;
-      }
+    }
 }
 //-----------------------------------------------------------------------------MATH/UTILS-------------------------------------------------------------------------------------------
 function getRandBetween(min, max) {
