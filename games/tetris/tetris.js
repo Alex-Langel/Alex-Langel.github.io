@@ -120,8 +120,18 @@ let darkUIColor = [50,50,50];
 let lilDarkUIColor = [80,80,80];
 let veryDarkUIColor = [20,20,20];
 let midUIColor = [125,125,125];
-//MUSIC
-let bgMusic;
+//AUDIO
+let menuMusic;
+let level12Music;
+let level34Music;
+let level56Music;
+let level78Music;
+let level9PMusic;
+let singleClearSound;
+let doubleClearSound;
+let tripleClearSound;
+let fourClearSound;
+let allClearSound;
 
 //GAME TIMING STUFF
 let frameLength = 20;                   //Starting Speed  -  Lower to speed up
@@ -184,6 +194,7 @@ function setup(){
     drawGrid();
     drawUI();
     drawMainMenu();
+    initVolume();
 }//SETUP COMPLETE
 //MAIN GAME LOOP
 function draw(){
@@ -217,7 +228,18 @@ function draw(){
 }//END MAIN LOOP
 //INITIALIZATION
 function preload() {
-    bgMusic = loadSound('aud/bgMusic.wav');
+    menuMusic = loadSound('aud/menuMusic.wav');
+    level12Music = loadSound('aud/level12Music.wav');
+    level34Music = loadSound('aud/level34Music.wav');
+    level56Music = loadSound('aud/level56Music.wav');
+    level78Music = loadSound('aud/level78Music.wav');
+    level9PMusic = loadSound('aud/level9PMusic.wav');
+    singleClearSound = loadSound('aud/singleClearSound.wav');
+    doubleClearSound = loadSound('aud/doubleClearSound.wav');
+    tripleClearSound = loadSound('aud/tripleClearSound.wav');
+    fourClearSound = loadSound('aud/fourClearSound.wav');
+    allClearSound = loadSound('aud/allClearSound.wav');
+
 }
 function initGrid() {
     var tempGridItem = [];
@@ -296,9 +318,8 @@ function beginGame() {
     drawUI();
     startTimer = millis();
     gameState = 1;
-    if (!bgMusic.isPlaying()) {
-        bgMusic.loop(); // Start and loop the music
-    }
+    stopMusic();
+    level12Music.loop(); // Start and loop the music
 }
 function genNewTetro() {
     var preSpawnRot = 0;
@@ -573,28 +594,65 @@ function endGame(){
     droppingPiece = false;
     droppingCells = [];
     drawScoreboard();
-    if (bgMusic.isPlaying()) {
-        bgMusic.stop(); // Stop the music
+    stopMusic();
+    
+}
+function stopMusic() {
+    if (menuMusic.isPlaying()) {
+        menuMusic.stop(); // Stop the music
     }
+    if (level12Music.isPlaying()) {
+        level12Music.stop(); // Stop the music
+    }
+    if (level34Music.isPlaying()) {
+        level34Music.stop(); // Stop the music
+    }
+    if (level56Music.isPlaying()) {
+        level56Music.stop(); // Stop the music
+    }
+    if (level78Music.isPlaying()) {
+        level78Music.stop(); // Stop the music
+    }
+    if (level9PMusic.isPlaying()) {
+        level9PMusic.stop(); // Stop the music
+    }
+}
+function initVolume() {
+    menuMusic.setVolume(0.2);
+    level12Music.setVolume(0.1);
+    level34Music.setVolume(0.1);
+    level56Music.setVolume(0.2);
+    level78Music.setVolume(0.2);
+    level9PMusic.setVolume(0.2);
+    singleClearSound.setVolume(0.5);
+    doubleClearSound.setVolume(0.5);
+    tripleClearSound.setVolume(0.5);
+    fourClearSound.setVolume(0.5);
+    allClearSound.setVolume(0.5);
 }
 //-----------------------------------------------------------------------------OTHER  ---------------------------------------------------------------------------------------------
 function getClearString() {
     var outString
     if (simulClears > 0) {
-        if (allClear == true) {
-            return "All Clear!";
-        } else if (simulClears == 1) {
-            
-            if (combo > 1) {
-                outString = combo + "x Combo!";
+        if (simulClears == 1) {
+            if (allClear == true) {
+                outString = "All Clear!";
             } else {
+                singleClearSound.play();
+                if (combo > 1) {
+                outString = combo + "x Combo!";
+                } else {
                 outString = "Single Clear";
+                }
             }
         } else if (simulClears == 2) {
             outString = "Double Clear!";
+            doubleClearSound.play();
         } else if (simulClears == 3) {
             outString = "Triple Clear!";
+            tripleClearSound.play();
         } else if (simulClears == 4) {
+            fourClearSound.play();
             if (prevTetris == true) {
                 outString = "Back to back TETRIS";
             } else {
@@ -614,11 +672,44 @@ function wasAllClear() {
             }
         }
     }
+    allClearSound.play();
     return true;
 }
 function levelUp() {
     clearsToLevel = 20;
     level++;
+    if (level == 3) {
+        if (level12Music.isPlaying()) {
+            level12Music.stop(); // Stop the music
+        }
+        if (level34Music.isPlaying()) {
+            level34Music.loop(); // Start and loop the music
+        }
+    }
+    if (level == 5) {
+        if (level34Music.isPlaying()) {
+            level34Music.stop(); // Stop the music
+        }
+        if (level56Music.isPlaying()) {
+            level56Music.loop(); // Start and loop the music
+        }
+    }
+    if (level == 7) {
+        if (level56Music.isPlaying()) {
+            level56Music.stop(); // Stop the music
+        }
+        if (level78Music.isPlaying()) {
+            level78Music.loop(); // Start and loop the music
+        }
+    }
+    if (level == 9) {
+        if (level78Music.isPlaying()) {
+            level78Music.stop(); // Stop the music
+        }
+        if (level9PMusic.isPlaying()) {
+            level9PMusic.loop(); // Start and loop the music
+        }
+    }
     if (gameSpeed > 2) {
         gameSpeed--;
     }
@@ -1955,7 +2046,7 @@ function drawScoreboard() {
     console.log(msToMinuteSecondTime(elapsedTime));
 }
     //Menu Movement============================================
-    function moveMenuCursorUp(menuOptions) {
+function moveMenuCursorUp(menuOptions) {
         var prevCursorPosition = [...curMenuPosition];
             if (menuOptions[0].length > 1) {//if multiple rows
                 if (curMenuPosition[1] == 0){ //on top row
@@ -2245,7 +2336,7 @@ function drawControlEditWindow(letter) {
 }
 //------------------------------------------------------------------------------KEYPRESS--------------------------------------------------------------------------------------------
 function keyPressed() {
-    console.log(curMenuPosition);
+    //if no music is play, start menu music!
     if (gameState == 0) {//if in pre-game menus
         if (curMenuPosition[0] == 0) {//in MAIN MENU
             if (key.toUpperCase() === playControls[4][0]) {//LEFT MENU BUTTON
@@ -2398,13 +2489,15 @@ function keyPressed() {
                     holdPiece();
                 }
         } else if (key.toUpperCase() === playControls[3][1]) { //RESTART KEY 
-        } else if (key.toUpperCase() === playControls[6][0]) {} else if (key.toUpperCase() === playControls[6][0]) {
-            beginGame();
-        } else if ( key === "Escape") {
+        } else if (key.toUpperCase() === playControls[6][0]) { //NEXT KEY
+            //beginGame();
+        } else if (key.toUpperCase() === playControls[6][1]) { //BACK KEY
             curMenuPosition = [0,0,0];//reset position to home of main menu
             resetGameVars();
             gameState = 0;
             drawMainMenu();//return to main menu
+            stopMusic();
+            menuMusic.loop(); // Start and loop the music
         }
     }
 }
