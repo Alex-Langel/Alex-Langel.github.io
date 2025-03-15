@@ -79,6 +79,11 @@ var controlMenuDims =   [mainMenuDims[0] + mainMenuDims[2] * (1/10),
                         mainMenuDims[2] * (8/10),
                         mainMenuDims[3] * (12/10)];
 
+var soundMenuDims = [mainMenuDims[0] - mainMenuDims[2] * (1/10), 
+                    mainMenuDims[1] + mainMenuDims[3] * (1/10), 
+                    mainMenuDims[2] * (12/10),
+                    mainMenuDims[3] * (8/10)];
+
 var mMenuLeft = canvasWidth * (1/10);
 var mMenuTop = canvasHeight * (1/10);
 var mMenuWidth = canvasWidth * (8/10);
@@ -107,7 +112,9 @@ let controlMenuOptions = [[[playControls[0][0], playControls[0][1]],[playControl
                           [[[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0]]],
                           [["clButton", "clButton"], ["clButton", "clButton"], ["clButton", "clButton"], ["clButton", "clButton"], ["clButton", "clButton"], ["clButton", "clButton"], ["clButton", "clButton"]]];
 
-
+let soundMenuOptions = [[["Mute MUSIC", "Mute SFX"],["Music Volume"],["SFX Volume"],["Sound Pack"]],
+                        [[[0,0,0,0],[0,0,0,0]],[[0,0,0,0]],[[0,0,0,0]],[[0,0,0,0]]],
+                        [["clButton", "clButton"],["volSlide"],["volSlide"],["volSlide"]]]
 
 //COLORS
 let bgColor = [5,5,5];//remove
@@ -121,6 +128,9 @@ let lilDarkUIColor = [80,80,80];
 let veryDarkUIColor = [20,20,20];
 let midUIColor = [125,125,125];
 //AUDIO
+let audioLevels = [50,50,0];
+let musicMute = false;
+let SFXMute = false;
 let menuMusic;
 let level12Music;
 let level34Music;
@@ -179,7 +189,7 @@ let prevTetris = false;                 //Whether the last line clear was a tetr
 let combo = 0;                          //Combo counter
 let score = 0;                          //Score counter
 let clears = 0;                         //Tracker for total number of clears
-let clearsToLevel = 20;                 //Counter for number of clears needed to level up
+let clearsToLevel = 10;                 //Counter for number of clears needed to level up
 let level = 1;                          //Counter for current level
                                         //-----Time tracking
 let startTimer;                         //Start of Time Tracking
@@ -302,7 +312,7 @@ function resetGameVars() {
     combo = 0;
     score = 0;
     clears = 0;
-    clearsToLevel = 20;
+    clearsToLevel =10;
     level = 1;
 
     startTimer = 0;
@@ -319,7 +329,9 @@ function beginGame() {
     startTimer = millis();
     gameState = 1;
     stopMusic();
+    if (musicMute == false) {
     level12Music.loop(); // Start and loop the music
+    }
 }
 function genNewTetro() {
     var preSpawnRot = 0;
@@ -638,7 +650,9 @@ function getClearString() {
             if (allClear == true) {
                 outString = "All Clear!";
             } else {
-                singleClearSound.play();
+                if (SFXMute == false) {
+                    singleClearSound.play();
+                }
                 if (combo > 1) {
                 outString = combo + "x Combo!";
                 } else {
@@ -647,12 +661,18 @@ function getClearString() {
             }
         } else if (simulClears == 2) {
             outString = "Double Clear!";
-            doubleClearSound.play();
+            if (SFXMute == false) {
+                doubleClearSound.play();
+            }
         } else if (simulClears == 3) {
             outString = "Triple Clear!";
-            tripleClearSound.play();
+            if (SFXMute == false) {
+                tripleClearSound.play();
+            }
         } else if (simulClears == 4) {
-            fourClearSound.play();
+            if (SFXMute == false) {
+                fourClearSound.play();
+            }
             if (prevTetris == true) {
                 outString = "Back to back TETRIS";
             } else {
@@ -672,42 +692,46 @@ function wasAllClear() {
             }
         }
     }
-    allClearSound.play();
+    if (SFXMute == false) {
+        allClearSound.play();
+    }
     return true;
 }
 function levelUp() {
-    clearsToLevel = 20;
+    clearsToLevel = 10;
     level++;
-    if (level == 3) {
-        if (level12Music.isPlaying()) {
-            level12Music.stop(); // Stop the music
+    if (musicMute ==false) {
+        if (level == 3) {
+            if (level12Music.isPlaying()) {
+                level12Music.stop(); // Stop the music
+            }
+            if (!level34Music.isPlaying()) {
+                level34Music.loop(); // Start and loop the music
+            }
         }
-        if (!level34Music.isPlaying()) {
-            level34Music.loop(); // Start and loop the music
+        if (level == 5) {
+            if (level34Music.isPlaying()) {
+                level34Music.stop(); // Stop the music
+            }
+            if (!level56Music.isPlaying()) {
+                level56Music.loop(); // Start and loop the music
+            }
         }
-    }
-    if (level == 5) {
-        if (level34Music.isPlaying()) {
-            level34Music.stop(); // Stop the music
+        if (level == 7) {
+            if (level56Music.isPlaying()) {
+                level56Music.stop(); // Stop the music
+            }
+            if (!level78Music.isPlaying()) {
+                level78Music.loop(); // Start and loop the music
+            }
         }
-        if (!level56Music.isPlaying()) {
-            level56Music.loop(); // Start and loop the music
-        }
-    }
-    if (level == 7) {
-        if (level56Music.isPlaying()) {
-            level56Music.stop(); // Stop the music
-        }
-        if (!level78Music.isPlaying()) {
-            level78Music.loop(); // Start and loop the music
-        }
-    }
-    if (level == 9) {
-        if (level78Music.isPlaying()) {
-            level78Music.stop(); // Stop the music
-        }
-        if (!level9PMusic.isPlaying()) {
-            level9PMusic.loop(); // Start and loop the music
+        if (level == 9) {
+            if (level78Music.isPlaying()) {
+                level78Music.stop(); // Stop the music
+            }
+            if (!level9PMusic.isPlaying()) {
+                level9PMusic.loop(); // Start and loop the music
+            }
         }
     }
     if (gameSpeed > 1) {
@@ -2065,8 +2089,11 @@ function moveMenuCursorUp(menuOptions) {
 function moveMenuCursorDown(menuOptions) {
         var prevCursorPosition = [...curMenuPosition];
             if (menuOptions[0].length > 1) {//if multiple rows
-                if (curMenuPosition[1] == menuOptions[0].length - 1){ //on top row
+                if (curMenuPosition[1] == menuOptions[0].length - 1){ //on bot row
                     curMenuPosition[1] = 0;
+                    if (menuOptions[0][curMenuPosition[1]].length == 1) {//if top row has only one
+                        curMenuPosition[2] = 0;
+                    }
                 } else {
                     curMenuPosition[1]++;
                     if (menuOptions[0][curMenuPosition[1]].length < 2) {
@@ -2120,7 +2147,7 @@ function highlightMenuOption(posAry) {
         var width = mainMenuOptions[1][aRow][aCol][2];
         var height = mainMenuOptions[1][aRow][aCol][3];
         drawUIBoxWithText(mainMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 40, left, top, width, height);
-    } else  if (curMenuPosition[0] == 1) {
+    } else if (curMenuPosition[0] == 1) {
         // var left = mainMenuOptions[1][aRow][aCol][0];
         // var top = mainMenuOptions[1][aRow][aCol][1];
         // var width = mainMenuOptions[1][aRow][aCol][2];
@@ -2132,6 +2159,27 @@ function highlightMenuOption(posAry) {
         var width = controlMenuOptions[1][aRow][aCol][2];
         var height = controlMenuOptions[1][aRow][aCol][3];
         drawUIBoxWithText(controlMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 40, left, top, width, height);
+    } else if (curMenuPosition[0] == 3) {
+
+    } else if (curMenuPosition[0] == 4) {
+        var left = soundMenuOptions[1][aRow][aCol][0];
+        var top = soundMenuOptions[1][aRow][aCol][1];
+        var width = soundMenuOptions[1][aRow][aCol][2];
+        var height = soundMenuOptions[1][aRow][aCol][3];
+        var ctrlType = soundMenuOptions[2][aRow][aCol];
+        var volNum;
+        if (soundMenuOptions[0][aRow][aCol] == "Music Volume") {
+            volNum = audioLevels[0]
+        } else if (soundMenuOptions[0][aRow][aCol] == "SFX Volume") {
+            volNum = audioLevels[1]
+        } else if (soundMenuOptions[0][aRow][aCol] == "Sound Pack") {
+            volNum = audioLevels[2]
+        }
+        if (ctrlType == "clButton") {
+            drawUIBoxWithText(soundMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 20, left, top, width, height);
+        } else if (ctrlType == "volSlide") {
+            drawVolumeSlider(soundMenuOptions[0][aRow][aCol], bolCol, "white", volNum, left, top, width, height);
+        }
     }
 }
 function unhighlightMenuOption(posAry) {
@@ -2162,6 +2210,16 @@ function unhighlightMenuOption(posAry) {
         var width = controlMenuOptions[1][aRow][aCol][2];
         var height = controlMenuOptions[1][aRow][aCol][3];
         drawUIBoxWithText(controlMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 2, 20, left, top, width, height);
+    } else if (curMenuPosition[0] == 3) {
+
+    } else if (curMenuPosition[0] == 4) {
+        var left = soundMenuOptions[1][aRow][aCol][0];
+        var top = soundMenuOptions[1][aRow][aCol][1];
+        var width = soundMenuOptions[1][aRow][aCol][2];
+        var height = soundMenuOptions[1][aRow][aCol][3];
+        var ctrlType = soundMenuOptions[2][aRow][aCol];
+        
+        drawUIBoxWithText(soundMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 2, 20, left, top, width, height);
     }
 }
 function drawUIBoxWithText(dispText, bgCol, olCol, txtCol, olSize, txtSize, left, top, width, height) {
@@ -2192,6 +2250,86 @@ function drawUIBoxWithText(dispText, bgCol, olCol, txtCol, olSize, txtSize, left
     stroke(txtCol);
     textAlign(CENTER, CENTER);
     text(dispText, left + width / 2, top + height / 2);
+}
+function drawVolumeSlider(dispText, bgCol, txtCol, volumeLevel, left, top, width, height) {
+    //let maxWidth = width * 0.9; // 90% of the box width
+    //let maxHeight = height * 0.9; // 90% of the box height
+    var ttxtSize = 40;
+    textSize(ttxtSize);
+    let textWidthValue = textWidth(dispText);
+    let textHeightValue = ttxtSize;
+    let labelTop = top;
+    let labelHi = height * (2.5/10);
+    let mainContTop = top + labelHi;
+    let mainContHi = height * (5/10);
+    let botTop = mainContTop + mainContHi;
+    let txtMaxHi = labelHi * (9/10)
+    let txtMaxWi = width * (9/10)
+
+    while (textWidthValue > txtMaxWi || textHeightValue > txtMaxHi) {
+        ttxtSize -= 1; // Decrease font size
+        textSize(ttxtSize);
+        textWidthValue = textWidth(dispText);
+        textHeightValue = ttxtSize;
+    }
+
+    fill(bgCol);
+    rect(left, labelTop, width, labelHi);
+    fill(txtCol);
+    stroke(txtCol);
+    textAlign(CENTER, CENTER);
+    text(dispText, left + width / 2, labelTop + labelHi / 2);
+    txtMaxHi = mainContHi * (9/10)
+    ttxtSize = 80;
+    textSize(ttxtSize);
+    textWidthValue = textWidth(dispText);
+    textHeightValue = ttxtSize;
+    
+    //shrink text if larger than rectangle
+    while (textWidthValue > txtMaxWi || textHeightValue > txtMaxHi) {
+        ttxtSize -= 1; // Decrease font size
+        textSize(ttxtSize);
+        textWidthValue = textWidth(dispText);
+        textHeightValue = ttxtSize;
+    }
+
+    fill(bgCol);
+    rect(left, mainContTop, width, mainContHi);
+
+    fill(txtCol);
+    stroke(txtCol);
+    textAlign(CENTER, CENTER);
+    dispText = "<[";
+    var lineNum = Math.floor(volumeLevel/5);
+    for (var i = 0; i < 21; i++) {
+        if (i <= lineNum) {
+            dispText += "|"
+        } else {
+            dispText += " "
+        }
+    }
+    dispText += "]>";
+
+    text(dispText, left + width / 2, mainContTop + mainContHi / 2);
+
+    txtMaxHi = labelHi * (9/10)
+    ttxtSize = 40;
+    textSize(ttxtSize);
+    textWidthValue = textWidth(dispText);
+    textHeightValue = ttxtSize;
+    while (textWidthValue > txtMaxWi || textHeightValue > txtMaxHi) {
+        ttxtSize -= 1; // Decrease font size
+        textSize(ttxtSize);
+        textWidthValue = textWidth(dispText);
+        textHeightValue = ttxtSize;
+    }
+    //draw text
+    fill(bgCol);
+    rect(left, botTop, width, labelHi);
+    fill(txtCol);
+    stroke(txtCol);
+    textAlign(CENTER, CENTER);
+    text(volumeLevel, left + width / 2, botTop + labelHi / 2);
 }
     //MENUS
 function drawMainMenu() {
@@ -2235,8 +2373,6 @@ function drawSettingsMenu() {
     drawUIBoxWithText("SETTINGS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
 }
 function drawControlsMenu() {
-    //var labArr = [["Move Left", "Move Right"],["Soft Drop", "Hard Drop"], ["Rotate CW", "Rotate CCW"], ["Hold", "Restart"],["Menu Left","Menu Right"],["Menu Up", "Menu Down"], ["Next", "Back"]];//add
-    var indCnt = 0;
     //Menu Bounding Box
     strokeWeight(8);
     stroke(midUIColor);
@@ -2251,7 +2387,7 @@ function drawControlsMenu() {
     var titleWidth = controlMenuDims[2] - (lMarg * 2);
     var titleHeight = controlMenuDims[3] * (1/20);
 
-    drawUIBoxWithText("In Game Controls", lilDarkUIColor, midUIColor, "white", 5, 20, controlMenuDims[0]+lMarg, controlMenuDims[1]+tMarg, titleWidth, titleHeight);
+    drawUIBoxWithText("In Game Controls", veryDarkUIColor, veryDarkUIColor, "white", 5, 40, controlMenuDims[0]+lMarg, controlMenuDims[1]+tMarg, titleWidth, titleHeight);
     var btnLeft = controlMenuDims[0] + lMarg;
     var btnTop = controlMenuDims[1] + tMarg + titleHeight + tMarg;
     var btnWidth = titleWidth
@@ -2267,17 +2403,13 @@ function drawControlsMenu() {
             drawUIBoxWithText(controlMenuOptions[0][i][j], lilDarkUIColor, midUIColor, "white", 2, 20, btnLeft, btnTop, btnWidth, btnHeight);
             controlMenuOptions[1][i][j] = [btnLeft, btnTop, btnWidth, btnHeight];
             btnLeft = btnLeft + btnWidth + lSecBuff;
-            indCnt++;
         }
         btnLeft = controlMenuDims[0] + lMarg;
         btnTop = btnTop + btnHeight + tMarg;
     }
 
     drawUIBoxWithText("Menu Controls", lilDarkUIColor, midUIColor, "white", 5, 40, controlMenuDims[0]+lMarg, btnTop+tSecBuff, titleWidth, titleHeight);
-    console.log(btnTop);
     btnTop = btnTop+tSecBuff + titleHeight + tMarg;
-    console.log(btnTop);
-    console.log(btnWidth);
     for (var i = 4; i < controlMenuOptions[0].length; i++) {
         btnWidth = (controlMenuDims[2] - (lMarg * 4) - (lSecBuff*(controlMenuOptions[0][i].length - 1))) / (controlMenuOptions[0][i].length * 2);
         for (var j = 0; j < controlMenuOptions[0][i].length; j++) {
@@ -2288,13 +2420,11 @@ function drawControlsMenu() {
             drawUIBoxWithText(controlMenuOptions[0][i][j], lilDarkUIColor, midUIColor, "white", 2, 20, btnLeft, btnTop, btnWidth, btnHeight);
             controlMenuOptions[1][i][j] = [btnLeft, btnTop, btnWidth, btnHeight];
             btnLeft = btnLeft + btnWidth + lSecBuff;
-            indCnt++;
         }
         btnLeft = controlMenuDims[0] + lMarg;
         btnTop = btnTop + btnHeight + tMarg;
     }
 
-    console.log(controlMenuOptions);
     highlightMenuOption(curMenuPosition);
 }
 function drawDisplayMenu() {
@@ -2302,14 +2432,69 @@ function drawDisplayMenu() {
     var ctrLeft = mMenuLeft - mMenuWidth * (1/10);
     var ctrHeight = mMenuHeight * (8/10);
     var ctrWidth = mMenuWidth * (12/10);
-    drawUIBoxWithText("DISPLAY OPTIONS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
+    drawUIBoxWithText("DISPLAY SETTINGS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
 }
 function drawSoundMenu() {
-    var ctrTop = mMenuTop + mMenuHeight * (1/10);
-    var ctrLeft = mMenuLeft - mMenuWidth * (1/10);
-    var ctrHeight = mMenuHeight * (8/10);
-    var ctrWidth = mMenuWidth * (12/10);
-    drawUIBoxWithText("SOUND SETTINGS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
+//     var ctrTop = mMenuTop + mMenuHeight * (1/10);
+//     var ctrLeft = mMenuLeft - mMenuWidth * (1/10);
+//     var ctrHeight = mMenuHeight * (8/10);
+//     var ctrWidth = mMenuWidth * (12/10);
+//     drawUIBoxWithText("DISPLAY OPTIONS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
+    //Menu Bounding Box
+    strokeWeight(8);
+    stroke(midUIColor);
+    fill(veryDarkUIColor);
+    rect(soundMenuDims[0], soundMenuDims[1], soundMenuDims[2], soundMenuDims[3]);
+    strokeWeight(1);
+    //Margins and buffer between 
+    var lMarg = soundMenuDims[2] * (1/20);
+    var tMarg = soundMenuDims[3] * (1/20);
+    var lSecBuff = soundMenuDims[2] * (1/10);
+    var tSecBuff = soundMenuDims[3] * (3/20);
+    var titleWidth = soundMenuDims[2] - (lMarg * 2);
+    var titleHeight = soundMenuDims[3] * (1/10);
+
+    drawUIBoxWithText("Sound Settings", veryDarkUIColor, veryDarkUIColor, "white", 5, 40, soundMenuDims[0]+lMarg, soundMenuDims[1]+tMarg, titleWidth, titleHeight);
+    var btnLeft = soundMenuDims[0] + lMarg;
+    var btnTop = soundMenuDims[1] + tMarg + titleHeight + tMarg;
+    var btnWidth = titleWidth
+    var btnHeight = soundMenuDims[3] * (1/10);
+
+
+        btnWidth = (soundMenuDims[2] - (lMarg * 2) - (lSecBuff*(soundMenuOptions[0][0].length - 1))) / (soundMenuOptions[0][0].length);
+        for (var j = 0; j < soundMenuOptions[0][0].length; j++) {
+
+            //drawUIBoxWithText(labContArr[i][j], midUIColor, midUIColor, "white", 2, 40, btnLeft, btnTop, btnWidth, btnHeight);
+            //btnLeft = btnLeft + btnWidth + lMarg;
+
+            drawUIBoxWithText(soundMenuOptions[0][0][j], lilDarkUIColor, midUIColor, "white", 2, 30, btnLeft, btnTop, btnWidth, btnHeight);
+            soundMenuOptions[1][0][j] = [btnLeft, btnTop, btnWidth, btnHeight];
+            btnLeft = btnLeft + btnWidth + lSecBuff;
+
+        }
+        btnLeft = soundMenuDims[0] + lMarg;
+        btnTop = btnTop + btnHeight + tMarg;
+
+    //drawUIBoxWithText("Menu sounds", lilDarkUIColor, midUIColor, "white", 5, 40, soundMenuDims[0]+lMarg, btnTop+tSecBuff, titleWidth, titleHeight);
+    console.log(btnTop);
+    btnWidth = soundMenuDims[2] - (lMarg * 2);
+    btnHeight = soundMenuDims[3] * (3/20);
+    console.log(btnTop);
+    console.log(btnWidth);
+    for (var i = 1; i < soundMenuOptions[0].length; i++) {
+            console.log(btnWidth);
+
+        drawUIBoxWithText(soundMenuOptions[0][i][0], lilDarkUIColor, midUIColor, "white", 2, 30, btnLeft, btnTop, btnWidth, btnHeight);
+        //drawVolumeSlider(soundMenuOptions[0][i][0], "white", audioLevels[i-1], btnLeft, btnTop, btnWidth, btnHeight);
+        soundMenuOptions[1][i][0] = [btnLeft, btnTop, btnWidth, btnHeight];
+
+        btnTop = btnTop + btnHeight + tMarg;
+    }
+
+    console.log(soundMenuOptions);
+    highlightMenuOption(curMenuPosition);
+
+    //drawUIBoxWithText("SOUND SETTINGS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
 }
 function drawControlEditWindow(letter) {
     console.log(letter);
@@ -2357,12 +2542,13 @@ function keyPressed() {
                     }
                 } else if (curMenuPosition[1] == 2) {//third row of buttons 
                     if (curMenuPosition[2] == 0) {//left button - Display
-                        console.log("DICKS");
-                        drawDisplayMenu();//draw controls menu
                         curMenuPosition = [3,0,0];//put cursor at home position
+                        drawDisplayMenu();//draw controls menu
+                        
                     } else if ((curMenuPosition[2] == 1)) {//right button - Sound
-                        drawSoundMenu();
                         curMenuPosition = [4,0,0];
+                        drawSoundMenu();
+                        
                     }
                 }
             }
@@ -2397,8 +2583,50 @@ function keyPressed() {
                 drawMainMenu();//return to main menu
             }
         } else if (curMenuPosition[0] == 4) {//sound menu
-            if ((key.toUpperCase() === playControls[6][0])) {
-                //
+            if (key.toUpperCase() === playControls[4][0]) {
+                if (curMenuPosition[1] == 0) {
+                    moveMenuCursorLeft(soundMenuOptions);
+                } else if (curMenuPosition[1] == 2) {
+
+                }
+            } else if (key.toUpperCase() === playControls[4][1]){
+                if (curMenuPosition[1] == 0) {
+                    moveMenuCursorRight(soundMenuOptions);
+                } else if (curMenuPosition[1] == 2) {
+
+                }
+            } else if (key.toUpperCase() === playControls[5][0]){
+                moveMenuCursorUp(soundMenuOptions);
+            } else if (key.toUpperCase() === playControls[5][1]){
+                moveMenuCursorDown(soundMenuOptions);
+            } else if ((key.toUpperCase() === playControls[6][0])) {
+                //console.log(soundMenuOptions[0][1][0]);
+                if (curMenuPosition[1] == 0) {//top row
+                    if (curMenuPosition[2] == 0) {//left button - muteMusic
+                        if (musicMute == false) {
+                            musicMute = true;
+                            soundMenuOptions[0][0][0] = "Unmute Music Volume"
+                            highlightMenuOption(curMenuPosition);
+                        } else {
+
+                            musicMute = false;
+                            soundMenuOptions[0][0][0] = "Mute Music Volume"
+                            highlightMenuOption(curMenuPosition);
+                        }
+                        //highlightMenuOption(curMenuPosition);
+                    }  else if (curMenuPosition[2] == 1) {//right button - muteSFX
+                        if (SFXMute == false) {
+                            SFXMute = true;
+                            soundMenuOptions[0][0][1] = "Unmute SFX Volume"
+                            console.log(soundMenuOptions[0][0][1]);
+                            highlightMenuOption(curMenuPosition);
+                        } else {
+                            SFXMute = false;
+                            soundMenuOptions[0][0][1] = "Mute SFX Volume"
+                            highlightMenuOption(curMenuPosition);
+                        }
+                    }   
+                }
             } else if ((key.toUpperCase() === playControls[6][1])) {
                 curMenuPosition = [0,0,0];//reset position to home of main menu
                 drawMainMenu();//return to main menu
@@ -2494,7 +2722,9 @@ function keyPressed() {
             gameState = 0;
             drawMainMenu();//return to main menu
             stopMusic();
-            menuMusic.loop(); // Start and loop the music
+            if (musicMute == false) {
+                menuMusic.loop(); // Start and loop the music
+            }
         }
     }
 }
