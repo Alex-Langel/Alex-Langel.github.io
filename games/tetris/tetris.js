@@ -682,7 +682,7 @@ function levelUp() {
         if (level12Music.isPlaying()) {
             level12Music.stop(); // Stop the music
         }
-        if (level34Music.isPlaying()) {
+        if (!level34Music.isPlaying()) {
             level34Music.loop(); // Start and loop the music
         }
     }
@@ -690,7 +690,7 @@ function levelUp() {
         if (level34Music.isPlaying()) {
             level34Music.stop(); // Stop the music
         }
-        if (level56Music.isPlaying()) {
+        if (!level56Music.isPlaying()) {
             level56Music.loop(); // Start and loop the music
         }
     }
@@ -698,7 +698,7 @@ function levelUp() {
         if (level56Music.isPlaying()) {
             level56Music.stop(); // Stop the music
         }
-        if (level78Music.isPlaying()) {
+        if (!level78Music.isPlaying()) {
             level78Music.loop(); // Start and loop the music
         }
     }
@@ -706,7 +706,7 @@ function levelUp() {
         if (level78Music.isPlaying()) {
             level78Music.stop(); // Stop the music
         }
-        if (level9PMusic.isPlaying()) {
+        if (!level9PMusic.isPlaying()) {
             level9PMusic.loop(); // Start and loop the music
         }
     }
