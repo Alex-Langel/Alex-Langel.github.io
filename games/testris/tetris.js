@@ -217,7 +217,7 @@ function draw(){
 }//END MAIN LOOP
 //INITIALIZATION
 function preload() {
-    bgMusic = loadSound('/aud/BGmusic.wav');
+    bgMusic = loadSound('aud/BGmusic.wav');
 }
 function initGrid() {
     var tempGridItem = [];
