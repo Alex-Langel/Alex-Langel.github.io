@@ -71,13 +71,13 @@ const gridCols = 10;
 
 //Menu Positioning
 var mainMenuDims =  [canvasWidth * (1/10), 
-    canvasHeight * (1/10), 
-    canvasWidth * (8/10), 
-    canvasHeight * (8/10)];
+                    canvasHeight * (1/10), 
+                    canvasWidth * (8/10), 
+                    canvasHeight * (8/10)];
 var controlMenuDims =   [mainMenuDims[0] + mainMenuDims[2] * (1/10), 
-        mainMenuDims[1] - mainMenuDims[3] * (1/10), 
-        mainMenuDims[2] * (8/10),
-        mainMenuDims[3] * (12/10)];
+                        mainMenuDims[1] - mainMenuDims[3] * (1/10), 
+                        mainMenuDims[2] * (8/10),
+                        mainMenuDims[3] * (12/10)];
 
 var mMenuLeft = canvasWidth * (1/10);
 var mMenuTop = canvasHeight * (1/10);
@@ -120,6 +120,8 @@ let darkUIColor = [50,50,50];
 let lilDarkUIColor = [80,80,80];
 let veryDarkUIColor = [20,20,20];
 let midUIColor = [125,125,125];
+//MUSIC
+let bgMusic;
 
 //GAME TIMING STUFF
 let frameLength = 20;                   //Starting Speed  -  Lower to speed up
@@ -214,6 +216,9 @@ function draw(){
 
 }//END MAIN LOOP
 //INITIALIZATION
+function preload() {
+    bgMusic = loadSound('aud/bgMusic.wav');
+}
 function initGrid() {
     var tempGridItem = [];
     var tempGridRow = [];
@@ -291,6 +296,9 @@ function beginGame() {
     drawUI();
     startTimer = millis();
     gameState = 1;
+    if (!bgMusic.isPlaying()) {
+        bgMusic.loop(); // Start and loop the music
+    }
 }
 function genNewTetro() {
     var preSpawnRot = 0;
@@ -565,6 +573,9 @@ function endGame(){
     droppingPiece = false;
     droppingCells = [];
     drawScoreboard();
+    if (bgMusic.isPlaying()) {
+        bgMusic.stop(); // Stop the music
+    }
 }
 //-----------------------------------------------------------------------------OTHER  ---------------------------------------------------------------------------------------------
 function getClearString() {
@@ -2307,8 +2318,10 @@ function keyPressed() {
         } else if (curMenuPosition[0] == 20) {//Controls Submenu - Control Edit Screen
             if (key.toUpperCase() === playControls[6][0]) {
                 curMenuPosition[0] = 2;
-                playControls[curMenuPosition[1]][curMenuPosition[2]] = changingKey;
-                controlMenuOptions[0][curMenuPosition[1]][curMenuPosition[2]] = changingKey;
+                if (changingKey != "") {
+                    playControls[curMenuPosition[1]][curMenuPosition[2]] = changingKey;
+                    controlMenuOptions[0][curMenuPosition[1]][curMenuPosition[2]] = changingKey;
+                }
                 drawControlsMenu();
             } else if (key.toUpperCase() === playControls[6][1]) {
                 curMenuPosition[0] = 2;
