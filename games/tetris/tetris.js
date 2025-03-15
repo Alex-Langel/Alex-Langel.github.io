@@ -2607,8 +2607,8 @@ function keyPressed() {
                             musicMute = true;
                             soundMenuOptions[0][0][0] = "Unmute Music Volume"
                             highlightMenuOption(curMenuPosition);
+                            stopMusic();
                         } else {
-
                             musicMute = false;
                             soundMenuOptions[0][0][0] = "Mute Music Volume"
                             highlightMenuOption(curMenuPosition);
