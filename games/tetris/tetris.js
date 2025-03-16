@@ -159,6 +159,7 @@ let grid = [];                          //The grid of cells. Contain their color
 let lastKeyHeld = null;                 //last key player was holding for overlapping L and R presses
 let holdingLeft = false;                //if holding left  -  for overlapping L and R presses
 let holdingRight = false;               //if holding right  -  for overlapping L and R presses
+let holdingDown = false;
 let preJackedLeftRoto = false;          //for rotating piece if rotation pressed during are
 let preJackedRightRoto = false;         //for rotating piece if rotation pressed during are
 let gameSpeed = frameLength;            //Current speed
@@ -180,6 +181,8 @@ let nxtBag = [];                        //reserve bag  -  for when current doesn
                                         //-----Location of tetrominos on grid that are not currently tracked in grid
 let droppingCells = [];                 //The currently falling tetromino location as 2D array coordinated
 let ghostCells = [];                    //The ghost location as array coordinates
+let contSDrop = 0;                      //Number of cells soft dropped continuously
+let contHDrop = 0;                      //Number of cells hard dropped continuously
                                         //-----Current Run Data
 let simulClears = 0;                    //Number of lines cleared at the same time
 let totTetris = 0;                      //Tracker for total number of Tetris's
@@ -227,6 +230,9 @@ function draw(){
                     addScore();
                 } else {
                     moveDown();
+                    if (holdingDown == true) {
+                        contSDrop++;
+                    }
                 }
                 drawGrid();
             }
@@ -547,6 +553,16 @@ function addScore() {
     if (simulClears != 4) {
         prevTetris = false;
     }
+    if (contHDrop > 0) {
+        score = score + (contHDrop * 2);
+    } else {
+        if (holdingDown == true) {
+            score = score + contSDrop;
+        }
+    }
+    contHDrop = 0;
+    contSDrop = 0;
+
     //single clear
     if (simulClears == 1) {
         totSingle++;
@@ -2901,6 +2917,7 @@ function keyPressed() {
             console.log("A key was pressed!" + key);
         } else if (key.toUpperCase() === playControls[1][0]) { //SOFT DROP KEY
             if (droppingPiece) {
+                holdingDown = true;
                 console.log(onGround(droppingCells));
                     effSpeed = gameSpeed/2;
                 console.log("A key was pressed!" + key);
@@ -2910,6 +2927,7 @@ function keyPressed() {
                 if (!onGround(droppingCells)) {
                     while (!onGround(droppingCells)) {
                         moveDown();
+                        contHDrop++;
                     }
                     addCellsToGrid(droppingCells);//put cells that just hit ground onto grid
                     areCount = frameCount + areDelay;//start areDelay for next piece
@@ -2963,6 +2981,8 @@ function keyPressed() {
 function keyReleased() {
     if (key.toUpperCase() === playControls[1][0]) {
         effSpeed = gameSpeed;
+        holdingDown = false;
+        contSDrop = 0;
     }
     if (key.toUpperCase() === playControls[0][0]) {
         holdingLeft = false;
