@@ -114,7 +114,7 @@ let controlMenuOptions = [[[playControls[0][0], playControls[0][1]],[playControl
 
 let soundMenuOptions = [[["Mute MUSIC", "Mute SFX"],["Music Volume"],["SFX Volume"],["Sound Pack"]],
                         [[[0,0,0,0],[0,0,0,0]],[[0,0,0,0]],[[0,0,0,0]],[[0,0,0,0]]],
-                        [["clButton", "clButton"],["volSlide"],["volSlide"],["volSlide"]]]
+                        [["clButton", "clButton"],["volSlide"],["volSlide"],["arButton"]]]
 
 //COLORS
 let bgColor = [5,5,5];//remove
@@ -129,6 +129,8 @@ let veryDarkUIColor = [20,20,20];
 let midUIColor = [125,125,125];
 //AUDIO
 let audioLevels = [50,50,0];
+let audioPacks = ["Classic", "Crash"]
+let selAudioPack = 0;
 let musicMute = false;
 let SFXMute = false;
 let menuMusic;
@@ -403,7 +405,7 @@ function spawnTetro(letter, rotDir) {
         if (grid[0][4][2] == "white" && grid[0][5][2] == "white" && grid[0][6][2] == "white"  && grid[1][5][2] == "white" ) { //if there is room for tetronimo
             droppingCells = [[0,4],[0,6],[0,5],[1,5]];
             droppingPiece = true;
-            curTetroRotationState = 0;
+            curTetroRotationState = 2;
             } else {
                 if (grid[0][5][2] == "white") {
                     grid[0][5][2] = curTetroColor;
@@ -659,6 +661,22 @@ function setSFXVolume(newVol) {
     fourClearSound.setVolume(newVol/100);
     allClearSound.setVolume(newVol/100);
 }
+function incSoundPack() {
+     if (selAudioPack == audioPacks.length - 1) {
+        console.log("?????????");
+        selAudioPack = 0;
+     } else {
+        console.log("!!!!!!");
+        selAudioPack++;
+     }
+}
+function decSoundPack() {
+    if (selAudioPack == 0) {
+       selAudioPack = audioPacks.length - 1;
+    } else {
+       selAudioPack--;
+    }
+}
 //-----------------------------------------------------------------------------OTHER  ---------------------------------------------------------------------------------------------
 function getClearString() {
     var outString
@@ -753,6 +771,7 @@ function levelUp() {
     }
     if (gameSpeed > 1) {
         gameSpeed--;
+        effSpeed = gameSpeed;
     }
     drawLevel();
     drawSpeed();
@@ -1040,6 +1059,7 @@ function rotateRight() {
             }
         } else {
             //normal wallkicks
+            console.log(curTetroRotationState);
             switch (curTetroRotationState) {
                 case 0:
                     //=================TEST 1================
@@ -1160,6 +1180,7 @@ function rotateRight() {
                 break;
                 case 3:
                     //=================TEST 1================
+                    console.log(curTetroRotationState);
                     if (tryMovement(newPositions, 0, -1)) { // Move one left
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += -1
@@ -1587,7 +1608,7 @@ function holdPiece() {
     droppingCells.forEach(([r, c]) => grid[r][c][2] = "white");
     droppingCells = [];
 
-    spawnTetro(curTetro);
+    spawnTetro(curTetro, 0);
     drawGrid();
     drawHoldPiece(heldTetro);
 }
@@ -2195,7 +2216,11 @@ function highlightMenuOption(posAry) {
         if (ctrlType == "clButton") {
             drawUIBoxWithText(soundMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 20, left, top, width, height);
         } else if (ctrlType == "volSlide") {
-            drawVolumeSlider(soundMenuOptions[0][aRow][aCol], bolCol, "white", volNum, left, top, width, height);
+            drawVolumeSlider(soundMenuOptions[0][aRow][aCol], btnCol, "white", volNum, left, top, width, height);
+        } else if (ctrlType == "arButton") {
+            console.log(audioPacks);
+            console.log(selAudioPack);
+            drawArrowButton(soundMenuOptions[0][aRow][aCol], audioPacks[selAudioPack], btnCol, "white", left, top, width, height)
         }
     }
 }
@@ -2235,7 +2260,6 @@ function unhighlightMenuOption(posAry) {
         var width = soundMenuOptions[1][aRow][aCol][2];
         var height = soundMenuOptions[1][aRow][aCol][3];
         var ctrlType = soundMenuOptions[2][aRow][aCol];
-        
         drawUIBoxWithText(soundMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 2, 20, left, top, width, height);
     }
 }
@@ -2347,6 +2371,126 @@ function drawVolumeSlider(dispText, bgCol, txtCol, volumeLevel, left, top, width
     stroke(txtCol);
     textAlign(CENTER, CENTER);
     text(volumeLevel, left + width / 2, botTop + labelHi / 2);
+}
+function drawArrowButton(labelText, contText, bgCol, txtCol, left, top, width, height) { 
+    let txtMaxWi = width * 0.9; // 90% of the box width
+    let txtMaxHi = height * 0.9; // 90% of the box height
+    var ttxtSize = 40;
+    textSize(ttxtSize);
+    let textWidthValue;
+    let textHeightValue = ttxtSize;
+
+    var arrTxt = "<"
+    var arrowTop = top;
+    var arrowHi = height;
+    var arrowWid = arrowHi;
+    var arrowLLeft = left;
+    var labTop = top;
+    var labLeft = arrowLLeft + arrowWid;
+    var labWid = width - (arrowWid * 2);
+    var labHi = height * (2/10);
+    var contTop = labTop + labHi;
+    var contLeft = labLeft;
+    var contWid = labWid;
+    var contHi = height * (8/10);  
+    var arrowRLeft = contLeft+contWid;
+
+    console.log(width);
+    console.log(height);
+    console.log(arrowWid);
+    console.log(arrowHi);
+    console.log(labWid);
+    fill(bgCol);
+    rect(left, top, width, height);
+
+    //drawLeftArrow
+    txtMaxHi = arrowHi * (9/10);
+    txtMaxWi = arrowWid * (9/10);
+    ttxtSize = 80;
+    textSize(ttxtSize);
+    textWidthValue = textWidth(arrTxt);
+    textHeightValue = ttxtSize;
+    while (textWidthValue > txtMaxWi || textHeightValue > txtMaxHi) {
+        ttxtSize -= 1; // Decrease font size
+        textSize(ttxtSize);
+        textWidthValue = textWidth(arrTxt);
+        textHeightValue = ttxtSize;
+    }
+    fill(bgCol);
+    rect(arrowLLeft, arrowTop, arrowTop, arrowHi);
+
+    fill(txtCol);
+    stroke(txtCol);
+    textAlign(CENTER, CENTER);
+    text(arrTxt, arrowLLeft + arrowWid / 2, arrowTop + arrowHi / 2);
+
+
+    //drawLabel
+    txtMaxHi = labHi * (9/10);
+    txtMaxWi = labWid * (9/10);
+    ttxtSize = 80;
+    textSize(ttxtSize);
+    textWidthValue = textWidth(labelText);
+    textHeightValue = ttxtSize;
+    while (textWidthValue > txtMaxWi || textHeightValue > txtMaxHi) {
+        ttxtSize -= 1; // Decrease font size
+        textSize(ttxtSize);
+        textWidthValue = textWidth(labelText);
+        textHeightValue = ttxtSize;
+    }
+    fill(bgCol);
+    rect(labLeft, labTop, labWid, labHi);
+
+    fill(txtCol);
+    stroke(txtCol);
+    textAlign(CENTER, CENTER);
+    text(labelText, labLeft+ labWid / 2, labTop + labHi / 2);
+
+
+    //drawContent
+    txtMaxHi = contHi * (9/10);
+    txtMaxWi = contWid * (9/10);
+    ttxtSize = 80;
+    textSize(ttxtSize);
+    textWidthValue = textWidth(contText);
+    textHeightValue = ttxtSize;
+    while (textWidthValue > txtMaxWi || textHeightValue > txtMaxHi) {
+        ttxtSize -= 1; // Decrease font size
+        textSize(ttxtSize);
+        textWidthValue = textWidth(contText);
+        textHeightValue = ttxtSize;
+    }
+    fill(bgCol);
+    rect(contLeft, contTop, contWid, contHi);
+
+    fill(txtCol);
+    stroke(txtCol);
+    textAlign(CENTER, CENTER);
+    text(contText, contLeft+ contWid / 2, contTop + contHi / 2);
+
+    
+    //drawRightArrow
+    arrTxt = ">";
+    txtMaxHi = contHi * (9/10);
+    txtMaxWi = contWid * (9/10);
+    ttxtSize = 80;
+    textSize(ttxtSize);
+    textWidthValue = textWidth(arrTxt);
+    textHeightValue = ttxtSize;
+    while (textWidthValue > txtMaxWi || textHeightValue > txtMaxHi) {
+        ttxtSize -= 1; // Decrease font size
+        textSize(ttxtSize);
+        textWidthValue = textWidth(arrTxt);
+        textHeightValue = ttxtSize;
+    }
+    fill(bgCol);
+    rect(arrowRLeft, arrowTop, arrowWid, arrowHi);
+
+    fill(txtCol);
+    stroke(txtCol);
+    textAlign(CENTER, CENTER);
+    text(arrTxt, arrowRLeft + arrowWid / 2, arrowTop + arrowHi / 2);
+
 }
     //MENUS
 function drawMainMenu() {
@@ -2500,11 +2644,14 @@ function drawSoundMenu() {
     console.log(btnWidth);
     for (var i = 1; i < soundMenuOptions[0].length; i++) {
             console.log(btnWidth);
-
-        drawUIBoxWithText(soundMenuOptions[0][i][0], lilDarkUIColor, midUIColor, "white", 2, 30, btnLeft, btnTop, btnWidth, btnHeight);
-        //drawVolumeSlider(soundMenuOptions[0][i][0], "white", audioLevels[i-1], btnLeft, btnTop, btnWidth, btnHeight);
+        //if (i == 3) {
+            //drawArrowButton(soundMenuOptions[0][i][0], audioPacks[selAudioPack], lilDarkUIColor, "white", btnLeft, btnTop, btnWidth, btnHeight);
+        //} else {
+            drawUIBoxWithText(soundMenuOptions[0][i][0], lilDarkUIColor, midUIColor, "white", 2, 30, btnLeft, btnTop, btnWidth, btnHeight);
+            //drawVolumeSlider(soundMenuOptions[0][i][0], "white", audioLevels[i-1], btnLeft, btnTop, btnWidth, btnHeight);
+            
+        //}
         soundMenuOptions[1][i][0] = [btnLeft, btnTop, btnWidth, btnHeight];
-
         btnTop = btnTop + btnHeight + tMarg;
     }
 
@@ -2615,6 +2762,9 @@ function keyPressed() {
                         setMusicVolume(audioLevels[1]);
                         highlightMenuOption(curMenuPosition);
                     }
+                } else if (curMenuPosition[1] == 3) {
+                    decSoundPack();
+                    highlightMenuOption(curMenuPosition);
                 }
             } else if (key.toUpperCase() === playControls[4][1]){
                 if (curMenuPosition[1] == 0) {
@@ -2631,11 +2781,15 @@ function keyPressed() {
                         setMusicVolume(audioLevels[1]);
                         highlightMenuOption(curMenuPosition);
                     }
+                } else if (curMenuPosition[1] == 3) {
+                    incSoundPack();
+                    highlightMenuOption(curMenuPosition);
                 }
             } else if (key.toUpperCase() === playControls[5][0]){
                 moveMenuCursorUp(soundMenuOptions);
             } else if (key.toUpperCase() === playControls[5][1]){
                 moveMenuCursorDown(soundMenuOptions);
+                console.log("WHATS GOING ON");
             } else if ((key.toUpperCase() === playControls[6][0])) {
                 //console.log(soundMenuOptions[0][1][0]);
                 if (curMenuPosition[1] == 0) {//top row
@@ -2705,9 +2859,7 @@ function keyPressed() {
         } else if (key.toUpperCase() === playControls[1][0]) { //SOFT DROP KEY
             if (droppingPiece) {
                 console.log(onGround(droppingCells));
-                if (effSpeed == gameSpeed) {
                     effSpeed = gameSpeed/2;
-                }
                 console.log("A key was pressed!" + key);
             }
         } else if (key.toUpperCase() === playControls[1][1]) { //HARD DROP KEY
