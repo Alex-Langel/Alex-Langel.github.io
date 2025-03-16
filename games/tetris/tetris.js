@@ -314,6 +314,7 @@ function resetGameVars() {
     clears = 0;
     clearsToLevel =10;
     level = 1;
+    gameSpeed = 20;
 
     startTimer = 0;
     elapsedTime = 0;
@@ -333,10 +334,11 @@ function beginGame() {
     level12Music.loop(); // Start and loop the music
     }
 }
-function genNewTetro() {
+function genNewTetro() { 
     var preSpawnRot = 0;
     if (pieceGend == false) {
         curTetro = getFromBag();
+        curTetro = 1;
         drawNextPiece(curBag[0]);
         drawAdtlNext();
         pieceGend = true;
@@ -2586,14 +2588,20 @@ function keyPressed() {
             if (key.toUpperCase() === playControls[4][0]) {
                 if (curMenuPosition[1] == 0) {
                     moveMenuCursorLeft(soundMenuOptions);
-                } else if (curMenuPosition[1] == 2) {
-
+                } else if (curMenuPosition[1] == 1) {
+                    if (audioLevels[0] > 0) {
+                        audioLevels[0] --;
+                        highlightMenuOption(curMenuPosition);
+                    }
                 }
             } else if (key.toUpperCase() === playControls[4][1]){
                 if (curMenuPosition[1] == 0) {
                     moveMenuCursorRight(soundMenuOptions);
-                } else if (curMenuPosition[1] == 2) {
-
+                } else if (curMenuPosition[1] == 1) {
+                    if (audioLevels[0] < 100) {
+                        audioLevels[0] ++;
+                        highlightMenuOption(curMenuPosition);
+                    }
                 }
             } else if (key.toUpperCase() === playControls[5][0]){
                 moveMenuCursorUp(soundMenuOptions);
