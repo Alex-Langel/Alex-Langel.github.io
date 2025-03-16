@@ -185,10 +185,12 @@ let simulClears = 0;                    //Number of lines cleared at the same ti
 let totTetris = 0;                      //Tracker for total number of Tetris's
 let totTriple = 0;                      //Tracker for total number of triple line clears
 let totDouble = 0;                      //Tracker for total number of double line clears
+let totSingle = 0;                      //Tracker for total number of singgle line clears
 let totBtoB = 0;                        //Tracker for total number of Back To Back Tetris's
 let totAllClears = 0;                   //Tracker for total number of all clears
 let prevTetris = false;                 //Whether the last line clear was a tetris for b2b tracking
 let combo = 0;                          //Combo counter
+let maxCombo = 0;                       //Highest Combo
 let score = 0;                          //Score counter
 let clears = 0;                         //Tracker for total number of clears
 let clearsToLevel = 10;                 //Counter for number of clears needed to level up
@@ -308,10 +310,12 @@ function resetGameVars() {
     totTetris = 0;
     totTriple = 0;
     totDouble = 0;
+    totSingle = 0;
     totBtoB = 0;
     totAllClears = 0;
     prevTetris = false;
     combo = 0;
+    maxCombo = 0;
     score = 0;
     clears = 0;
     clearsToLevel =10;
@@ -545,6 +549,7 @@ function addScore() {
     }
     //single clear
     if (simulClears == 1) {
+        totSingle++;
         score = score + 100;
     //double clear
     } else if (simulClears == 2) {
@@ -566,6 +571,9 @@ function addScore() {
     if (simulClears > 0) {
         //increment combo
         combo = combo + 1;
+        if (maxCombo < combo) {
+            maxCombo = combo;
+        }
         if (wasAllClear() == true) {
             totAllClears ++;
             allClear = true;
@@ -634,12 +642,12 @@ function stopMusic() {
     }
 }
 function initVolume() {
-    menuMusic.setVolume(0.2);
-    level12Music.setVolume(0.1);
-    level34Music.setVolume(0.1);
-    level56Music.setVolume(0.2);
-    level78Music.setVolume(0.2);
-    level9PMusic.setVolume(0.2);
+    menuMusic.setVolume(0.5);
+    level12Music.setVolume(0.5);
+    level34Music.setVolume(0.5);
+    level56Music.setVolume(0.5);
+    level78Music.setVolume(0.5);
+    level9PMusic.setVolume(0.5);
     singleClearSound.setVolume(0.5);
     doubleClearSound.setVolume(0.5);
     tripleClearSound.setVolume(0.5);
@@ -2106,6 +2114,41 @@ function drawScoreboard() {
 
     text("Time: " + msToMinuteSecondTime(elapsedTime), SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
     console.log(msToMinuteSecondTime(elapsedTime));
+
+    SBTXTop = SBTXTop + (SBHeight * (1/20));
+    SBTXHeight = SBHeight * (1/10);
+
+    text("Single Clears: " + totSingle, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
+
+    SBTXTop = SBTXTop + (SBHeight * (1/20));
+    SBTXHeight = SBHeight * (1/10);
+
+    text("Double Clears: " + totDouble, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
+
+    SBTXTop = SBTXTop + (SBHeight * (1/20));
+    SBTXHeight = SBHeight * (1/10);
+
+    text("Triple Clears: " + totTriple, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
+
+    SBTXTop = SBTXTop + (SBHeight * (1/20));
+    SBTXHeight = SBHeight * (1/10);
+
+    text("Tetris: " + totTetris, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
+
+    SBTXTop = SBTXTop + (SBHeight * (1/20));
+    SBTXHeight = SBHeight * (1/10);
+
+    text("B2B Tetris: " + totBtoB, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
+
+    SBTXTop = SBTXTop + (SBHeight * (1/20));
+    SBTXHeight = SBHeight * (1/10);
+
+    text("All Clears: " + totAllClears, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
+
+    SBTXTop = SBTXTop + (SBHeight * (1/20));
+    SBTXHeight = SBHeight * (1/10);
+
+    text("Highest Combo: " + maxCombo, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
 }
     //Menu Movement============================================
 function moveMenuCursorUp(menuOptions) {
