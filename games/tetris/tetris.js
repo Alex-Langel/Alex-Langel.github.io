@@ -338,7 +338,7 @@ function genNewTetro() {
     var preSpawnRot = 0;
     if (pieceGend == false) {
         curTetro = getFromBag();
-        curTetro = 1;
+        //curTetro = 1;
         drawNextPiece(curBag[0]);
         drawAdtlNext();
         pieceGend = true;
@@ -643,6 +643,21 @@ function initVolume() {
     tripleClearSound.setVolume(0.5);
     fourClearSound.setVolume(0.5);
     allClearSound.setVolume(0.5);
+}
+function setMusicVolume(newVol) {
+    menuMusic.setVolume(newVol/100);
+    level12Music.setVolume(newVol/100);
+    level34Music.setVolume(newVol/100);
+    level56Music.setVolume(newVol/100);
+    level78Music.setVolume(newVol/100);
+    level9PMusic.setVolume(newVol/100);
+}
+function setSFXVolume(newVol) {
+    singleClearSound.setVolume(newVol/100);
+    doubleClearSound.setVolume(newVol/100);
+    tripleClearSound.setVolume(newVol/100);
+    fourClearSound.setVolume(newVol/100);
+    allClearSound.setVolume(newVol/100);
 }
 //-----------------------------------------------------------------------------OTHER  ---------------------------------------------------------------------------------------------
 function getClearString() {
@@ -2303,8 +2318,8 @@ function drawVolumeSlider(dispText, bgCol, txtCol, volumeLevel, left, top, width
     textAlign(CENTER, CENTER);
     dispText = "<[";
     var lineNum = Math.floor(volumeLevel/5);
-    for (var i = 0; i < 21; i++) {
-        if (i <= lineNum) {
+    for (var i = 0; i < 20; i++) {
+        if (i < lineNum) {
             dispText += "|"
         } else {
             dispText += " "
@@ -2591,6 +2606,13 @@ function keyPressed() {
                 } else if (curMenuPosition[1] == 1) {
                     if (audioLevels[0] > 0) {
                         audioLevels[0] --;
+                        setMusicVolume(audioLevels[0]);
+                        highlightMenuOption(curMenuPosition);
+                    }
+                } else if (curMenuPosition[1] == 2) {
+                    if (audioLevels[1] > 0) {
+                        audioLevels[1] --;
+                        setMusicVolume(audioLevels[1]);
                         highlightMenuOption(curMenuPosition);
                     }
                 }
@@ -2600,6 +2622,13 @@ function keyPressed() {
                 } else if (curMenuPosition[1] == 1) {
                     if (audioLevels[0] < 100) {
                         audioLevels[0] ++;
+                        setMusicVolume(audioLevels[0]);
+                        highlightMenuOption(curMenuPosition);
+                    }
+                } else if (curMenuPosition[1] == 2) {
+                    if (audioLevels[1] > 0) {
+                        audioLevels[1] ++;
+                        setMusicVolume(audioLevels[1]);
                         highlightMenuOption(curMenuPosition);
                     }
                 }
