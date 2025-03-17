@@ -980,7 +980,7 @@ function rotateRight() {
         if (
             newX < 0 || newX >= grid.length ||
             newY < 0 || newY >= grid[0].length ||
-            (grid[newX][newY][2] != "white") // Ensure new cell is empty
+            (grid[newX][newY] != "") // Ensure new cell is empty
         ) {
             collDet = true;//collision detected
         }
@@ -1350,7 +1350,7 @@ function rotateLeft() {
         if (
             newX < 0 || newX >= grid.length ||
             newY < 0 || newY >= grid[0].length ||
-            (grid[newX][newY][2] != "white") // Ensure new cell is empty
+            (grid[newX][newY] != "") // Ensure new cell is empty
         ) {
             collDet = true;//collision detected
         }
