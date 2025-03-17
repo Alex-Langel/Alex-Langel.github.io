@@ -690,6 +690,7 @@ function setSFXVolume(newVol) {
     allClearSound.setVolume(newVol/100);
 }
 function incSoundPack() {
+    stopMusic();
      if (selAudioPack == audioPacks.length - 1) {
         console.log("?????????");
         selAudioPack = 0;
@@ -699,6 +700,7 @@ function incSoundPack() {
      }
 }
 function decSoundPack() {
+    stopMusic();
     if (selAudioPack == 0) {
        selAudioPack = audioPacks.length - 1;
     } else {
