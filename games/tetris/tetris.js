@@ -1,5 +1,9 @@
 //NEEDS BETTER RANDOMIZTION
 //BETTER SCORE CALCULATION
+//WORK ON T-SPIN DETECTION
+//WORK ON RIGHT SIDE UI
+//WORK ON DISPLAY MENU
+//WORK ON SETTIGNS MENU
 //
 //====================================================================================GLOBAL VARIABLES=================================================================================================================
 //GET CANVAS SIZE
@@ -8,8 +12,9 @@ let canvasWidth = container.clientWidth;
 let canvasHeight = container.clientHeight;
 
 //Grid Size
-const gridWidth = (canvasWidth/2)-1;
-const gridHeight = canvasHeight -1;
+var gridWidth = (canvasWidth/2)-1;
+var gridHeight = canvasHeight -1;
+
 
 //UI POSITIONS
 const UIstartX = gridWidth + 1;
@@ -65,6 +70,8 @@ const UIendX = canvasWidth-1;
 //GRID SIZE
 const gridRows = 20;
 const gridCols = 10;
+var cellWid = gridWidth / gridCols;
+var cellHi = gridHeight / gridRows;
 
 //Menu Positioning
 var mainMenuDims =  [canvasWidth * (1/10), 
@@ -114,9 +121,20 @@ let soundMenuOptions = [[["Mute MUSIC", "Mute SFX"],["Music Volume"],["SFX Volum
                         [["clButton", "clButton"],["volSlide"],["volSlide"],["arButton"]]]
 
 //COLORS
-let bgColor = [5,5,5];//remove
 let gridColor = [5,5,5];
 let ghostColor = [255,255,255];
+let primUIColor = [150,150,150];
+let secUIColor = [];
+let accentColor = [];
+let tertUIColor = [];
+let textColor = [255,255,255];
+
+let tetroColors = [[0,255,255],[255,255,0],[255,0,255],[0,0,255],[255,165,0],[0,128,0],[255,0,0]];
+
+
+
+let bgColor = [5,5,5];//remove
+
 let lightUIColor = [200,200,200];
 let lilLightUIColor = [170,170,170];
 let veryLightUIColor = [230,230,230];
@@ -188,9 +206,11 @@ let simulClears = 0;                    //Number of lines cleared at the same ti
 let totTetris = 0;                      //Tracker for total number of Tetris's
 let totTriple = 0;                      //Tracker for total number of triple line clears
 let totDouble = 0;                      //Tracker for total number of double line clears
-let totSingle = 0;                      //Tracker for total number of singgle line clears
+let totSingle = 0;                      //Tracker for total number of single line clears
 let totBtoB = 0;                        //Tracker for total number of Back To Back Tetris's
 let totAllClears = 0;                   //Tracker for total number of all clears
+let allClear = false;                   //Boolean for if clear was allClear 
+let wasTSpin = 0;                       //If player hit tspin, 0 for none, 1 for normal T spin, 2 for mini
 let prevTetris = false;                 //Whether the last line clear was a tetris for b2b tracking
 let combo = 0;                          //Combo counter
 let maxCombo = 0;                       //Highest Combo
@@ -277,7 +297,7 @@ function initGrid() {
     for (var j = 1; j < gridRows+1; j++){
         for (var i = 1; i < gridCols+1; i++){
         
-                tempGridItem = [];
+                tempGridItem = "";
                 var cellWidth = (gridWidth + 1) / gridCols;
                 var cellHeight = (gridHeight + 1) / gridRows;
                 var rightCoord = (cellWidth * i) - 1;
@@ -286,13 +306,15 @@ function initGrid() {
                 var topCoord = bottomCoord - cellHeight + 1;
 
 
-                tempGridItem = [[leftCoord, topCoord], [rightCoord, bottomCoord], ["white"]];  //fix color
+                //tempGridItem = [[leftCoord, topCoord], [rightCoord, bottomCoord], ["white"]];  //fix color
+
                 tempGridRow.push(tempGridItem);
         }
         tempGrid.push(tempGridRow);
         tempGridRow = [];
     }
     return tempGrid;
+
 }
 function initBags() {
     curBag = [...fullBag];
@@ -386,31 +408,31 @@ function spawnTetro(letter, rotDir) {
     switch (letter) {
     case 1: 
     curTetroColor = "aqua";
-        if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[2][5][2] == "white"  && grid[3][5][2] == "white" ) { //if there is room for tetronimo
+        if (grid[0][5] == "" && grid[1][5] == "" && grid[2][5] == ""  && grid[3][5] == "" ) { //if there is room for tetronimo
             droppingCells = [[0,5],[1,5],[2,5],[3,5]];
             droppingPiece = true;
             curTetroRotationState = 1;
         } else {
-            if (grid[0][5][2] == "white"){
-                grid[0][5][2] = curTetroColor;
+            if (grid[0][5] == ""){
+                grid[0][5] = curTetroColor;
             }
-            if (grid[1][5][2] == "white"){
-                grid[1][5][2] = curTetroColor;
+            if (grid[1][5] == ""){
+                grid[1][5] = curTetroColor;
             }
-            if (grid[2][5][2] == "white"){
-                grid[2][5][2] = curTetroColor;
+            if (grid[2][5] == ""){
+                grid[2][5] = curTetroColor;
             }
             spawnFail = true;
         }
         break;
     case 2:
         curTetroColor = "yellow";
-        if (grid[0][4][2] == "white" && grid[0][5][2] == "white" && grid[1][4][2] == "white" && grid[1][5][2] == "white") { //if there is room for tetronimo
+        if (grid[0][4] == "" && grid[0][5] == "" && grid[1][4] == "" && grid[1][5] == "") { //if there is room for tetronimo
             droppingCells = [[0,4],[0,5],[1,4],[1,5]];
             droppingPiece = true;
             curTetroRotationState = 0;
         } else {
-            if (grid[0][4][2] == "white" && grid[0][5][2] == "white") {
+            if (grid[0][4] == "" && grid[0][5][2] == "") {
                 grid[0][4][2] = curTetroColor;
                 grid[0][5][2] = curTetroColor;
             } 
@@ -419,75 +441,75 @@ function spawnTetro(letter, rotDir) {
         break;
     case 3:
         curTetroColor = "magenta";
-        if (grid[0][4][2] == "white" && grid[0][5][2] == "white" && grid[0][6][2] == "white"  && grid[1][5][2] == "white" ) { //if there is room for tetronimo
+        if (grid[0][4] == "" && grid[0][5] == "" && grid[0][6] == ""  && grid[1][5] == "" ) { //if there is room for tetronimo
             droppingCells = [[0,4],[0,6],[0,5],[1,5]];
             droppingPiece = true;
             curTetroRotationState = 2;
             } else {
-                if (grid[0][5][2] == "white") {
-                    grid[0][5][2] = curTetroColor;
+                if (grid[0][5] == "") {
+                    grid[0][5] = curTetroColor;
                 }
             spawnFail = true;
         }
         break;
     case 4:
         curTetroColor = "blue";
-        if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[2][5][2] == "white"  && grid[2][4][2] == "white" ) { //if there is room for tetronimo
+        if (grid[0][5] == "" && grid[1][5] == "" && grid[2][5] == ""  && grid[2][4] == "" ) { //if there is room for tetronimo
             droppingCells = [[0,5],[2,5],[1,5],[2,4]];
             droppingPiece = true;
             curTetroRotationState = 3;
         } else {
-            if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[1][4][2] == "white") {
-                grid[0][5][2] = curTetroColor;
-                grid[1][5][2] = curTetroColor;
-                grid[1][4][2] = curTetroColor;
-            } else if (grid[0][5][2] == "white" && grid[0][4][2] == "white") {
-                grid[0][5][2] = curTetroColor;
-                grid[0][4][2] = curTetroColor;
+            if (grid[0][5] == "" && grid[1][5] == "" && grid[1][4] == "") {
+                grid[0][5] = curTetroColor;
+                grid[1][5] = curTetroColor;
+                grid[1][4] = curTetroColor;
+            } else if (grid[0][5] == "" && grid[0][4] == "") {
+                grid[0][5] = curTetroColor;
+                grid[0][4] = curTetroColor;
             }
             spawnFail = true;
         }
         break;
     case 5:
         curTetroColor = "orange";
-        if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[2][5][2] == "white"  && grid[2][6][2] == "white" ) { //if there is room for tetronimo
+        if (grid[0][5] == "" && grid[1][5] == "" && grid[2][5] == ""  && grid[2][6] == "" ) { //if there is room for tetronimo
             droppingCells = [[0,5],[2,5],[1,5],[2,6]];
             droppingPiece = true;
             curTetroRotationState = 1;
         } else {
-            if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[1][6][2] == "white") {
-                grid[0][5][2] = curTetroColor
-                grid[1][5][2] = curTetroColor;
-                grid[1][6][2] = curTetroColor;
-            } else if (grid[0][5][2] == "white" && grid[0][6][2] == "white") {
-                grid[0][5][2] = curTetroColor;
-                grid[0][6][2] = curTetroColor;
+            if (grid[0][5] == "" && grid[1][5] == "" && grid[1][6] == "") {
+                grid[0][5] = curTetroColor
+                grid[1][5] = curTetroColor;
+                grid[1][6] = curTetroColor;
+            } else if (grid[0][5] == "" && grid[0][6] == "") {
+                grid[0][5] = curTetroColor;
+                grid[0][6] = curTetroColor;
             }
             spawnFail = true;
         }
         break;
     case 6:
         curTetroColor = "green";
-        if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[0][6][2] == "white"  && grid[1][4][2] == "white" ) { //if there is room for tetronimo
+        if (grid[0][5] == "" && grid[1][5] == "" && grid[0][6] == ""  && grid[1][4] == "" ) { //if there is room for tetronimo
             droppingCells = [[0,5],[0,6],[1,5],[1,4]];
             droppingPiece = true;
             curTetroRotationState = 0;
         } else {
-            if (grid[0][5][2] == "white" && grid[0][4][2] == "white"){
-                grid[0][5][2] = curTetroColor;
-                grid[0][4][2] = curTetroColor;
+            if (grid[0][5] == "" && grid[0][4] == ""){
+                grid[0][5] = curTetroColor;
+                grid[0][4] = curTetroColor;
             }
             spawnFail = true;
         }
         break;
     case 7:
         curTetroColor = "red";
-        if (grid[0][5][2] == "white" && grid[1][5][2] == "white" && grid[1][6][2] == "white"  && grid[0][4][2] == "white" ) { //if there is room for tetronimo
+        if (grid[0][5] == "" && grid[1][5] == "" && grid[1][6] == ""  && grid[0][4] == "" ) { //if there is room for tetronimo
             droppingCells = [[0,5],[1,6],[1,5],[0,4]];
             droppingPiece = true;
             curTetroRotationState = 0;
         } else {
-            if (grid[0][5][2] == "white" && grid[0][6][2] == "white"){
+            if (grid[0][5] == "" && grid[0][6] == ""){
                 grid[0][5][2] == curTetroColor;
                 grid[0][6][2] == curTetroColor;
             }
@@ -505,7 +527,7 @@ function spawnTetro(letter, rotDir) {
             rotateLeft();
         }
     }
-    drawGrid();
+    //();
     if (spawnFail == true) {
         endGame();
     }
@@ -513,7 +535,7 @@ function spawnTetro(letter, rotDir) {
 function rowIsFull(rowNum) {
     var noWhite = true;
     for (var i = 0; i < gridCols; i++) {
-        if (grid[rowNum][i][2] == "white") {
+        if (grid[rowNum][i] == "") {
             noWhite = false;
         }
     }
@@ -529,12 +551,13 @@ function getRows() {
 }
 function clearRows() {
     var rowsToCheck = getRows();
+    console.log(rowsToCheck);
     for (var i = 0; i < rowsToCheck.length; i++) {
         if (rowIsFull(rowsToCheck[i]) == true) {
             deleteAndPushRow(rowsToCheck[i]);
             simulClears++;
             clears++;
-            if (clearsToLevel == 0) {
+            if (clearsToLevel == 1) {
                 levelUp();
             } else {
                 clearsToLevel--;
@@ -550,7 +573,7 @@ function addCellsToGrid(cellsToAdd) {
     for (var i = 0; i < cellsToAdd.length; i++) {
         row = cellsToAdd[i][0];
         col = cellsToAdd[i][1];
-        grid[row][col][2] = curTetroColor;
+        grid[row][col] = curTetroColor;
     }
 
 }
@@ -692,10 +715,8 @@ function setSFXVolume(newVol) {
 function incSoundPack() {
     stopMusic();
      if (selAudioPack == audioPacks.length - 1) {
-        console.log("?????????");
         selAudioPack = 0;
      } else {
-        console.log("!!!!!!");
         selAudioPack++;
      }
 }
@@ -795,6 +816,14 @@ function getClearString() {
     }
     return outString;
 }
+function getTspinVal(rotationState) {
+    //check all 4 corners
+        //Tspin
+        //check 2 corners based on rotation state
+            //Mini if so
+        //
+    //
+}
 function wasAllClear() {
     for (let i = 0; i < grid.length; i++) {  // Outer loop for each row
         for (let j = 0; j < grid[i].length; j++) {  // Inner loop for each element in the row
@@ -809,7 +838,7 @@ function wasAllClear() {
     return true;
 }
 function levelUp() {
-    clearsToLevel = 10 - clearsToLevel;
+    clearsToLevel = 10;
     level++;
     if (musicMute ==false) {
         if (level == 3) {
@@ -867,11 +896,11 @@ function getFromBag() {
 function deleteAndPushRow(rowNum) {
     for (var i = rowNum; i > 0; i--) {
         for (var j = 0; j < gridCols; j++) {
-            grid[i][j][2] = grid[i-1][j][2];
+            grid[i][j] = grid[i-1][j];
         }
     }
     for (var j = 0; j < gridCols; j++) {
-        grid[0][j][2] = "white";
+        grid[0][j] = "";
     }
 }
 //-----------------------------------------------------------------------------MOVEMENT---------------------------------------------------------------------------------------------
@@ -884,8 +913,8 @@ function onGround(cells) {
             return true;
         }
         // Check if the next row is occupied
-        let nextCellColor = grid[row + 1][col][2];
-        if (nextCellColor != "white") {
+        let nextCellColor = grid[row + 1][col];
+        if (nextCellColor != "") {
             let isPartOfTetromino = false;
             // Make sure it's not falsely detecting its own cells
             //for (let j = 0; j < 4; j++) {
@@ -902,6 +931,7 @@ function onGround(cells) {
     return false;
 }
 function moveDown() {
+    wasTSpin = 0;
     for (let i = 0; i < 4; i++) {
         droppingCells[i][0] += 1; // Move left
     }
@@ -911,6 +941,7 @@ function moveLeft() {
     if (droppingPiece && gameState == 1) {
         if (tryMovement(droppingCells, 0, -1) == true) {
             console.log("Moving Left!");
+            wasTSpin = 0;
             for (let i = 0; i < 4; i++) {
                 droppingCells[i][1] += -1; // Move left
             }
@@ -922,6 +953,7 @@ function moveRight() {
     if (droppingPiece && gameState == 1) {
         if (tryMovement(droppingCells, 0, 1) == true) {
             console.log("Moving Right!");
+            wasTSpin = 0;
             for (let i = 0; i < 4; i++) {
                 droppingCells[i][1] += 1; // Move left
             }
@@ -1135,7 +1167,6 @@ function rotateRight() {
             }
         } else {
             //normal wallkicks
-            console.log(curTetroRotationState);
             switch (curTetroRotationState) {
                 case 0:
                     //=================TEST 1================
@@ -1256,7 +1287,6 @@ function rotateRight() {
                 break;
                 case 3:
                     //=================TEST 1================
-                    console.log(curTetroRotationState);
                     if (tryMovement(newPositions, 0, -1)) { // Move one left
                         for (var i = 0; i < 4; i++) { // Apply position change
                             newPositions[i][1] += -1
@@ -1519,6 +1549,7 @@ function rotateLeft() {
                     } else {
                         //=================TEST 2================
                         if (tryMovement(newPositions, -1, 1)) { // Move one right and up
+                            //getTspinVal();
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += -1
                                 newPositions[i][1] += 1
@@ -1528,6 +1559,7 @@ function rotateLeft() {
                         } else {
                             //=================TEST 3================
                             if (tryMovement(newPositions, 2, 0)) { // Move down two
+                                //getTspinVal();
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += 2
                                 }
@@ -1536,6 +1568,7 @@ function rotateLeft() {
                             } else {
                                 //=================TEST 4================
                                 if (tryMovement(newPositions, 2, 1)) { // Move down two right one
+                                    //getTspinVal();
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 2
                                         newPositions[i][1] += 1
@@ -1558,6 +1591,7 @@ function rotateLeft() {
                     } else {
                         //=================TEST 2================
                         if (tryMovement(newPositions, 1, 1)) { // Move one right and down
+                            //getTspinVal();
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += 1
                                 newPositions[i][1] += 1
@@ -1567,6 +1601,7 @@ function rotateLeft() {
                         } else {
                             //=================TEST 3================
                             if (tryMovement(newPositions, -2, 0)) { // Move up two
+                                //getTspinVal();
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] -= 2
                                 }
@@ -1575,6 +1610,7 @@ function rotateLeft() {
                             } else {
                                 //=================TEST 4================
                                 if (tryMovement(newPositions, -2, 1)) { // Move up two right one
+                                    //getTspinVal();
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += -2
                                         newPositions[i][1] += 1
@@ -1597,6 +1633,7 @@ function rotateLeft() {
                     } else {
                         //=================TEST 2================
                         if (tryMovement(newPositions, -1, -1)) { // Move one left and up
+                            //getTspinVal();
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += -1
                                 newPositions[i][1] += -1
@@ -1606,6 +1643,7 @@ function rotateLeft() {
                         } else {
                             //=================TEST 3================
                             if (tryMovement(newPositions, 2, 0)) { // Move down two
+                                //getTspinVal();
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += 2
                                 }
@@ -1614,6 +1652,7 @@ function rotateLeft() {
                             } else {
                                 //=================TEST 4================
                                 if (tryMovement(newPositions, 2, -1)) { // Move down two left one
+                                    //getTspinVal();
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 2
                                         newPositions[i][1] += -1
@@ -1636,6 +1675,7 @@ function rotateLeft() {
                     } else {
                         //=================TEST 2================
                         if (tryMovement(newPositions, 1, -1)) { // Move one left and down
+                            //getTspinVal();
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += 1
                                 newPositions[i][1] += -1
@@ -1645,6 +1685,7 @@ function rotateLeft() {
                         } else {
                             //=================TEST 3================
                             if (tryMovement(newPositions, -2, 0)) { // Move up two
+                                //getTspinVal();
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] -= 2
                                 }
@@ -1653,6 +1694,7 @@ function rotateLeft() {
                             } else {
                                 //=================TEST 4================
                                 if (tryMovement(newPositions, 2, 1)) { // Move down two right one
+                                    //getTspinVal();
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 2
                                         newPositions[i][1] += 1
@@ -1681,7 +1723,7 @@ function holdPiece() {
         curTetro = newPiece;        //set the current to the new piece
     }
     //clear current piece from screen
-    droppingCells.forEach(([r, c]) => grid[r][c][2] = "white");
+    droppingCells.forEach(([r, c]) => grid[r][c] = "");
     droppingCells = [];
 
     spawnTetro(curTetro, 0);
@@ -1713,7 +1755,7 @@ function positionIsValid(TestAry) {
         if (
             x < 0 || x >= grid.length ||
             y < 0 || y >= grid[0].length ||
-            (grid[x][y][2] != "white") // Ensure new cell is empty
+            (grid[x][y] != "") // Ensure new cell is empty
         ) {
             return false;
         }
@@ -1741,13 +1783,13 @@ function drawGrid(){
         for (var j = 0; j < grid[0].length; j++) {
             stroke(0,0,0);
             strokeWeight(1);
-            if (grid[i][j][2] == "white") {
+
+            if (!grid[i][j]) {
                 fill(gridColor);
             } else {
-                fill(grid[i][j][2]);
+                fill(grid[i][j]);
             }
-            //fill("white");
-            rect(grid[i][j][0][0], grid[i][j][0][1], grid[i][j][1][0]-grid[i][j][0][0], grid[i][j][1][1]-grid[i][j][0][1]);
+            rect(j*cellWid,  i*cellHi, cellWid, cellHi); 
         }
     }
     if (droppingPiece == true) {
@@ -1760,18 +1802,18 @@ function drawGrid(){
 }
 function drawGhost() {
     for (var i = 0; i < ghostCells.length; i++) {
-        var row = ghostCells[i][0];
-        var col = ghostCells[i][1];
+        var col = ghostCells[i][0];
+        var row = ghostCells[i][1];
         fill(ghostColor);
-        rect(grid[row][col][0][0],grid[row][col][0][1],grid[row][col][1][0]-grid[row][col][0][0],grid[row][col][1][1]-grid[row][col][0][1]);
+        rect(row*cellWid,col*cellHi,cellWid, cellHi);
     }
 }
 function drawFallingPiece() {
     for (var i = 0; i < droppingCells.length; i++) {
-        var row = droppingCells[i][0];
-        var col = droppingCells[i][1];
+        var col = droppingCells[i][0];
+        var row = droppingCells[i][1];
         fill(curTetroColor);
-        rect(grid[row][col][0][0],grid[row][col][0][1],grid[row][col][1][0]-grid[row][col][0][0],grid[row][col][1][1]-grid[row][col][0][1]);
+        rect(row*cellWid,col*cellHi,cellWid, cellHi);
     }
 }
     //Right side UI
@@ -2289,7 +2331,6 @@ function highlightMenuOption(posAry) {
     var aRow = posAry[1];
     var aCol = posAry[2];
 
-    console.log(curMenuPosition);
     if (curMenuPosition[0] == 0) {
         var left = mainMenuOptions[1][aRow][aCol][0];
         var top = mainMenuOptions[1][aRow][aCol][1];
@@ -2329,8 +2370,6 @@ function highlightMenuOption(posAry) {
         } else if (ctrlType == "volSlide") {
             drawVolumeSlider(soundMenuOptions[0][aRow][aCol], btnCol, "white", volNum, left, top, width, height);
         } else if (ctrlType == "arButton") {
-            console.log(audioPacks);
-            console.log(selAudioPack);
             drawArrowButton(soundMenuOptions[0][aRow][aCol], audioPacks[selAudioPack], btnCol, "white", left, top, width, height)
         }
     }
@@ -2395,7 +2434,6 @@ function drawUIBoxWithText(dispText, bgCol, olCol, txtCol, olSize, txtSize, left
         textSize(ttxtSize);
         textWidthValue = textWidth(dispText);
         textHeightValue = ttxtSize;
-        console.log(txtSize + " | " + ttxtSize)
     }
     //draw text
     fill(txtCol);
@@ -2506,11 +2544,6 @@ function drawArrowButton(labelText, contText, bgCol, txtCol, left, top, width, h
     var contHi = height * (8/10);  
     var arrowRLeft = contLeft+contWid;
 
-    console.log(width);
-    console.log(height);
-    console.log(arrowWid);
-    console.log(arrowHi);
-    console.log(labWid);
     fill(bgCol);
     rect(left, top, width, height);
 
@@ -2685,7 +2718,6 @@ function drawControlsMenu() {
     for (var i = 4; i < controlMenuOptions[0].length; i++) {
         btnWidth = (controlMenuDims[2] - (lMarg * 4) - (lSecBuff*(controlMenuOptions[0][i].length - 1))) / (controlMenuOptions[0][i].length * 2);
         for (var j = 0; j < controlMenuOptions[0][i].length; j++) {
-            console.log(btnWidth);
             drawUIBoxWithText(labContArr[i][j], midUIColor, midUIColor, "white", 2, 40, btnLeft, btnTop, btnWidth, btnHeight);
             btnLeft = btnLeft + btnWidth + lMarg;
 
@@ -2748,31 +2780,21 @@ function drawSoundMenu() {
         btnTop = btnTop + btnHeight + tMarg;
 
     //drawUIBoxWithText("Menu sounds", lilDarkUIColor, midUIColor, "white", 5, 40, soundMenuDims[0]+lMarg, btnTop+tSecBuff, titleWidth, titleHeight);
-    console.log(btnTop);
     btnWidth = soundMenuDims[2] - (lMarg * 2);
     btnHeight = soundMenuDims[3] * (3/20);
-    console.log(btnTop);
-    console.log(btnWidth);
     for (var i = 1; i < soundMenuOptions[0].length; i++) {
-            console.log(btnWidth);
-        //if (i == 3) {
-            //drawArrowButton(soundMenuOptions[0][i][0], audioPacks[selAudioPack], lilDarkUIColor, "white", btnLeft, btnTop, btnWidth, btnHeight);
-        //} else {
-            drawUIBoxWithText(soundMenuOptions[0][i][0], lilDarkUIColor, midUIColor, "white", 2, 30, btnLeft, btnTop, btnWidth, btnHeight);
-            //drawVolumeSlider(soundMenuOptions[0][i][0], "white", audioLevels[i-1], btnLeft, btnTop, btnWidth, btnHeight);
-            
-        //}
+
+        drawUIBoxWithText(soundMenuOptions[0][i][0], lilDarkUIColor, midUIColor, "white", 2, 30, btnLeft, btnTop, btnWidth, btnHeight);
+
         soundMenuOptions[1][i][0] = [btnLeft, btnTop, btnWidth, btnHeight];
         btnTop = btnTop + btnHeight + tMarg;
     }
 
-    console.log(soundMenuOptions);
     highlightMenuOption(curMenuPosition);
 
     //drawUIBoxWithText("SOUND SETTINGS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
 }
 function drawControlEditWindow(letter) {
-    console.log(letter);
     var mRow = curMenuPosition[1];
     var mCol = curMenuPosition[2];
     var menWid = controlMenuDims[2] * (3/4);
@@ -2902,9 +2924,7 @@ function keyPressed() {
                 moveMenuCursorUp(soundMenuOptions);
             } else if (key.toUpperCase() === playControls[5][1]){
                 moveMenuCursorDown(soundMenuOptions);
-                console.log("WHATS GOING ON");
             } else if ((key.toUpperCase() === playControls[6][0])) {
-                //console.log(soundMenuOptions[0][1][0]);
                 if (curMenuPosition[1] == 0) {//top row
                     if (curMenuPosition[2] == 0) {//left button - muteMusic
                         if (musicMute == false) {
