@@ -1,8 +1,5 @@
-
 //NEEDS BETTER RANDOMIZTION
 //BETTER SCORE CALCULATION
-//SRS NEEDS LOTS OF WORK
-//WORK ON MODIFYIG CURRENT PIECE LOGIC TO NOT BE IN MAIN GRID UNTIL STOPPED -> EASIER TURNING LOGIC
 //
 //====================================================================================GLOBAL VARIABLES=================================================================================================================
 //GET CANVAS SIZE
@@ -133,6 +130,7 @@ let audioPacks = ["Classic", "Crash"]
 let selAudioPack = 0;
 let musicMute = false;
 let SFXMute = false;
+let soundLoading = true;
 let menuMusic;
 let level12Music;
 let level34Music;
@@ -144,6 +142,8 @@ let doubleClearSound;
 let tripleClearSound;
 let fourClearSound;
 let allClearSound;
+let BtoBTetrisSound;
+let deathSound;
 
 //GAME TIMING STUFF
 let frameLength = 20;                   //Starting Speed  -  Lower to speed up
@@ -203,6 +203,26 @@ let startTimer;                         //Start of Time Tracking
 let elapsedTime;                        //Time since Time Tracking began
 
 //FIRST TIME SETUP
+function preload() {
+    menuMusic = loadSound('aud/classic/menuMusic.wav');
+    level12Music = loadSound('aud/classic/level12Music.wav');
+    level34Music = loadSound('aud/classic/level34Music.wav');
+    level56Music = loadSound('aud/classic/level56Music.wav');
+    level78Music = loadSound('aud/classic/level78Music.wav');
+    level9PMusic = loadSound('aud/classic/level9PMusic.wav');
+    singleClearSound = loadSound('aud/classic/singleClearSound.wav');
+    doubleClearSound = loadSound('aud/classic/doubleClearSound.wav');
+    tripleClearSound = loadSound('aud/classic/tripleClearSound.wav');
+    fourClearSound = loadSound('aud/classic/fourClearSound.wav');
+    allClearSound = loadSound('aud/classic/allClearSound.wav');
+    soundLoading = false;
+}
+function onSoundLoaded() {
+    // Now that the sound is loaded, you can safely play it
+    if (!menuMusic.isPlaying()) {
+        menuMusic.loop();
+    }
+}
 function setup(){
     let canvas = createCanvas(canvasWidth, canvasHeight);
     canvas.parent("canvCont");
@@ -212,7 +232,8 @@ function setup(){
     drawUI();
     drawMainMenu();
     initVolume();
-}//SETUP COMPLETE
+}
+//SETUP COMPLETE
 //MAIN GAME LOOP
 function draw(){
     if (gameState == 0) {
@@ -239,28 +260,16 @@ function draw(){
         } else {
             genNewTetro();
         }
-    } else if (gameState == 2) {//game ended
+    } else if (gameState == 2) {
+        //game ended
 
     }
 
     //background(0);
 
-}//END MAIN LOOP
-//INITIALIZATION
-function preload() {
-    menuMusic = loadSound('aud/menuMusic.wav');
-    level12Music = loadSound('aud/level12Music.wav');
-    level34Music = loadSound('aud/level34Music.wav');
-    level56Music = loadSound('aud/level56Music.wav');
-    level78Music = loadSound('aud/level78Music.wav');
-    level9PMusic = loadSound('aud/level9PMusic.wav');
-    singleClearSound = loadSound('aud/singleClearSound.wav');
-    doubleClearSound = loadSound('aud/doubleClearSound.wav');
-    tripleClearSound = loadSound('aud/tripleClearSound.wav');
-    fourClearSound = loadSound('aud/fourClearSound.wav');
-    allClearSound = loadSound('aud/allClearSound.wav');
-
 }
+//END MAIN LOOP
+//INITIALIZATION
 function initGrid() {
     var tempGridItem = [];
     var tempGridRow = [];
@@ -309,7 +318,6 @@ function resetGameVars() {
 
     droppingCells = [];
     ghostCells = [];
-    rowsToCheck = [];
 
     simulClears = 0;
     allClear = false;
@@ -327,7 +335,6 @@ function resetGameVars() {
     clearsToLevel =10;
     level = 1;
     gameSpeed = 20;
-
     startTimer = 0;
     elapsedTime = 0;
 
@@ -553,10 +560,10 @@ function addScore() {
     if (simulClears != 4) {
         prevTetris = false;
     }
-    if (contHDrop > 0) {
+    if (contHDrop > 0) { //points for hard drops
         score = score + (contHDrop * 2);
     } else {
-        if (holdingDown == true) {
+        if (holdingDown == true) { //points for soft drops
             score = score + contSDrop;
         }
     }
@@ -599,9 +606,6 @@ function addScore() {
         //draw the combo
         drawClearsCombos();
         //get all clears
-        if (wasAllClear() == true) {
-            totAllClears ++;
-        }
     } else { //reset combo if no clear
         combo = 0;
     }
@@ -701,6 +705,52 @@ function decSoundPack() {
        selAudioPack--;
     }
 }
+function playNewSoundPack() {
+    switch(selAudioPack) {
+    case 0:
+        stopMusic();
+        menuMusic = loadSound('aud/classic/menuMusic.wav', onSoundLoaded);
+        level12Music = loadSound('aud/classic/level12Music.wav');
+        level34Music = loadSound('aud/classic/level34Music.wav');
+        level56Music = loadSound('aud/classic/level56Music.wav');
+        level78Music = loadSound('aud/classic/level78Music.wav');
+        level9PMusic = loadSound('aud/classic/level9PMusic.wav');
+        singleClearSound = loadSound('aud/classic/singleClearSound.wav');
+        doubleClearSound = loadSound('aud/classic/doubleClearSound.wav');
+        tripleClearSound = loadSound('aud/classic/tripleClearSound.wav');
+        fourClearSound = loadSound('aud/classic/fourClearSound.wav');
+        allClearSound = loadSound('aud/classic/allClearSound.wav');
+    break;
+    case 1:
+        stopMusic();
+        menuMusic = loadSound('aud/crash/menuMusic.wav', onSoundLoaded);
+        level12Music = loadSound('aud/crash/level12Music.wav');
+        level34Music = loadSound('aud/crash/level34Music.wav');
+        level56Music = loadSound('aud/crash/level56Music.wav');
+        level78Music = loadSound('aud/crash/level78Music.wav');
+        level9PMusic = loadSound('aud/crash/level9PMusic.wav');
+        singleClearSound = loadSound('aud/crash/singleClearSound.wav');
+        doubleClearSound = loadSound('aud/crash/doubleClearSound.wav');
+        tripleClearSound = loadSound('aud/crash/tripleClearSound.wav');
+        fourClearSound = loadSound('aud/crash/fourClearSound.wav');
+        allClearSound = loadSound('aud/crash/allClearSound.wav');
+    break;
+    default:
+        stopMusic();
+        menuMusic = loadSound('aud/classic/menuMusic.wav', onSoundLoaded);
+        level12Music = loadSound('aud/classic/level12Music.wav');
+        level34Music = loadSound('aud/classic/level34Music.wav');
+        level56Music = loadSound('aud/classic/level56Music.wav');
+        level78Music = loadSound('aud/classic/level78Music.wav');
+        level9PMusic = loadSound('aud/classic/level9PMusic.wav');
+        singleClearSound = loadSound('aud/classic/singleClearSound.wav');
+        doubleClearSound = loadSound('aud/classic/doubleClearSound.wav');
+        tripleClearSound = loadSound('aud/classic/tripleClearSound.wav');
+        fourClearSound = loadSound('aud/classic/fourClearSound.wav');
+        allClearSound = loadSound('aud/classic/allClearSound.wav');
+    break;
+    }
+}
 //-----------------------------------------------------------------------------OTHER  ---------------------------------------------------------------------------------------------
 function getClearString() {
     var outString
@@ -757,7 +807,7 @@ function wasAllClear() {
     return true;
 }
 function levelUp() {
-    clearsToLevel = 10;
+    clearsToLevel = 10 - clearsToLevel;
     level++;
     if (musicMute ==false) {
         if (level == 3) {
@@ -2823,6 +2873,7 @@ function keyPressed() {
                     }
                 } else if (curMenuPosition[1] == 3) {
                     decSoundPack();
+                    playNewSoundPack();
                     highlightMenuOption(curMenuPosition);
                 }
             } else if (key.toUpperCase() === playControls[4][1]){
@@ -2842,6 +2893,7 @@ function keyPressed() {
                     }
                 } else if (curMenuPosition[1] == 3) {
                     incSoundPack();
+                    playNewSoundPack();
                     highlightMenuOption(curMenuPosition);
                 }
             } else if (key.toUpperCase() === playControls[5][0]){
