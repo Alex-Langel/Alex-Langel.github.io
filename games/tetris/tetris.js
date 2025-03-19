@@ -12,60 +12,14 @@ let canvasWidth = container.clientWidth;
 let canvasHeight = container.clientHeight;
 
 //Grid Size
-var gridWidth = (canvasWidth/2)-1;
-var gridHeight = canvasHeight -1;
+var gridWidth = (canvasWidth/2) - 1;
+var gridHeight = canvasHeight;
 
 
 //UI POSITIONS
-const UIstartX = gridWidth + 1;
-const UIendX = canvasWidth-1;
-    //TOP UI ELEMENT -- NEXT PIECE AND HOLD PIECE
-    var nxtHldTop = 0;
-    var nxtHldLeft = UIstartX;
-    var nxtHldWid = UIendX-UIstartX + 1;
-    var nxtHldHi = (canvasHeight) * (5/20);
-        //NEXT PIECE LOCATION AND SIZE
-        var nxtGrdL = nxtHldLeft + (nxtHldWid/10);
-        var nxtGrdT = canvasHeight * (1/20);
-        var nxtGrdW = nxtHldWid * (6/20);
-        var nxtGrdH = nxtHldHi * (12/20);
-        //HOLD PIECE LOCATION AND SIZE
-        var hldGrdL = UIstartX + (nxtHldWid/2)+ ((nxtHldWid/2) * 2/5);
-        var hldGrdT = nxtGrdT;
-        var hldGrdW = nxtHldWid * (2/10);
-        var hldGrdH = nxtHldHi * (2/5);
-    //UI ELEMENT -- ADDITIONAL NEXT PIECES
-    var adlNxtL = UIstartX;
-    var adlNxtT = nxtHldHi;
-    var adlNxtW = UIendX-UIstartX + 1;
-    var adlNxtH = (canvasHeight) * (3/20);
-    //UI ELEMENT -- CLEAR STRING
-    var clrStrL = UIstartX;
-    var clrStrT = adlNxtT + adlNxtH;
-    var clrStrW = UIendX-UIstartX + 1;
-    var clrStrH = (canvasHeight) * (3/20);
-    //UI ELEMENT -- TIMER
-    var tmrLocL = UIstartX;
-    var tmrLocT = clrStrT + clrStrH;
-    var tmrLocW = UIendX-UIstartX + 1;
-    var tmrLocH = (canvasHeight) * (2/20);
-    //UI ELEMENT -- COMBO & LINES
-        //LINES
-        var curLineL = UIstartX;
-        var curLineT = (tmrLocT  + tmrLocH) + (canvasHeight) * (1/20);
-        var curLineW = (UIendX-UIstartX + 1) /3;
-        var curLineH = (canvasHeight) * (2/20);
-        var lvlLineL = curLineL + curLineW
-        var lvlLineT = curLineT;
-        var lvlLineW = curLineW
-        var lvlLineH = curLineH;
-        //COMBO
-        var comLineL = lvlLineL + lvlLineW;
-        var comLineT = lvlLineT;
-        var comLineW = lvlLineW;
-        var comLineH = lvlLineH;
-    //UI ELEMENT -- SCORE
-    //BOTTOM UI ELEMENT -- LEVEL AND SPEED
+let UIstartX = gridWidth + 1;
+let UIWidth = canvasWidth-UIstartX;
+//let UIendX = canvasWidth-1;
 
 //GRID SIZE
 const gridRows = 20;
@@ -88,24 +42,13 @@ var soundMenuDims = [mainMenuDims[0] - mainMenuDims[2] * (1/10),
                     mainMenuDims[2] * (12/10),
                     mainMenuDims[3] * (8/10)];
 
-var mMenuLeft = canvasWidth * (1/10);
-var mMenuTop = canvasHeight * (1/10);
-var mMenuWidth = canvasWidth * (8/10);
-var mMenuHeight = canvasHeight * (8/10);
 
-var mMenuLMarg = mMenuWidth * (1/20);
-var mMenuWBase = mMenuWidth - mMenuLMarg * 2;
-var titleTop = mMenuTop + mMenuHeight * (1/20)
-var titleHeight = mMenuHeight * (2/10);
-
-var mMenuTitleSpacing = mMenuHeight * (1/10);
-var mMenuButtonTopTop = titleTop + titleHeight + mMenuTitleSpacing
-var mMenuButtonHeight = mMenuHeight * (1/10);
-var mMenuButtonSpacing = mMenuHeight * (1/20);
 //Controls
 let playControls = [["A","D"],["S","W"],["E","Q"],["SHIFT","R"],["ARROWLEFT","ARROWRIGHT"],["ARROWUP","ARROWDOWN"],["ENTER","ESCAPE"]];
 var labContArr = [["Move Left", "Move Right"],["Soft Drop", "Hard Drop"], ["Rotate CCW", "Rotate CW"], ["Hold", "Restart"],["Menu Left","Menu Right"],["Menu Up", "Menu Down"], ["Next", "Back"]]
 let changingKey = "";
+let changingColor = [0,0,0];
+let chColVal = 0;
 //Menus
 let curMenuPosition = [0,0,0];
 let mainMenuOptions = [[["Play Game"], ["Settings", "Controls"], ["Display", "Sound"]],
@@ -120,15 +63,21 @@ let soundMenuOptions = [[["Mute MUSIC", "Mute SFX"],["Music Volume"],["SFX Volum
                         [[[0,0,0,0],[0,0,0,0]],[[0,0,0,0]],[[0,0,0,0]],[[0,0,0,0]]],
                         [["clButton", "clButton"],["volSlide"],["volSlide"],["arButton"]]]
 
+let displayMenuOptions =    [[["Width"],["Height"],["I", "O", "T", "L"],["J", "S", "Z","\'Ghost\'"],["Background Color", "Primary Color", "Secondary Color", "Tertiary Color"],[ "Accent Color", "Text Color"]],
+                            [[[0,0,0,0]],[[0,0,0,0]],[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0]]],
+                            [["arButton"],["arButton"], ["clButton", "clButton", "clButton", "clButton"],["clButton", "clButton", "clButton", "clButton"],["clButton", "clButton", "clButton", "clButton"],["clButton", "clButton"]]];
+
+let colorChangeMenuOptions =    [[["Red"],["Green"],["Blue"],["Back"]],
+                                [[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]],
+                                [["arButton"],["arButton"],["arButton"], ["clButton"]]];
 //COLORS
 let gridColor = [5,5,5];
 let ghostColor = [255,255,255];
-let primUIColor = [150,150,150];
-let secUIColor = [];
-let accentColor = [];
-let tertUIColor = [];
+let primUIColor = [114, 44, 171];
+let secUIColor = [0,0,0];
+let tertUIColor = [60,25,100];
+let accentColor = [171,131,235];
 let textColor = [255,255,255];
-
 let tetroColors = [[0,255,255],[255,255,0],[255,0,255],[0,0,255],[255,165,0],[0,128,0],[255,0,0]];
 
 
@@ -154,13 +103,20 @@ let level12Music;
 let level34Music;
 let level56Music;
 let level78Music;
-let level9PMusic;
+let level910Music;
+let level1112Music;
+let level1314Music;
+let level1516Music;
+let level1718Music;
+let level19PMusic;
 let singleClearSound;
 let doubleClearSound;
 let tripleClearSound;
 let fourClearSound;
 let allClearSound;
 let BtoBTetrisSound;
+let tspinSound;
+let tspinMiniSound;
 let deathSound;
 
 //GAME TIMING STUFF
@@ -170,6 +126,10 @@ const DAS_REPEAT_RATE = 5;              //Speed of continuous movement
 const areDelay = 30;                    //Delay before piece spawning
 let areCount = areDelay;                //Delay before piece spawning
 let dasCounter = 0;                     //Delayed-auto shifting
+let lockTimer = 0;                      //Counts how long until next reset over
+let lockDelay = 30;                     // 30 frames = ~0.5 seconds at 60fps
+let lockResetLimit = 10;                //Maximum number of times can be refreshed
+let lockResets = 0;                     //Counter for number of times reset
 //GAME VARIABLES                        //I SHOULD PROBABLY REDUCE THESE, THERE ARE A SHIT TON (I THINK ONLY ONE OF THEM ISN'T NECESSARY BELOW THIS POINT ACTUALLY LMAO)
 let gameState = 0;                      //0 = not started (in main menus) | 1 = Game Running | 2 = Game Over Screen
 let grid = [];                          //The grid of cells. Contain their colorString. "white" is empty.
@@ -177,7 +137,7 @@ let grid = [];                          //The grid of cells. Contain their color
 let lastKeyHeld = null;                 //last key player was holding for overlapping L and R presses
 let holdingLeft = false;                //if holding left  -  for overlapping L and R presses
 let holdingRight = false;               //if holding right  -  for overlapping L and R presses
-let holdingDown = false;
+let holdingDown = false;                //if holding down - for soft dropping
 let preJackedLeftRoto = false;          //for rotating piece if rotation pressed during are
 let preJackedRightRoto = false;         //for rotating piece if rotation pressed during are
 let gameSpeed = frameLength;            //Current speed
@@ -208,9 +168,11 @@ let totTriple = 0;                      //Tracker for total number of triple lin
 let totDouble = 0;                      //Tracker for total number of double line clears
 let totSingle = 0;                      //Tracker for total number of single line clears
 let totBtoB = 0;                        //Tracker for total number of Back To Back Tetris's
+let totTspin = 0;                       //Tracker for total number of T-Spins
+let totTSpinM = 0;                      //Tracker for total number of T-Spin mini's
 let totAllClears = 0;                   //Tracker for total number of all clears
 let allClear = false;                   //Boolean for if clear was allClear 
-let wasTSpin = 0;                       //If player hit tspin, 0 for none, 1 for normal T spin, 2 for mini
+let wasTSpin = -1;                      //If player hit tspin, 0 for none, 1 for normal T spin, 2 for mini
 let prevTetris = false;                 //Whether the last line clear was a tetris for b2b tracking
 let combo = 0;                          //Combo counter
 let maxCombo = 0;                       //Highest Combo
@@ -220,7 +182,7 @@ let clearsToLevel = 10;                 //Counter for number of clears needed to
 let level = 1;                          //Counter for current level
                                         //-----Time tracking
 let startTimer;                         //Start of Time Tracking
-let elapsedTime;                        //Time since Time Tracking began
+let elapsedTime = 0;                        //Time since Time Tracking began
 
 //FIRST TIME SETUP
 function preload() {
@@ -229,12 +191,21 @@ function preload() {
     level34Music = loadSound('aud/classic/level34Music.wav');
     level56Music = loadSound('aud/classic/level56Music.wav');
     level78Music = loadSound('aud/classic/level78Music.wav');
-    level9PMusic = loadSound('aud/classic/level9PMusic.wav');
+    level910Music = loadSound('aud/classic/level910Music.wav');
+    level1112Music = loadSound('aud/classic/level1112Music.wav');
+    level1314Music = loadSound('aud/classic/level1314Music.wav');
+    level1516Music = loadSound('aud/classic/level1516Music.wav');
+    level1718Music = loadSound('aud/classic/level1718Music.wav');
+    level19PMusic = loadSound('aud/classic/level19PMusic.wav');
     singleClearSound = loadSound('aud/classic/singleClearSound.wav');
     doubleClearSound = loadSound('aud/classic/doubleClearSound.wav');
     tripleClearSound = loadSound('aud/classic/tripleClearSound.wav');
     fourClearSound = loadSound('aud/classic/fourClearSound.wav');
+    BtoBTetrisSound = loadSound('aud/classic/BtoBTetrisSound.wav');
     allClearSound = loadSound('aud/classic/allClearSound.wav');
+    tspinSound = loadSound('aud/classic/tspinSound.wav');
+    tspinMiniSound = loadSound('aud/classic/tspinMiniSound.wav');
+    deathSound = loadSound('aud/classic/deathSound.wav');
     soundLoading = false;
 }
 function onSoundLoaded() {
@@ -244,6 +215,8 @@ function onSoundLoaded() {
     }
 }
 function setup(){
+    getStartingDims();
+    resetDims();
     let canvas = createCanvas(canvasWidth, canvasHeight);
     canvas.parent("canvCont");
     grid = initGrid();
@@ -265,12 +238,27 @@ function draw(){
         if (droppingPiece == true) {//if a piece is dropping
             if (frameCount % effSpeed == 0) {//once in effSpeed frames
                 if (onGround(droppingCells) ==  true) {//check for ground
-                    addCellsToGrid(droppingCells);
-                    areCount = frameCount + areDelay;
-                    clearRows();
-                    addScore();
+                    if (lockTimer === 0) {
+                        lockTimer = frameCount; // Start lock delay timer
+                        
+                    }
+                    
+                    if (frameCount - lockTimer >= lockDelay) {
+                        // Lock the piece after lockDelay frames
+                        if (wasTSpin == 0) {
+                            getTspinVal();
+                        }
+                        addCellsToGrid(droppingCells);
+                        areCount = frameCount + areDelay;
+                        clearRows();
+                        addScore();
+                        droppingPiece = false;
+                        lockTimer = 0;
+                        lockResets = 0; // Reset lock counter
+                    }
                 } else {
                     moveDown();
+                    
                     if (holdingDown == true) {
                         contSDrop++;
                     }
@@ -291,30 +279,16 @@ function draw(){
 //END MAIN LOOP
 //INITIALIZATION
 function initGrid() {
-    var tempGridItem = [];
     var tempGridRow = [];
     var tempGrid = [];
     for (var j = 1; j < gridRows+1; j++){
         for (var i = 1; i < gridCols+1; i++){
-        
-                tempGridItem = "";
-                var cellWidth = (gridWidth + 1) / gridCols;
-                var cellHeight = (gridHeight + 1) / gridRows;
-                var rightCoord = (cellWidth * i) - 1;
-                var bottomCoord = (cellHeight * j) - 1;
-                var leftCoord = rightCoord - cellWidth + 1;
-                var topCoord = bottomCoord - cellHeight + 1;
-
-
-                //tempGridItem = [[leftCoord, topCoord], [rightCoord, bottomCoord], ["white"]];  //fix color
-
-                tempGridRow.push(tempGridItem);
+                tempGridRow.push("");
         }
         tempGrid.push(tempGridRow);
         tempGridRow = [];
     }
     return tempGrid;
-
 }
 function initBags() {
     curBag = [...fullBag];
@@ -361,8 +335,61 @@ function resetGameVars() {
     elapsedTime = 0;
 
 }
+function getStartingDims() {
+    let windowWidth = container.clientWidth;
+    let windowHeight = container.clientHeight;
+    let newWidth = (windowWidth);
+    let newHeight = (windowHeight);
+    //let newWidth = largestMultipleOf100(windowWidth);
+    //let newHeight = largestMultipleOf100(windowHeight);
+    newHeight = Math.min(newHeight, newWidth);
+    newWidth = Math.min(newHeight, newWidth);
+    console.log(newHeight);
+    canvasHeight = Math.max(newHeight, 200);
+    canvasWidth = Math.max(newWidth, 200);
+}
+function resetDims() {
+    resizeCanvas(canvasWidth, canvasHeight);
+    gridWidth = (canvasWidth/2) - 1;
+    gridHeight = canvasHeight;
+    UIstartX = gridWidth + 1;
+    UIWidth = canvasWidth-UIstartX;
+    cellWid = gridWidth / gridCols;
+    cellHi = gridHeight / gridRows;
+    resizeCanvas(canvasWidth, canvasHeight);
+    drawGrid();
+    drawUI();
+
+    mainMenuDims =  [canvasWidth * (1/10), 
+        canvasHeight * (1/10), 
+        canvasWidth * (8/10), 
+        canvasHeight * (8/10)];
+    controlMenuDims =   [mainMenuDims[0] + mainMenuDims[2] * (1/10), 
+            mainMenuDims[1] - mainMenuDims[3] * (1/10), 
+            mainMenuDims[2] * (8/10),
+            mainMenuDims[3] * (12/10)];
+
+    soundMenuDims = [mainMenuDims[0] - mainMenuDims[2] * (1/10), 
+        mainMenuDims[1] + mainMenuDims[3] * (1/10), 
+        mainMenuDims[2] * (12/10),
+        mainMenuDims[3] * (8/10)];
+
+
+    if (gameState == 0) {
+        if (curMenuPosition[0] == 0) {
+            drawMainMenu();
+        } else if (curMenuPosition[0] == 3) {
+            drawMainMenu();
+            drawDisplayMenu();
+        }
+    }
+
+}
 //BASIC GAME LOGIC
 function beginGame() {
+    if (deathSound.isPlaying()) {
+        deathSound.stop();
+    }
     resetGameVars();
     grid = initGrid();
     initBags();
@@ -379,8 +406,8 @@ function genNewTetro() {
     var preSpawnRot = 0;
     if (pieceGend == false) {
         curTetro = getFromBag();
-        //curTetro = 1;
-        drawNextPiece(curBag[0]);
+        //curTetro = 3;
+        drawNextPiece();
         drawAdtlNext();
         pieceGend = true;
     } else {
@@ -407,7 +434,7 @@ function spawnTetro(letter, rotDir) {
     
     switch (letter) {
     case 1: 
-    curTetroColor = "aqua";
+    curTetroColor = tetroColors[0];
         if (grid[0][5] == "" && grid[1][5] == "" && grid[2][5] == ""  && grid[3][5] == "" ) { //if there is room for tetronimo
             droppingCells = [[0,5],[1,5],[2,5],[3,5]];
             droppingPiece = true;
@@ -426,7 +453,7 @@ function spawnTetro(letter, rotDir) {
         }
         break;
     case 2:
-        curTetroColor = "yellow";
+        curTetroColor = tetroColors[1];
         if (grid[0][4] == "" && grid[0][5] == "" && grid[1][4] == "" && grid[1][5] == "") { //if there is room for tetronimo
             droppingCells = [[0,4],[0,5],[1,4],[1,5]];
             droppingPiece = true;
@@ -440,7 +467,7 @@ function spawnTetro(letter, rotDir) {
         }
         break;
     case 3:
-        curTetroColor = "magenta";
+        curTetroColor = tetroColors[2];
         if (grid[0][4] == "" && grid[0][5] == "" && grid[0][6] == ""  && grid[1][5] == "" ) { //if there is room for tetronimo
             droppingCells = [[0,4],[0,6],[0,5],[1,5]];
             droppingPiece = true;
@@ -453,7 +480,7 @@ function spawnTetro(letter, rotDir) {
         }
         break;
     case 4:
-        curTetroColor = "blue";
+        curTetroColor = tetroColors[3];
         if (grid[0][5] == "" && grid[1][5] == "" && grid[2][5] == ""  && grid[2][4] == "" ) { //if there is room for tetronimo
             droppingCells = [[0,5],[2,5],[1,5],[2,4]];
             droppingPiece = true;
@@ -471,7 +498,7 @@ function spawnTetro(letter, rotDir) {
         }
         break;
     case 5:
-        curTetroColor = "orange";
+        curTetroColor = tetroColors[4];
         if (grid[0][5] == "" && grid[1][5] == "" && grid[2][5] == ""  && grid[2][6] == "" ) { //if there is room for tetronimo
             droppingCells = [[0,5],[2,5],[1,5],[2,6]];
             droppingPiece = true;
@@ -489,7 +516,7 @@ function spawnTetro(letter, rotDir) {
         }
         break;
     case 6:
-        curTetroColor = "green";
+        curTetroColor = tetroColors[5];
         if (grid[0][5] == "" && grid[1][5] == "" && grid[0][6] == ""  && grid[1][4] == "" ) { //if there is room for tetronimo
             droppingCells = [[0,5],[0,6],[1,5],[1,4]];
             droppingPiece = true;
@@ -503,7 +530,7 @@ function spawnTetro(letter, rotDir) {
         }
         break;
     case 7:
-        curTetroColor = "red";
+        curTetroColor = tetroColors[6];
         if (grid[0][5] == "" && grid[1][5] == "" && grid[1][6] == ""  && grid[0][4] == "" ) { //if there is room for tetronimo
             droppingCells = [[0,5],[1,6],[1,5],[0,4]];
             droppingPiece = true;
@@ -595,23 +622,64 @@ function addScore() {
 
     //single clear
     if (simulClears == 1) {
-        totSingle++;
-        score = score + 100;
+        if (wasTSpin == 1) {
+            if (!tspinSound.isPlaying()) {
+                tspinSound.play();
+            }
+        } else if (wasTSpin == 2) {
+            if (!tspinMiniSound.isPlaying()) {
+                tspinMiniSound.play();
+            }
+        } else {
+            totSingle++;
+            score = score + 100;
+        }
     //double clear
     } else if (simulClears == 2) {
-        score = score + 300;
+        if (wasTSpin == 1) {
+            if (!tspinSound.isPlaying()) {
+                tspinSound.play();
+            }
+        } else if (wasTSpin == 2) {
+            if (!tspinMiniSound.isPlaying()) {
+                tspinMiniSound.play();
+            }
+        } else {
+            score = score + 300;
+            totDouble++;
+        }
     //triple clear
     } else if (simulClears == 3) {
-        score = score + 500;
-        totTriple++;
+        if (!tspinSound.isPlaying()) {
+            tspinSound.play();
+        }
+        if (wasTSpin == 1) {
+            
+        } else {
+            score = score + 500;
+            totTriple++;
+        }
     //tetris
     } else if (simulClears == 4) {
         if (prevTetris == true) {
             totBtoB ++;
+            if (!BtoBTetrisSound.isPlaying()) {
+                BtoBTetrisSound.play();
+            }
         }
         prevTetris = true;
         totTetris++;
         score = score + 800;
+    } else if (simulClears == 0) {
+        if (wasTSpin == 1) {
+            if (!tspinSound.isPlaying()) {
+                tspinSound.play();
+            }
+        } else if (wasTSpin == 2) {
+            if (!tspinMiniSound.isPlaying()) {
+                tspinMiniSound.play();
+            }
+        }
     }
     //if any lines cleared
     if (simulClears > 0) {
@@ -662,8 +730,11 @@ function endGame(){
     droppingCells = [];
     drawScoreboard();
     stopMusic();
-    
+    if (!deathSound.isPlaying()) {
+        deathSound.play();
+    }
 }
+//--------------------------------------------------------------------------AUDIO---------------------------------------------------------------------------------------------------
 function stopMusic() {
     if (menuMusic.isPlaying()) {
         menuMusic.stop(); // Stop the music
@@ -680,8 +751,23 @@ function stopMusic() {
     if (level78Music.isPlaying()) {
         level78Music.stop(); // Stop the music
     }
-    if (level9PMusic.isPlaying()) {
-        level9PMusic.stop(); // Stop the music
+    if (level910Music.isPlaying()) {
+        level910Music.stop(); // Stop the music
+    }
+    if (level1112Music.isPlaying()) {
+        level1112Music.stop(); // Stop the music
+    }
+    if (level1314Music.isPlaying()) {
+        level1314Music.stop(); // Stop the music
+    }
+    if (level1516Music.isPlaying()) {
+        level1516Music.stop(); // Stop the music
+    }
+    if (level1718Music.isPlaying()) {
+        level1718Music.stop(); // Stop the music
+    }
+    if (level19PMusic.isPlaying()) {
+        level19PMusicMusic.stop(); // Stop the music
     }
 }
 function initVolume() {
@@ -690,12 +776,21 @@ function initVolume() {
     level34Music.setVolume(0.5);
     level56Music.setVolume(0.5);
     level78Music.setVolume(0.5);
-    level9PMusic.setVolume(0.5);
+    level910Music.setVolume(0.5);
+    level1112Music.setVolume(0.5);
+    level1314Music.setVolume(0.5);
+    level1516Music.setVolume(0.5);
+    level1718Music.setVolume(0.5);
+    level19PMusic.setVolume(0.5);
     singleClearSound.setVolume(0.5);
     doubleClearSound.setVolume(0.5);
     tripleClearSound.setVolume(0.5);
     fourClearSound.setVolume(0.5);
+    BtoBTetrisSound.setVolume(0.5)
     allClearSound.setVolume(0.5);
+    deathSound.setVolume(0.5);
+    tspinSound.setVolume(0.5);
+    tspinMiniSound.setVolume(0.5);
 }
 function setMusicVolume(newVol) {
     menuMusic.setVolume(newVol/100);
@@ -703,7 +798,13 @@ function setMusicVolume(newVol) {
     level34Music.setVolume(newVol/100);
     level56Music.setVolume(newVol/100);
     level78Music.setVolume(newVol/100);
-    level9PMusic.setVolume(newVol/100);
+    level910Music.setVolume(newVol/100);
+    level1112Music.setVolume(newVol/100);
+    level1314Music.setVolume(newVol/100);
+    level1516Music.setVolume(newVol/100);
+    level1718Music.setVolume(newVol/100);
+    level19PMusic.setVolume(newVol/100);
+
 }
 function setSFXVolume(newVol) {
     singleClearSound.setVolume(newVol/100);
@@ -737,12 +838,21 @@ function playNewSoundPack() {
         level34Music = loadSound('aud/classic/level34Music.wav');
         level56Music = loadSound('aud/classic/level56Music.wav');
         level78Music = loadSound('aud/classic/level78Music.wav');
-        level9PMusic = loadSound('aud/classic/level9PMusic.wav');
+        level910Music = loadSound('aud/classic/level910Music.wav');
+        level1112Music = loadSound('aud/classic/level1112Music.wav');
+        level1314Music = loadSound('aud/classic/level1314Music.wav');
+        level1516Music = loadSound('aud/classic/level1516Music.wav');
+        level1718Music = loadSound('aud/classic/level1718Music.wav');
+        level19PMusic = loadSound('aud/classic/level19PMusic.wav');
         singleClearSound = loadSound('aud/classic/singleClearSound.wav');
         doubleClearSound = loadSound('aud/classic/doubleClearSound.wav');
         tripleClearSound = loadSound('aud/classic/tripleClearSound.wav');
         fourClearSound = loadSound('aud/classic/fourClearSound.wav');
+        BtoBTetrisSound = loadSound('aud/classic/BtoBTetrisSound.wav');
         allClearSound = loadSound('aud/classic/allClearSound.wav');
+        tspinSound = loadSound('aud/classic/tspinSound.wav');
+        tspinMiniSound = loadSound('aud/classic/tspinMiniSound.wav');
+        deathSound = loadSound('aud/classic/deathSound.wav');
     break;
     case 1:
         stopMusic();
@@ -751,12 +861,21 @@ function playNewSoundPack() {
         level34Music = loadSound('aud/crash/level34Music.wav');
         level56Music = loadSound('aud/crash/level56Music.wav');
         level78Music = loadSound('aud/crash/level78Music.wav');
-        level9PMusic = loadSound('aud/crash/level9PMusic.wav');
+        level910Music = loadSound('aud/crash/level910Music.wav');
+        level1112Music = loadSound('aud/classic/level1112Music.wav');
+        level1314Music = loadSound('aud/classic/level1314Music.wav');
+        level1516Music = loadSound('aud/classic/level1516Music.wav');
+        level1718Music = loadSound('aud/classic/level1718Music.wav');
+        level19PMusic = loadSound('aud/classic/level19PMusic.wav');
         singleClearSound = loadSound('aud/crash/singleClearSound.wav');
         doubleClearSound = loadSound('aud/crash/doubleClearSound.wav');
         tripleClearSound = loadSound('aud/crash/tripleClearSound.wav');
         fourClearSound = loadSound('aud/crash/fourClearSound.wav');
+        BtoBTetrisSound = loadSound('aud/crash/BtoBTetrisSound.wav');
         allClearSound = loadSound('aud/crash/allClearSound.wav');
+        tspinSound = loadSound('aud/crash/tspinSound.wav');
+        tspinMiniSound = loadSound('aud/crash/tspinMiniSound.wav');
+        deathSound = loadSound('aud/crash/deathSound.wav');
     break;
     default:
         stopMusic();
@@ -765,12 +884,21 @@ function playNewSoundPack() {
         level34Music = loadSound('aud/classic/level34Music.wav');
         level56Music = loadSound('aud/classic/level56Music.wav');
         level78Music = loadSound('aud/classic/level78Music.wav');
-        level9PMusic = loadSound('aud/classic/level9PMusic.wav');
+        level910Music = loadSound('aud/classic/level910Music.wav');
+        level1112Music = loadSound('aud/classic/level1112Music.wav');
+        level1314Music = loadSound('aud/classic/level1314Music.wav');
+        level1516Music = loadSound('aud/classic/level1516Music.wav');
+        level1718Music = loadSound('aud/classic/level1718Music.wav');
+        level19PMusic = loadSound('aud/classic/level19PMusic.wav');
         singleClearSound = loadSound('aud/classic/singleClearSound.wav');
         doubleClearSound = loadSound('aud/classic/doubleClearSound.wav');
         tripleClearSound = loadSound('aud/classic/tripleClearSound.wav');
         fourClearSound = loadSound('aud/classic/fourClearSound.wav');
+        BtoBTetrisSound = loadSound('aud/classic/BtoBTetrisSound.wav');
         allClearSound = loadSound('aud/classic/allClearSound.wav');
+        tspinSound = loadSound('aud/classic/tspinSound.wav');
+        tspinMiniSound = loadSound('aud/classic/tspinMiniSound.wav');
+        deathSound = loadSound('aud/classic/deathSound.wav');
     break;
     }
 }
@@ -816,18 +944,70 @@ function getClearString() {
     }
     return outString;
 }
-function getTspinVal(rotationState) {
-    //check all 4 corners
-        //Tspin
-        //check 2 corners based on rotation state
-            //Mini if so
-        //
-    //
+function getTspinVal() {
+        var cornerCount = 0;
+
+        if (grid[droppingCells[2][0]+1][droppingCells[2][1]+1] != "" || droppingCells[2][0]+1 == gridRows || droppingCells[2][1]+1 == gridCols) {
+            cornerCount++;
+        }
+        if (grid[droppingCells[2][0]-1][droppingCells[2][1]+1] != "" || droppingCells[2][0]-1 == 0 || droppingCells[2][1]+1 == gridCols) {
+            cornerCount++;
+        }
+        if (grid[droppingCells[2][0]+1][droppingCells[2][1]-1] != "" || droppingCells[2][0]+1 == gridRows || droppingCells[2][1]-1 == 0) {
+            cornerCount++;
+        }
+        if (grid[droppingCells[2][0]-1][droppingCells[2][1]-1] != "" || droppingCells[2][0]-1 == 0 || droppingCells[2][1]-1 == 0) {
+            cornerCount++;
+        }
+        if (cornerCount > 2) {
+            cornerCount = 0;
+            wasTSpin = 1;
+            switch(curTetroRotationState) {
+                case 0:
+                    if (grid[droppingCells[2][0]-1][droppingCells[2][1]+1] != "" || droppingCells[2][0]+1 == gridRows || droppingCells[2][1]+1 == gridCols) {
+                        cornerCount++;
+                    }
+                    if (grid[droppingCells[2][0]-1][droppingCells[2][1]-1] != "" || droppingCells[2][0]-1 == 0 || droppingCells[2][1]-1 == 0) {
+                        cornerCount++;
+                    }
+                break;
+                case 1:
+                    if (grid[droppingCells[2][0]+1][droppingCells[2][1]+1] != "" || droppingCells[2][0]+1 == gridRows || droppingCells[2][1]+1 == gridCols) {
+                        cornerCount++;
+                    }
+                    if (grid[droppingCells[2][0]-1][droppingCells[2][1]+1] != "" || droppingCells[2][0]-1 == 0 || droppingCells[2][1]+1 == gridCols) {
+                        cornerCount++;
+                    }
+                break;
+                case 2:
+                    if (grid[droppingCells[2][0]+1][droppingCells[2][1]+1] != "" || droppingCells[2][0]+1 == gridRows || droppingCells[2][1]+1 == gridCols) {
+                        cornerCount++;
+                    }
+                    if (grid[droppingCells[2][0]+1][droppingCells[2][1]-1] != "" || droppingCells[2][0]+1 == gridRows || droppingCells[2][1]-1 == 0) {
+                        cornerCount++;
+                    }
+                break;
+                case 3:
+                    if (grid[droppingCells[2][0]+1][droppingCells[2][1]-1] != "" || droppingCells[2][0]+1 == gridRows || droppingCells[2][1]-1 == 0) {
+                        cornerCount++;
+                    }
+                    if (grid[droppingCells[2][0]-1][droppingCells[2][1]-1] != "" || droppingCells[2][0]-1 == 0 || droppingCells[2][1]-1 == 0) {
+                        cornerCount++;
+                    }
+                break;
+            }
+            if (cornerCount != 2) {
+                wasTSpin = 2;
+            }
+        }
+        else {
+            wasTSpin = -1;
+        }
 }
 function wasAllClear() {
     for (let i = 0; i < grid.length; i++) {  // Outer loop for each row
         for (let j = 0; j < grid[i].length; j++) {  // Inner loop for each element in the row
-            if (grid[i][j][2] != "white") {
+            if (grid[i][j] != "") {
                 return false;
             }
         }
@@ -869,8 +1049,48 @@ function levelUp() {
             if (level78Music.isPlaying()) {
                 level78Music.stop(); // Stop the music
             }
-            if (!level9PMusic.isPlaying()) {
-                level9PMusic.loop(); // Start and loop the music
+            if (!level910Music.isPlaying()) {
+                level910Music.loop(); // Start and loop the music
+            }
+        }
+        if (level == 11) {
+            if (level910Music.isPlaying()) {
+                level910Music.stop(); // Stop the music
+            }
+            if (!level1112Music.isPlaying()) {
+                level1112Music.loop(); // Start and loop the music
+            }
+        }
+        if (level == 13) {
+            if (level1112Music.isPlaying()) {
+                level1112Music.stop(); // Stop the music
+            }
+            if (!level1314Music.isPlaying()) {
+                level1314Music.loop(); // Start and loop the music
+            }
+        }
+        if (level == 15) {
+            if (level1314Music.isPlaying()) {
+                level1314Music.stop(); // Stop the music
+            }
+            if (!level1516Music.isPlaying()) {
+                level1516Music.loop(); // Start and loop the music
+            }
+        }
+        if (level == 17) {
+            if (level1516Music.isPlaying()) {
+                level1516Music.stop(); // Stop the music
+            }
+            if (!level1718Music.isPlaying()) {
+                level1718Music.loop(); // Start and loop the music
+            }
+        }
+        if (level == 9) {
+            if (level1718Music.isPlaying()) {
+                level1718Music.stop(); // Stop the music
+            }
+            if (!level19PMusic.isPlaying()) {
+                level19PMusic.loop(); // Start and loop the music
             }
         }
     }
@@ -903,35 +1123,73 @@ function deleteAndPushRow(rowNum) {
         grid[0][j] = "";
     }
 }
+function updateColors() {
+    if (chColVal != 0) {
+        switch (chColVal) {
+            case 1:
+                curTetro[0] = changingColor;
+            break;
+            case 2:
+                curTetro[1] = changingColor;
+            break;
+            case 3:
+                curTetro[2] = changingColor;
+            break;
+            case 4:
+                curTetro[3] = changingColor;
+            break;
+            case 5:
+                curTetro[4] = changingColor;
+            break;
+            case 6:
+                curTetro[5] = changingColor;
+            break;
+            case 7:
+                curTetro[6] = changingColor;
+            break;
+            case 8:
+                ghostColor = changingColor;
+            break;
+            case 9:
+                gridColor = changingColor;
+            break;
+            case 10:
+                primUIColor = changingColor;
+            break;
+            case 11:
+                secUIColor = changingColor;
+            break;
+            case 12:
+                tertUIColor = changingColor;
+            break;
+            case 13:
+                accentColor = changingColor;
+            break;
+            case 14:
+                textColor = changingColor;
+            break;
+        }
+        chColVal = 0;
+    }
+}
 //-----------------------------------------------------------------------------MOVEMENT---------------------------------------------------------------------------------------------
 function onGround(cells) {
     for (let i = 0; i < 4; i++) {
-        let row = cells[i][0];
         let col = cells[i][1];
+        let row = cells[i][0];
         // If any part is at the bottom of the entire grid
         if (row >= gridRows - 1) {
             return true;
         }
         // Check if the next row is occupied
-        let nextCellColor = grid[row + 1][col];
-        if (nextCellColor != "") {
-            let isPartOfTetromino = false;
-            // Make sure it's not falsely detecting its own cells
-            //for (let j = 0; j < 4; j++) {
-                //if (droppingCells[j][0] === row + 1 && droppingCells[j][1] === col) {
-                    //isPartOfTetromino = true;
-                    //break;
-                //}
-            //}
-            if (!isPartOfTetromino) {
-                return true;
-            }
+        if (grid[row + 1][col] != "") {
+            return true;
         }
     }
     return false;
 }
 function moveDown() {
-    wasTSpin = 0;
+    wasTSpin = -1;
     for (let i = 0; i < 4; i++) {
         droppingCells[i][0] += 1; // Move left
     }
@@ -941,7 +1199,8 @@ function moveLeft() {
     if (droppingPiece && gameState == 1) {
         if (tryMovement(droppingCells, 0, -1) == true) {
             console.log("Moving Left!");
-            wasTSpin = 0;
+            wasTSpin = -1;
+            resetLockDelay();
             for (let i = 0; i < 4; i++) {
                 droppingCells[i][1] += -1; // Move left
             }
@@ -952,8 +1211,8 @@ function moveLeft() {
 function moveRight() {
     if (droppingPiece && gameState == 1) {
         if (tryMovement(droppingCells, 0, 1) == true) {
-            console.log("Moving Right!");
-            wasTSpin = 0;
+            wasTSpin = -1;
+            resetLockDelay();
             for (let i = 0; i < 4; i++) {
                 droppingCells[i][1] += 1; // Move left
             }
@@ -965,6 +1224,7 @@ function rotateRight() {
     const pivot = droppingCells[2]; // Use the 3rd cell as pivot
     let newPositions = [];
     let collDet = false;
+    let successfulRotation = false;
     if (curTetro == 2) {
         return; //o does not rotate
     }
@@ -1004,6 +1264,10 @@ function rotateRight() {
         }
         // Apply new positions
         updateCurrentPosition(newPositions);
+        if (curTetro == 3) {
+            wasTSpin = 0
+        }
+        successfulRotation = true;
     } else {
         if (curTetro == 1) {
             //do weird shit for line piece
@@ -1176,6 +1440,10 @@ function rotateRight() {
                         }
                         updateCurrentPosition(newPositions);
                         curTetroRotationState = 1;
+                        if (curTetro == 3) {
+                            wasTSpin = 0
+                        }
+                        successfulRotation = true;
                     } else {
                         //=================TEST 2================
                         if (tryMovement(newPositions, -1, -1)) { // Move one left and up
@@ -1185,6 +1453,10 @@ function rotateRight() {
                             }
                             updateCurrentPosition(newPositions);
                             curTetroRotationState = 1;
+                            if (curTetro == 3) {
+                                wasTSpin = 0
+                            }
+                            successfulRotation = true;
                         } else {
                             //=================TEST 3================
                             if (tryMovement(newPositions, 2, 0)) { // Move down two
@@ -1193,6 +1465,10 @@ function rotateRight() {
                                 }
                                 updateCurrentPosition(newPositions);
                                 curTetroRotationState = 1;
+                                if (curTetro == 3) {
+                                    wasTSpin = 0
+                                }
+                                successfulRotation = true;
                             } else {
                                 //=================TEST 4================
                                 if (tryMovement(newPositions, 2, -1)) { // Move down two left one
@@ -1202,6 +1478,10 @@ function rotateRight() {
                                     }
                                     updateCurrentPosition(newPositions);
                                     curTetroRotationState = 1;
+                                    if (curTetro == 3) {
+                                        wasTSpin = 0
+                                    }
+                                    successfulRotation = true;
                                 }
                             }
                         }
@@ -1215,6 +1495,10 @@ function rotateRight() {
                         }
                         updateCurrentPosition(newPositions);
                         curTetroRotationState = 2;
+                        if (curTetro == 3) {
+                            wasTSpin = 0
+                        }
+                        successfulRotation = true;
                     } else {
                         //=================TEST 2================
                         if (tryMovement(newPositions, 1, 1)) { // Move one right and down
@@ -1224,6 +1508,10 @@ function rotateRight() {
                             }
                             updateCurrentPosition(newPositions);
                             curTetroRotationState = 2;
+                            if (curTetro == 3) {
+                                wasTSpin = 0
+                            }
+                            successfulRotation = true;
                         } else {
                             //=================TEST 3================
                             if (tryMovement(newPositions, -2, 0)) { // Move up two
@@ -1232,6 +1520,10 @@ function rotateRight() {
                                 }
                                 updateCurrentPosition(newPositions);
                                 curTetroRotationState = 2;
+                                if (curTetro == 3) {
+                                    wasTSpin = 0
+                                }
+                                successfulRotation = true;
                             } else {
                                 //=================TEST 4================
                                 if (tryMovement(newPositions, -2, 1)) { // Move up two right one
@@ -1241,6 +1533,10 @@ function rotateRight() {
                                     }
                                     updateCurrentPosition(newPositions);
                                     curTetroRotationState = 2;
+                                    if (curTetro == 3) {
+                                        wasTSpin = 0
+                                    }
+                                    successfulRotation = true;
                                 }
                             }
                         }
@@ -1254,6 +1550,10 @@ function rotateRight() {
                         }
                         updateCurrentPosition(newPositions);
                         curTetroRotationState = 3;
+                        if (curTetro == 3) {
+                            wasTSpin = 0
+                        }
+                        successfulRotation = true;
                     } else {
                         //=================TEST 2================
                         if (tryMovement(newPositions, -1, 1)) { // Move one right and up
@@ -1263,6 +1563,10 @@ function rotateRight() {
                             }
                             updateCurrentPosition(newPositions);
                             curTetroRotationState = 3;
+                            if (curTetro == 3) {
+                                wasTSpin = 0
+                            }
+                            successfulRotation = true;
                         } else {
                             //=================TEST 3================
                             if (tryMovement(newPositions, 2, 0)) { // Move down two
@@ -1271,6 +1575,10 @@ function rotateRight() {
                                 }
                                 updateCurrentPosition(newPositions);
                                 curTetroRotationState = 3;
+                                if (curTetro == 3) {
+                                    wasTSpin = 0
+                                }
+                                successfulRotation = true;
                             } else {
                                 //=================TEST 4================
                                 if (tryMovement(newPositions, 2, 1)) { // Move down two right one
@@ -1280,6 +1588,10 @@ function rotateRight() {
                                     }
                                     updateCurrentPosition(newPositions);
                                     curTetroRotationState = 3;
+                                    if (curTetro == 3) {
+                                        wasTSpin = 0
+                                    }
+                                    successfulRotation = true;
                                 }
                             }
                         }
@@ -1293,6 +1605,10 @@ function rotateRight() {
                         }
                         updateCurrentPosition(newPositions);
                         curTetroRotationState = 0;
+                        if (curTetro == 3) {
+                            wasTSpin = 0
+                        }
+                        successfulRotation = true;
                     } else {
                         //=================TEST 2================
                         if (tryMovement(newPositions, 1, -1)) { // Move one left and down
@@ -1302,6 +1618,10 @@ function rotateRight() {
                             }
                             updateCurrentPosition(newPositions);
                             curTetroRotationState = 0;
+                            if (curTetro == 3) {
+                                wasTSpin = 0
+                            }
+                            successfulRotation = true;
                         } else {
                             //=================TEST 3================
                             if (tryMovement(newPositions, -2, 0)) { // Move up two
@@ -1310,6 +1630,10 @@ function rotateRight() {
                                 }
                                 updateCurrentPosition(newPositions);
                                 curTetroRotationState = 0;
+                                if (curTetro == 3) {
+                                    wasTSpin = 0
+                                }
+                                successfulRotation = true;
                             } else {
                                 //=================TEST 4================
                                 if (tryMovement(newPositions, 2, 1)) { // Move down two right one
@@ -1319,6 +1643,10 @@ function rotateRight() {
                                     }
                                     updateCurrentPosition(newPositions);
                                     curTetroRotationState = 0;
+                                    if (curTetro == 3) {
+                                        wasTSpin = 0
+                                    }
+                                    successfulRotation = true;
                                 }
                             }
                         }
@@ -1327,11 +1655,15 @@ function rotateRight() {
             }
         }
     }
+    if (successfulRotation == true) {
+        resetLockDelay();
+    }
 }
 function rotateLeft() {
     let pivot = droppingCells[2]; // Use the 3rd cell as pivot
     let newPositions = [];
     let collDet = false;
+    let successfulRotation = false;
     if (curTetro == 2) {
         return;
     }
@@ -1374,8 +1706,11 @@ function rotateLeft() {
         }
         // Apply new positions
         updateCurrentPosition(newPositions);
+        wasTSpin = 0;
+        successfulRotation = true;
     } else {
         if (curTetro == 1) {
+            console.log("KILL MYSELF, WHAT");
             //do weird shit for line piece
             switch (curTetroRotationState) {
                 case 0:
@@ -1546,35 +1881,48 @@ function rotateLeft() {
                         }
                         updateCurrentPosition(newPositions);
                         curTetroRotationState = 3;
+                        if (curTetro == 3) {
+                            wasTSpin = 0
+                        }
+                        successfulRotation = true;
                     } else {
                         //=================TEST 2================
                         if (tryMovement(newPositions, -1, 1)) { // Move one right and up
-                            //getTspinVal();
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += -1
                                 newPositions[i][1] += 1
                             }
                             updateCurrentPosition(newPositions);
                             curTetroRotationState = 3;
+                            if (curTetro == 3) {
+                                wasTSpin = 0
+                            }
+                            successfulRotation = true;
                         } else {
                             //=================TEST 3================
                             if (tryMovement(newPositions, 2, 0)) { // Move down two
-                                //getTspinVal();
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += 2
                                 }
                                 updateCurrentPosition(newPositions);
                                 curTetroRotationState = 3;
+                                if (curTetro == 3) {
+                                    wasTSpin = 0
+                                }
+                                successfulRotation = true;
                             } else {
                                 //=================TEST 4================
                                 if (tryMovement(newPositions, 2, 1)) { // Move down two right one
-                                    //getTspinVal();
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 2
                                         newPositions[i][1] += 1
                                     }
                                     updateCurrentPosition(newPositions);
                                     curTetroRotationState = 3;
+                                    if (curTetro == 3) {
+                                        wasTSpin = 0
+                                    }
+                                    successfulRotation = true;
                                 }
                             }
                         }
@@ -1588,35 +1936,48 @@ function rotateLeft() {
                         }
                         updateCurrentPosition(newPositions);
                         curTetroRotationState = 0;
+                        if (curTetro == 3) {
+                            wasTSpin = 0
+                        }
+                        successfulRotation = true;
                     } else {
                         //=================TEST 2================
                         if (tryMovement(newPositions, 1, 1)) { // Move one right and down
-                            //getTspinVal();
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += 1
                                 newPositions[i][1] += 1
                             }
                             updateCurrentPosition(newPositions);
                             curTetroRotationState = 0;
+                            if (curTetro == 3) {
+                                wasTSpin = 0
+                            }
+                            successfulRotation = true;
                         } else {
                             //=================TEST 3================
                             if (tryMovement(newPositions, -2, 0)) { // Move up two
-                                //getTspinVal();
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] -= 2
                                 }
                                 updateCurrentPosition(newPositions);
                                 curTetroRotationState = 0;
+                                if (curTetro == 3) {
+                                    wasTSpin = 0
+                                }
+                                successfulRotation = true;
                             } else {
                                 //=================TEST 4================
                                 if (tryMovement(newPositions, -2, 1)) { // Move up two right one
-                                    //getTspinVal();
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += -2
                                         newPositions[i][1] += 1
                                     }
                                     updateCurrentPosition(newPositions);
                                     curTetroRotationState = 0;
+                                    if (curTetro == 3) {
+                                        wasTSpin = 0
+                                    }
+                                    successfulRotation = true;
                                 }
                             }
                         }
@@ -1630,35 +1991,48 @@ function rotateLeft() {
                         }
                         updateCurrentPosition(newPositions);
                         curTetroRotationState = 1;
+                        if (curTetro == 3) {
+                            wasTSpin = 0
+                        }
+                        successfulRotation = true;
                     } else {
                         //=================TEST 2================
                         if (tryMovement(newPositions, -1, -1)) { // Move one left and up
-                            //getTspinVal();
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += -1
                                 newPositions[i][1] += -1
                             }
                             updateCurrentPosition(newPositions);
                             curTetroRotationState = 1;
+                            if (curTetro == 3) {
+                                wasTSpin = 0
+                            }
+                            successfulRotation = true;
                         } else {
                             //=================TEST 3================
                             if (tryMovement(newPositions, 2, 0)) { // Move down two
-                                //getTspinVal();
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] += 2
                                 }
                                 updateCurrentPosition(newPositions);
                                 curTetroRotationState = 1;
+                                if (curTetro == 3) {
+                                    wasTSpin = 0
+                                }
+                                successfulRotation = true;
                             } else {
                                 //=================TEST 4================
                                 if (tryMovement(newPositions, 2, -1)) { // Move down two left one
-                                    //getTspinVal();
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 2
                                         newPositions[i][1] += -1
                                     }
                                     updateCurrentPosition(newPositions);
                                     curTetroRotationState = 1;
+                                    if (curTetro == 3) {
+                                        wasTSpin = 0
+                                    }
+                                    successfulRotation = true;
                                 }
                             }
                         }
@@ -1672,35 +2046,48 @@ function rotateLeft() {
                         }
                         updateCurrentPosition(newPositions);
                         curTetroRotationState = 2;
+                        if (curTetro == 3) {
+                            wasTSpin = 0
+                        }
+                        successfulRotation = true;
                     } else {
                         //=================TEST 2================
                         if (tryMovement(newPositions, 1, -1)) { // Move one left and down
-                            //getTspinVal();
                             for (var i = 0; i < 4; i++) { // Apply position change
                                 newPositions[i][0] += 1
                                 newPositions[i][1] += -1
                             }
                             updateCurrentPosition(newPositions);
                             curTetroRotationState = 2;
+                            if (curTetro == 3) {
+                                wasTSpin = 0
+                            }
+                            successfulRotation = true;
                         } else {
                             //=================TEST 3================
                             if (tryMovement(newPositions, -2, 0)) { // Move up two
-                                //getTspinVal();
                                 for (var i = 0; i < 4; i++) { // Apply position change
                                     newPositions[i][0] -= 2
                                 }
                                 updateCurrentPosition(newPositions);
                                 curTetroRotationState = 2;
+                                if (curTetro == 3) {
+                                    wasTSpin = 0
+                                }
+                                successfulRotation = true;
                             } else {
                                 //=================TEST 4================
                                 if (tryMovement(newPositions, 2, 1)) { // Move down two right one
-                                    //getTspinVal();
                                     for (var i = 0; i < 4; i++) { // Apply position change
                                         newPositions[i][0] += 2
                                         newPositions[i][1] += 1
                                     }
                                     updateCurrentPosition(newPositions);
                                     curTetroRotationState = 2;
+                                    if (curTetro == 3) {
+                                        wasTSpin = 0
+                                    }
+                                    successfulRotation = true;
                                 }
                             }
                         }
@@ -1709,13 +2096,16 @@ function rotateLeft() {
             }
         }
     }
+    if (successfulRotation == true) {
+        resetLockDelay();
+    }
 }
 function holdPiece() {
     var newPiece;
     if (heldTetro == 0) {       //if no piece held already
         heldTetro = curTetro;       //set hold to current tetro
         curTetro = getFromBag();    //get current tetro from bag
-        drawNextPiece(curBag[0]);
+        drawNextPiece();
         drawAdtlNext();
     } else {                    //if piece held
         newPiece = heldTetro;       //put held piece in temp
@@ -1776,20 +2166,34 @@ function updateDAS() {
       }
     }
 }
+function resetLockDelay() {
+    if (onGround(droppingCells) && lockResets < lockResetLimit) {
+        lockTimer = frameCount; // Reset lock timer
+        lockResets++;
+        console.log("LOCK RESETS: " + lockResets);
+    }
+}
 //------------------------------------------------------------------------------DRAWING---------------------------------------------------------------------------------------------
     //play area
 function drawGrid(){
+    stroke(accentColor);
+    strokeWeight(1);
+    fill(gridColor);
+    rect(0,0,gridWidth,gridHeight);
     for (var i = 0; i < grid.length; i++) {
         for (var j = 0; j < grid[0].length; j++) {
             stroke(0,0,0);
             strokeWeight(1);
 
             if (!grid[i][j]) {
+                strokeWeight(0);
                 fill(gridColor);
             } else {
+                strokeWeight(1);
                 fill(grid[i][j]);
             }
             rect(j*cellWid,  i*cellHi, cellWid, cellHi); 
+            strokeWeight(1);
         }
     }
     if (droppingPiece == true) {
@@ -1816,65 +2220,63 @@ function drawFallingPiece() {
         rect(row*cellWid,col*cellHi,cellWid, cellHi);
     }
 }
-    //Right side UI
+    //IN GAME UI
 function drawUI() {
-
-    drawNextHold(nxtHldTop, nxtHldLeft, nxtHldWid, nxtHldHi);
-    drawAdtlNext();
+    //Bounding Rectangle
+    stroke("black");
+    fill("black");
+    strokeWeight(1);
+    rect(UIstartX, 0, UIWidth, canvasHeight);
+    //ALL UI ELEMENTS
+    drawNextHold();
     drawClearText();
     drawTimer();
     drawClearsCombos();
     drawScore();
     drawLevel();
-    drawSpeed();
-
-
-    //drawClears();
-    //drawCombo();
-    
-    //stroke(0,0,0);
-    //rect(spdL, infoSecS, UIendX-spdL, infoSecE - infoSecS);
-
-
 }
-function drawNextHold(top, left, width, height) {
-    //NEXT textbox
-    var nxtTxtL = nxtGrdL;
-    var nxtTxtT = top;
-    var nxtTxtW = nxtGrdW;
-    var nxtTxtH = height / 4;
-
-    fill(bgColor);
-    strokeWeight(0);
-    rect(left, top, width, height);
+function drawNextHold() {
+    //BORDER
+    fill(tertUIColor);
     strokeWeight(1);
-
-    fill(255);
-    stroke(255);
-    textSize(24);
-    textAlign(CENTER, CENTER);
-    text("NEXT", nxtTxtL + nxtTxtW * (1/2), nxtTxtT + nxtTxtH / 2);
-    //NEXT grid
-    drawNextPiece(nextTetro); 
-
+    stroke(accentColor);
+    rect(UIstartX, 0, UIWidth, canvasHeight * (8/20));
+    strokeWeight(1);
+    //NEXT textbox
+    var nxtTxtL = UIstartX + (UIWidth / 10);
+    var nxtTxtT = 0;
+    var nxtTxtW = UIWidth * (6/20);
+    var nxtTxtH = canvasHeight / 20;
+    drawCenteredText("NEXT", nxtTxtL, nxtTxtT, nxtTxtW, nxtTxtH);
+    drawNextPiece(); 
     //HOLD textbox
-    var hldTxtL = hldGrdL
-    var hldTxtT = top;
-    var hldTxtW = hldGrdW;
-    var hldTxtH = height / 4;
-    fill(255);
-    stroke(255);
-    textSize(24);
-    textAlign(CENTER, CENTER);
-    text("HOLD", hldTxtL + hldTxtW * (1/2), hldTxtT + hldTxtH / 2);
-    //HOLD grid
-    drawHoldPiece(heldTetro);
+    var hldTxtL = (UIstartX + UIWidth/2) + (UIWidth / 2) * (8/20)
+    var hldTxtT = 0;
+    var hldTxtW = UIWidth * (4/20);
+    var hldTxtH = canvasHeight / 20;
+    drawCenteredText("HOLD", hldTxtL, hldTxtT, hldTxtW, hldTxtH);
+    drawHoldPiece();
+    drawAdtlNext();
 }
-function drawNextPiece(tetNum) {
-    drawMiniGrid(tetNum, nxtGrdL, nxtGrdT, nxtGrdW, nxtGrdH);
+function drawNextPiece() {
+    var left = UIstartX;
+    var width = (UIWidth / 2);
+    var height = canvasHeight * (5/20);
+    var nxtGrdL = left + (width/5);
+    var nxtGrdT = canvasHeight * (1/20);
+    var nxtGrdW = width * (12/20);
+    var nxtGrdH = height * (12/20);    
+    drawMiniGrid(curBag[0], nxtGrdL, nxtGrdT, nxtGrdW, nxtGrdH);
 }
-function drawHoldPiece(tetNum) {
-    drawMiniGrid(tetNum, hldGrdL, hldGrdT, hldGrdW, hldGrdH);
+function drawHoldPiece() {
+    var left = UIstartX + UIWidth/2 ;
+    var width = (UIWidth / 2);
+    var height = canvasHeight * (5/20);
+    var hldGrdL = left + width * (8/20);
+    var hldGrdT = canvasHeight * (1/20);
+    var hldGrdW = width * (8/20);
+    var hldGrdH = height * (8/20);
+    drawMiniGrid(heldTetro, hldGrdL, hldGrdT, hldGrdW, hldGrdH);
 }
 function drawAdtlNext() {
     //get 6 next tetriminos
@@ -1896,34 +2298,19 @@ function drawAdtlNext() {
             nextTets.push(nxtBag[i]);
         }
     }
-    //bounding rectangle
-    fill(bgColor);
-    strokeWeight(0);
-    rect(adlNxtL, adlNxtT, adlNxtW, adlNxtH)
-    strokeWeight(1);
-
 
     //grid locations
-    var gridT = nxtHldHi + (canvasHeight * (3/80));
-    var gridL = adlNxtL + (adlNxtW * (1/40));
-    var gridW = (UIendX-UIstartX + 1) * (3/20);
+    var gridT = (canvasHeight) * (5/20) + (canvasHeight * (3/80));
+    var gridL = UIstartX + (UIWidth * (1/40));
+    var gridW = UIWidth * (3/20);
     var gridH = gridW;
-    drawMiniGrid(nextTets[0], gridL, gridT, gridW, gridH);
 
-    //gridLoc2
-    gridL = gridL + gridW + (adlNxtW * (1/20))
-    drawMiniGrid(nextTets[1], gridL, gridT, gridW, gridH);
-    //gridLoc3
-    gridL = gridL + gridW + (adlNxtW * (1/20))
-    drawMiniGrid(nextTets[2], gridL, gridT, gridW, gridH);
-    //gridLoc4
-    gridL = gridL + gridW + (adlNxtW * (1/20))
-    drawMiniGrid(nextTets[3], gridL, gridT, gridW, gridH);
-    //gridLoc5
-    gridL = gridL + gridW + (adlNxtW * (1/20))
-    drawMiniGrid(nextTets[4], gridL, gridT, gridW, gridH);
+    for (var i = 0; i < 5; i++) {
+        drawMiniGrid(nextTets[i], gridL, gridT, gridW, gridH);
+        gridL = gridL + gridW + (UIWidth * (1/20))
+    }
 }
-function drawMiniGrid(tetNum, left, top, width, height) {
+function drawMiniGrid(tetNum, left, top, width, height) { //needs work
     let nxtGrid = [];
     var cellWidth = ((width) / 4) - 1;
     var cellHeight = ((height) / 4) - 1;
@@ -1933,7 +2320,10 @@ function drawMiniGrid(tetNum, left, top, width, height) {
     var tRow = [];
 
     //drawEmptyTetroBox();
-    drawEmptyMiniGrid(left, top, width, height);
+    stroke (accentColor);
+    strokeWeight(2);
+    fill(secUIColor);
+    rect(left,top, width, height);
 
     var c = "white";
     for (var i = 0; i < 4; i++) {
@@ -1950,46 +2340,46 @@ function drawMiniGrid(tetNum, left, top, width, height) {
     //|1 = I|2 = O|3 = T|4 = J|5 = L|6 = S|7 = Z|
     switch (tetNum) {
     case 1:
-       nxtGrid[0][2][2] = "aqua";
-       nxtGrid[1][2][2] = "aqua";
-       nxtGrid[2][2][2] = "aqua";
-       nxtGrid[3][2][2] = "aqua";
+       nxtGrid[0][2][2] = tetroColors[0];
+       nxtGrid[1][2][2] = tetroColors[0];
+       nxtGrid[2][2][2] = tetroColors[0];
+       nxtGrid[3][2][2] = tetroColors[0];
         break;
     case 2:
-       nxtGrid[1][1][2] = "yellow";
-       nxtGrid[1][2][2] = "yellow";
-       nxtGrid[2][1][2] = "yellow";
-       nxtGrid[2][2][2] = "yellow";
+       nxtGrid[1][1][2] = tetroColors[1];
+       nxtGrid[1][2][2] = tetroColors[1];
+       nxtGrid[2][1][2] = tetroColors[1];
+       nxtGrid[2][2][2] = tetroColors[1];
         break;
     case 3:
-       nxtGrid[1][1][2] = "magenta";
-       nxtGrid[1][2][2] = "magenta";
-       nxtGrid[1][3][2] = "magenta";
-       nxtGrid[2][2][2] = "magenta";
+       nxtGrid[1][1][2] = tetroColors[2];
+       nxtGrid[1][2][2] = tetroColors[2];
+       nxtGrid[1][3][2] = tetroColors[2];
+       nxtGrid[2][2][2] = tetroColors[2];
         break;
     case 4:
-       nxtGrid[0][2][2] = "blue";
-       nxtGrid[1][2][2] = "blue";
-       nxtGrid[2][2][2] = "blue";
-       nxtGrid[2][1][2] = "blue";
+       nxtGrid[0][2][2] = tetroColors[3];
+       nxtGrid[1][2][2] = tetroColors[3];
+       nxtGrid[2][2][2] = tetroColors[3];
+       nxtGrid[2][1][2] = tetroColors[3];
         break;
     case 5:
-       nxtGrid[0][1][2] = "orange";
-       nxtGrid[1][1][2] = "orange";
-       nxtGrid[2][1][2] = "orange";
-       nxtGrid[2][2][2] = "orange";
+       nxtGrid[0][1][2] = tetroColors[4];
+       nxtGrid[1][1][2] = tetroColors[4];
+       nxtGrid[2][1][2] = tetroColors[4];
+       nxtGrid[2][2][2] = tetroColors[4];
         break;
     case 6:
-       nxtGrid[1][3][2] = "green";
-       nxtGrid[1][2][2] = "green";
-       nxtGrid[2][2][2] = "green";
-       nxtGrid[2][1][2] = "green";
+       nxtGrid[1][3][2] = tetroColors[5];
+       nxtGrid[1][2][2] = tetroColors[5];
+       nxtGrid[2][2][2] = tetroColors[5];
+       nxtGrid[2][1][2] = tetroColors[5];
         break;
     case 7:
-       nxtGrid[1][1][2] = "red";
-       nxtGrid[1][2][2] = "red";
-       nxtGrid[2][2][2] = "red";
-       nxtGrid[2][3][2] = "red";
+       nxtGrid[1][1][2] = tetroColors[6];
+       nxtGrid[1][2][2] = tetroColors[6];
+       nxtGrid[2][2][2] = tetroColors[6];
+       nxtGrid[2][3][2] = tetroColors[6];
         break;
     default:
         break;
@@ -1998,11 +2388,11 @@ function drawMiniGrid(tetNum, left, top, width, height) {
     for (var i = 0; i < nxtGrid.length; i++) {
         for (var j = 0; j < nxtGrid[0].length; j++) {
             if (nxtGrid[i][j][2] != "white") {
-                if (nxtGrid[i][j][2] != "blue" && nxtGrid[i][j][2] != "orange" && nxtGrid[i][j][2] != "yellow") {
+                if (nxtGrid[i][j][2] != tetroColors[3] && nxtGrid[i][j][2] != tetroColors[4] && nxtGrid[i][j][2] != tetroColors[1]) {
                     nxtGrid[i][j][0][0] = nxtGrid[i][j][0][0] - (cellWidth / 2);
                     nxtGrid[i][j][1][0] = nxtGrid[i][j][1][0] - (cellWidth / 2);
                 }
-                if ( nxtGrid[i][j][2] == "orange" || nxtGrid[i][j][2] == "blue") {
+                if ( nxtGrid[i][j][2] == tetroColors[3] || nxtGrid[i][j][2] == tetroColors[4]) {
                     nxtGrid[i][j][0][1] = nxtGrid[i][j][0][1] + (cellHeight / 2);
                     nxtGrid[i][j][1][1] = nxtGrid[i][j][1][1] + (cellHeight / 2);
                 }
@@ -2016,177 +2406,84 @@ function drawMiniGrid(tetNum, left, top, width, height) {
         }
     }
 }
-function drawEmptyMiniGrid(left, top, width, height) {
-    stroke (veryDarkUIColor);
-    strokeWeight(1);
-    fill(veryDarkUIColor);
-    rect(left,top, width, height);
-}
 function drawClearText(clearString) {
-    fill(lightUIColor[0], lightUIColor[1], lightUIColor[2]);
-    rect(clrStrL, clrStrT, clrStrW, clrStrH);
+    var top = canvasHeight*(8/20);
+    var height = (canvasHeight) * (3/20);
+    fill(primUIColor);
+    strokeWeight(1);
+    stroke(accentColor);
+    rect(UIstartX, top, UIWidth, height);
     if (clearString != "" ) {
-        fill(0);
-        stroke(0);
-        textSize(24);
-        textAlign(CENTER, CENTER);
-        text(clearString, clrStrL + clrStrW / 2, clrStrT + clrStrH / 2);
+        drawCenteredText(clearString, UIstartX, top, UIWidth, height, 24);
     }
 }
 function drawTimer() {
-    stroke(5);
-    fill(darkUIColor);
-    rect(tmrLocL, tmrLocT, tmrLocW, tmrLocH);
-
-
-    fill(255);
-    stroke(255);
-    textSize(24);
-    textAlign(CENTER, CENTER);
-    text(msToMinuteSecondTime(elapsedTime), tmrLocL + tmrLocW / 2, tmrLocT + tmrLocH / 2);
-
-
+    var top = (canvasHeight) * (11/20);
+    var height = (canvasHeight) * (2/20);
+     stroke(accentColor);
+     strokeWeight(1);
+     fill(tertUIColor);
+     rect(UIstartX, top, UIWidth, height);
+     drawCenteredText(msToMinuteSecondTime(elapsedTime), UIstartX, top, UIWidth, height, 24);
 }
 function drawClearsCombos() {
-    var txtcclrT = (tmrLocT  + tmrLocH);
-    var txtcclrL = UIstartX;
-    var txtcclrW = (UIendX-UIstartX + 1) /3;
-    var txtcclrH = (canvasHeight) * (1/20);
-
+    var clrT = (canvasHeight) * (13/20);
+    var clrL = UIstartX;
+    var clrW = UIWidth /3;
+    var clrH = (canvasHeight) * (3/20);
+    var disTxt = ["Lines Cleared", "Lines to Level", "Combo"];
     //header text
-    fill(lightUIColor[0], lightUIColor[1], lightUIColor[2]);
-    stroke(0);
-    rect(txtcclrL, txtcclrT, txtcclrW, txtcclrH);
-
-    fill(0);
-    stroke(0);
-    textSize(20);
-    textAlign(CENTER, CENTER);
-    text("Lines Cleared:", txtcclrL + txtcclrW * (1/2), txtcclrT + txtcclrH / 2);
-    txtcclrL = txtcclrL + txtcclrW;
-
-    fill(lilLightUIColor[0], lilLightUIColor[1], lilLightUIColor[2]);
-    stroke(0);
-    rect(txtcclrL, txtcclrT, txtcclrW, txtcclrH);
-
-    fill(0);
-    stroke(0);
-    textSize(20);
-    textAlign(CENTER, CENTER);
-    text("Lines to Level:", txtcclrL + txtcclrW * (1/2), txtcclrT + txtcclrH / 2);
-    txtcclrL = txtcclrL + txtcclrW;
-    
-    fill(lightUIColor[0], lightUIColor[1], lightUIColor[2]);
-    stroke(0);
-    rect(txtcclrL, txtcclrT, txtcclrW, txtcclrH);
-
-    fill(0);
-    stroke(0);
-    textSize(20);
-    textAlign(CENTER, CENTER);
-    text("Combo:", txtcclrL + txtcclrW * (1/2), txtcclrT + txtcclrH / 2);
-
+    for (var i = 0; i < 3; i++) {
+        fill(secUIColor);
+        stroke(accentColor);
+        strokeWeight(1);
+        rect(clrL + (clrW*i), clrT, clrW, clrH);
+        drawCenteredText(disTxt[i], clrL + (clrW*i), clrT, clrW, clrH/4, 80);
+    }
     drawClears();
     drawCombos();
 }
 function drawClears() {
+    var clrT = ((canvasHeight) * (13/20)) + ((canvasHeight) * (3/20)/4);
+    var clrL = UIstartX;
+    var clrW = UIWidth /3;
+    var clrH = (canvasHeight) * (9/80);
     //draw bounding rectangle
-    fill(midUIColor);
-    stroke(0);
-    rect(curLineL, curLineT, curLineW, curLineH);
-    //text
-    fill(0);
-    stroke(0);
-    textSize(24);
-    textAlign(CENTER, CENTER);
-    text(clears, curLineL + curLineW * (1/2), curLineT + curLineH / 2);
-    //draw bounding rectangle
-    fill(lilDarkUIColor);
-    stroke(0);
-    rect(lvlLineL, lvlLineT, lvlLineW, lvlLineH);
-    //text
-    fill(0);
-    stroke(0);
-    textSize(24);
-    textAlign(CENTER, CENTER);
-    text(clearsToLevel, lvlLineL + lvlLineW * (1/2), lvlLineT + lvlLineH / 2);
-
-
-
+     drawCenteredText(clears, clrL, clrT, clrW, clrH, 60);
+     clrL += clrW;
+     drawCenteredText(clearsToLevel, clrL, clrT, clrW, clrH, 60);
 }
 function drawCombos() {
-    fill(midUIColor);
-    rect(comLineL, comLineT, comLineW, comLineH);
+    var clrT = ((canvasHeight) * (13/20)) + ((canvasHeight) * (3/20)/4);
+    var clrL = UIstartX + (UIWidth * (2/3));
+    var clrW = UIWidth /3;
+    var clrH = (canvasHeight) * (9/80);
 
-        //draw bounding rectangle
-        fill(midUIColor);
-        stroke(0);
-        rect(comLineL, comLineT, comLineW, comLineH);
-        //text
-        fill(0);
-        stroke(0);
-        textSize(24);
-        textAlign(CENTER, CENTER);
-        text(combo, comLineL + comLineW * (1/2), comLineT + comLineH / 2);
+     drawCenteredText(combo, clrL, clrT, clrW, clrH, 60);
 }
 function drawScore() {
-    //score Text (label)
-    let scTextT = ((gridHeight+1) * (8/10));
-    let scTextB = ((gridHeight+1) * (17/20)) - 1;
-    //border rectangle
-    fill(150,150,150);
-    stroke(0);
-    rect(UIstartX, scTextT, UIendX-UIstartX, scTextB-scTextT);
-    //Text
-    fill(0);
-    textSize(30);
-    textAlign(CENTER, CENTER);
-    text("SCORE", UIstartX + (UIendX-UIstartX) / 2, scTextT + (scTextB-scTextT) / 2);
-
-
-    //score box (actual score)
-    let scBoxT = scTextB + 1;
-    let scBoxB = ((gridHeight+1) * (19/20)) - 1;
-    //border rectangle
-    fill(midUIColor);
-    rect(UIstartX, scBoxT, UIendX-UIstartX, scBoxB-scBoxT);
-    //Text
-    fill(0);
-    textSize(24);
-    textAlign(CENTER, CENTER);
-    text(score, UIstartX + (UIendX-UIstartX) / 2, scBoxT + (scBoxB-scBoxT) / 2);
-
+    let top = ((gridHeight+1) * (8/10));
+    let height = gridHeight * (3/20);
+    stroke(accentColor);
+    strokeWeight(1);
+    fill(primUIColor);
+    rect(UIstartX, top, UIWidth, height);
+    height = gridHeight * (1/20);
+    drawCenteredText("SCORE", UIstartX, top, UIWidth, height, 24);
+    top += height;
+    height = height * 2;
+    drawCenteredText(score, UIstartX, top, UIWidth, height, 40);
 }
 function drawLevel() {
-    let infoSecS = (gridHeight+1) * (19/20);
-    let infoSecE = gridHeight;
-    let lvlR = (UIendX+UIstartX-1)/2;
-
+    let top = gridHeight * (19/20);
+    let height = gridHeight * (1/20);
+    stroke(accentColor);
     strokeWeight(1);
-    stroke(0,0,0);
-    fill(veryDarkUIColor);
-    rect(UIstartX, infoSecS, lvlR-UIstartX, infoSecE - infoSecS); //draw box
-    stroke(255,255,255);
-    fill(255,255,255);
-    textSize(24);
-    textAlign(CENTER, CENTER);
-    text("Level " + level, UIstartX + (lvlR-UIstartX) / 2, infoSecS + (infoSecE - infoSecS) / 2);
+    fill(tertUIColor);
+    rect(UIstartX, top, UIWidth, height);
+    drawCenteredText("Level " + level, UIstartX, top, UIWidth, height);
 }
-function drawSpeed() {
-    let infoSecS = (gridHeight) * (19/20);
-    let infoSecE = gridHeight;
-    let spdL = (UIendX+UIstartX+1)/2;
-    
-    strokeWeight(1);
-    stroke(0,0,0);
-    fill(veryLightUIColor);
-    rect(spdL, infoSecS, UIendX-spdL, infoSecE - infoSecS); //draw box
-    fill(0,0,0);
-    textSize(24);
-    textAlign(CENTER, CENTER);
-    text("Speed: " + (21 - gameSpeed), spdL + (UIendX-spdL) / 2, infoSecS + (infoSecE - infoSecS) / 2);
-}
-function drawScoreboard() {
+function drawScoreboard() { //needs work
     var SBLeft = gridWidth * (1/10);
     var SBTop = gridHeight * (1/10);
     var SBWidth = gridWidth * (8/10);
@@ -2258,161 +2555,278 @@ function drawScoreboard() {
     SBTXTop = SBTXTop + (SBHeight * (1/20));
     SBTXHeight = SBHeight * (1/10);
 
+    text("T-Spins: " + totTspin, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
+
+    SBTXTop = SBTXTop + (SBHeight * (1/20));
+    SBTXHeight = SBHeight * (1/10);
+
+    text("T-Spin Minis: " + totTSpinM, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
+
+    SBTXTop = SBTXTop + (SBHeight * (1/20));
+    SBTXHeight = SBHeight * (1/10);
+
     text("Highest Combo: " + maxCombo, SBTXLeft + (SBTXWidth) / 2, SBTXTop + (SBTXHeight) / 2);
 }
-    //Menu Movement============================================
-function moveMenuCursorUp(menuOptions) {
-        var prevCursorPosition = [...curMenuPosition];
-            if (menuOptions[0].length > 1) {//if multiple rows
-                if (curMenuPosition[1] == 0){ //on top row
-                    curMenuPosition[1] = menuOptions[0].length - 1;
-                } else {
-                    curMenuPosition[1]--;
-                        if (menuOptions[0][curMenuPosition[1]].length < 2) {
-                            curMenuPosition[2] = 0;
-                    }
-                }
-            unhighlightMenuOption(prevCursorPosition);
-            highlightMenuOption(curMenuPosition);
-            //drawMainMenuButtons(prevCursorPosition);
-        }
-}
-function moveMenuCursorDown(menuOptions) {
-        var prevCursorPosition = [...curMenuPosition];
-            if (menuOptions[0].length > 1) {//if multiple rows
-                if (curMenuPosition[1] == menuOptions[0].length - 1){ //on bot row
-                    curMenuPosition[1] = 0;
-                    if (menuOptions[0][curMenuPosition[1]].length == 1) {//if top row has only one
-                        curMenuPosition[2] = 0;
-                    }
-                } else {
-                    curMenuPosition[1]++;
-                    if (menuOptions[0][curMenuPosition[1]].length < 2) {
-                        curMenuPosition[2] = 0;
-                    }
-                }
-            }
-            unhighlightMenuOption(prevCursorPosition);
-            highlightMenuOption(curMenuPosition);
-            //drawMainMenuButtons(prevCursorPosition);
-}
-function moveMenuCursorLeft(menuOptions) {
-    var prevCursorPosition = [...curMenuPosition];
-        if (menuOptions[0][curMenuPosition[1]].length > 1) {//if two cols
-            if (curMenuPosition[2] == 0){ //on first col
-                curMenuPosition[2] = (menuOptions[0][curMenuPosition[1]].length - 1);
-            } else {
-                curMenuPosition[2]--;
-            }
-            unhighlightMenuOption(prevCursorPosition);
-            highlightMenuOption(curMenuPosition);
-            //drawMainMenuButtons(prevCursorPosition);
-        }  
-}
-function moveMenuCursorRight(menuOptions) {
-        var prevCursorPosition = [...curMenuPosition];
-            if (menuOptions[0][curMenuPosition[1]].length > 1) {//if two cols
-                if (curMenuPosition[2] == (menuOptions[0][curMenuPosition[1]].length - 1)){ //on final col
-                    curMenuPosition[2]= 0;
-                } else {
-                    curMenuPosition[2]++;
-                }
-                unhighlightMenuOption(prevCursorPosition);
-                highlightMenuOption(curMenuPosition);
-                //drawMainMenuButtons(prevCursorPosition);
-        }
-}
-function highlightMenuOption(posAry) {
-    var btnCol = veryDarkUIColor;
-    var bolCol = lightUIColor;
-    var txCol = "white"
+    //MENUS
+function drawMainMenu() {
+    //Menu Bounding Box
+    strokeWeight(8);
+    stroke(accentColor);
+    fill(secUIColor);
+    rect(mainMenuDims[0], mainMenuDims[1], mainMenuDims[2], mainMenuDims[3]);
+    strokeWeight(1);
+    //Margins and buffer between 
+    var lMarg = mainMenuDims[2] * (1/20);
+    var tMarg = mainMenuDims[3] * (1/20);
+    var lSecBuff = mainMenuDims[2] * (1/10);
+    var tSecBuff = mainMenuDims[3] * (2/10);
+    var titleWidth = mainMenuDims[2] - (lMarg * 2);
+    var titleHeight = mainMenuDims[3] * (2/10);
 
-    var aMen = posAry[0]
-    var aRow = posAry[1];
-    var aCol = posAry[2];
+    drawUIBoxWithText("* * * TETRIS * * *", tertUIColor, primUIColor, textColor, 5, 40, mainMenuDims[0]+lMarg, mainMenuDims[1]+tMarg, titleWidth, titleHeight);
+    var btnLeft = mainMenuDims[0] + lMarg;
+    var btnTop = mainMenuDims[1] + tMarg + titleHeight + tSecBuff;
+    var btnWidth = titleWidth
+    var btnHeight = mainMenuDims[3] * (1/10);
 
-    if (curMenuPosition[0] == 0) {
-        var left = mainMenuOptions[1][aRow][aCol][0];
-        var top = mainMenuOptions[1][aRow][aCol][1];
-        var width = mainMenuOptions[1][aRow][aCol][2];
-        var height = mainMenuOptions[1][aRow][aCol][3];
-        drawUIBoxWithText(mainMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 40, left, top, width, height);
-    } else if (curMenuPosition[0] == 1) {
-        // var left = mainMenuOptions[1][aRow][aCol][0];
-        // var top = mainMenuOptions[1][aRow][aCol][1];
-        // var width = mainMenuOptions[1][aRow][aCol][2];
-        // var height = mainMenuOptions[1][aRow][aCol][3];
-        // drawUIBoxWithText(mainMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 40, left, top, width, height);
-    } else if (curMenuPosition[0] == 2) {
-        var left = controlMenuOptions[1][aRow][aCol][0];
-        var top = controlMenuOptions[1][aRow][aCol][1];
-        var width = controlMenuOptions[1][aRow][aCol][2];
-        var height = controlMenuOptions[1][aRow][aCol][3];
-        drawUIBoxWithText(controlMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 40, left, top, width, height);
-    } else if (curMenuPosition[0] == 3) {
-
-    } else if (curMenuPosition[0] == 4) {
-        var left = soundMenuOptions[1][aRow][aCol][0];
-        var top = soundMenuOptions[1][aRow][aCol][1];
-        var width = soundMenuOptions[1][aRow][aCol][2];
-        var height = soundMenuOptions[1][aRow][aCol][3];
-        var ctrlType = soundMenuOptions[2][aRow][aCol];
-        var volNum;
-        if (soundMenuOptions[0][aRow][aCol] == "Music Volume") {
-            volNum = audioLevels[0]
-        } else if (soundMenuOptions[0][aRow][aCol] == "SFX Volume") {
-            volNum = audioLevels[1]
-        } else if (soundMenuOptions[0][aRow][aCol] == "Sound Pack") {
-            volNum = audioLevels[2]
+    for (var i = 0; i < mainMenuOptions[0].length; i++) {
+        btnWidth = (mainMenuDims[2] - (lMarg * 2) - (lSecBuff*(mainMenuOptions[0][i].length - 1))) / mainMenuOptions[0][i].length;
+        for (var j = 0; j < mainMenuOptions[0][i].length; j++) {
+            drawUIBoxWithText(mainMenuOptions[0][i][j], secUIColor, accentColor, textColor, 2, 40, btnLeft, btnTop, btnWidth, btnHeight);
+            mainMenuOptions[1][i][j] = [btnLeft, btnTop, btnWidth, btnHeight];
+            btnLeft = btnLeft + btnWidth + lSecBuff;
         }
-        if (ctrlType == "clButton") {
-            drawUIBoxWithText(soundMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 20, left, top, width, height);
-        } else if (ctrlType == "volSlide") {
-            drawVolumeSlider(soundMenuOptions[0][aRow][aCol], btnCol, "white", volNum, left, top, width, height);
-        } else if (ctrlType == "arButton") {
-            drawArrowButton(soundMenuOptions[0][aRow][aCol], audioPacks[selAudioPack], btnCol, "white", left, top, width, height)
-        }
+        btnLeft = mainMenuDims[0] + lMarg;
+        btnTop = btnTop + btnHeight + tMarg;
     }
+    highlightMenuOption([0,0,0]);
 }
-function unhighlightMenuOption(posAry) {
-    var btnCol = lilDarkUIColor;
-    var bolCol = midUIColor;
-    var txCol = "white"
+function drawSettingsMenu() {
+    var ctrTop = mainMenuDims[0] * (1/10);
+    var ctrLeft = mainMenuDims[1] * (1/10);
+    var ctrHeight = mainMenuDims[2] * (8/10);
+    var ctrWidth = mainMenuDims[3] * (12/10);
+    drawUIBoxWithText("SETTINGS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
+}
+function drawControlsMenu() {
+    //Menu Bounding Box
+    strokeWeight(8);
+    stroke(accentColor);
+    fill(secUIColor);
+    rect(controlMenuDims[0], controlMenuDims[1], controlMenuDims[2], controlMenuDims[3]);
+    strokeWeight(1);
+    //Margins and buffer between 
+    var lMarg = controlMenuDims[2] * (1/20);
+    var tMarg = controlMenuDims[3] * (1/40);
+    var lSecBuff = controlMenuDims[2] * (1/10);
+    var tSecBuff = controlMenuDims[3] * (3/20);
+    var titleWidth = controlMenuDims[2] - (lMarg * 2);
+    var titleHeight = controlMenuDims[3] * (1/20);
 
-    var aMen = posAry[0]
-    var aRow = posAry[1];
-    var aCol = posAry[2];
+    drawUIBoxWithText("In Game Controls", secUIColor, accentColor, textColor, 0, 40, controlMenuDims[0]+lMarg, controlMenuDims[1]+tMarg, titleWidth, titleHeight);
+    var btnLeft = controlMenuDims[0] + lMarg;
+    var btnTop = controlMenuDims[1] + tMarg + titleHeight + tMarg;
+    var btnWidth = titleWidth
+    var btnHeight = controlMenuDims[3] * (1/20);
 
+    for (var i = 0; i < 4; i++) {
+        btnWidth = (controlMenuDims[2] - (lMarg * 4) - (lSecBuff*(controlMenuOptions[0][i].length - 1))) / (controlMenuOptions[0][i].length * 2);
+        for (var j = 0; j < controlMenuOptions[0][i].length; j++) {
 
-    if (curMenuPosition[0] == 0) {
-        var left = mainMenuOptions[1][aRow][aCol][0];
-        var top = mainMenuOptions[1][aRow][aCol][1];
-        var width = mainMenuOptions[1][aRow][aCol][2];
-        var height = mainMenuOptions[1][aRow][aCol][3];
-        drawUIBoxWithText(mainMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 2, 40, left, top, width, height);
-    } else  if (curMenuPosition[0] == 1) {
-        // var left = mainMenuOptions[1][aRow][aCol][0];
-        // var top = mainMenuOptions[1][aRow][aCol][1];
-        // var width = mainMenuOptions[1][aRow][aCol][2];
-        // var height = mainMenuOptions[1][aRow][aCol][3];
-        // drawUIBoxWithText(mainMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 40, left, top, width, height);
-    } else if (curMenuPosition[0] == 2) {
-        var left = controlMenuOptions[1][aRow][aCol][0];
-        var top = controlMenuOptions[1][aRow][aCol][1];
-        var width = controlMenuOptions[1][aRow][aCol][2];
-        var height = controlMenuOptions[1][aRow][aCol][3];
-        drawUIBoxWithText(controlMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 2, 20, left, top, width, height);
-    } else if (curMenuPosition[0] == 3) {
+            drawUIBoxWithText(labContArr[i][j], accentColor, accentColor, textColor, 2, 40, btnLeft, btnTop, btnWidth, btnHeight);
+            btnLeft = btnLeft + btnWidth + lMarg;
 
-    } else if (curMenuPosition[0] == 4) {
-        var left = soundMenuOptions[1][aRow][aCol][0];
-        var top = soundMenuOptions[1][aRow][aCol][1];
-        var width = soundMenuOptions[1][aRow][aCol][2];
-        var height = soundMenuOptions[1][aRow][aCol][3];
-        var ctrlType = soundMenuOptions[2][aRow][aCol];
-        drawUIBoxWithText(soundMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 2, 20, left, top, width, height);
+            drawUIBoxWithText(controlMenuOptions[0][i][j], secUIColor, accentColor, textColor, 2, 20, btnLeft, btnTop, btnWidth, btnHeight);
+            controlMenuOptions[1][i][j] = [btnLeft, btnTop, btnWidth, btnHeight];
+            btnLeft = btnLeft + btnWidth + lSecBuff;
+        }
+        btnLeft = controlMenuDims[0] + lMarg;
+        btnTop = btnTop + btnHeight + tMarg;
     }
+
+    drawUIBoxWithText("Menu Controls", secUIColor, accentColor, textColor, 5, 40, controlMenuDims[0]+lMarg, btnTop+tSecBuff, titleWidth, titleHeight);
+    btnTop = btnTop+tSecBuff + titleHeight + tMarg;
+    for (var i = 4; i < controlMenuOptions[0].length; i++) {
+        btnWidth = (controlMenuDims[2] - (lMarg * 4) - (lSecBuff*(controlMenuOptions[0][i].length - 1))) / (controlMenuOptions[0][i].length * 2);
+        for (var j = 0; j < controlMenuOptions[0][i].length; j++) {
+            drawUIBoxWithText(labContArr[i][j], accentColor, accentColor, textColor, 2, 40, btnLeft, btnTop, btnWidth, btnHeight);
+            btnLeft = btnLeft + btnWidth + lMarg;
+
+            drawUIBoxWithText(controlMenuOptions[0][i][j], secUIColor, accentColor, textColor, 2, 20, btnLeft, btnTop, btnWidth, btnHeight);
+            controlMenuOptions[1][i][j] = [btnLeft, btnTop, btnWidth, btnHeight];
+            btnLeft = btnLeft + btnWidth + lSecBuff;
+        }
+        btnLeft = controlMenuDims[0] + lMarg;
+        btnTop = btnTop + btnHeight + tMarg;
+    }
+
+    highlightMenuOption(curMenuPosition);
 }
+function drawDisplayMenu() {
+    var left = canvasWidth * (1/20);
+    var top = canvasHeight * (1/20);
+    var width = canvasWidth * (9/10);
+    var height = canvasHeight * (9/10);
+    var tMarg = height * (1/40);
+    var lMarg = height * (1/20);
+    var sectionSep = height * (1/20);
+    var curLeft = left + lMarg;
+    var curTop = top + tMarg;
+    var curWidth = width - lMarg * 2;
+    var curHeight = height * (1/20);
+    //Bounding Box
+    stroke(accentColor);
+    strokeWeight(5);
+    fill(secUIColor);
+    rect(left, top, width, height);
+    strokeWeight(1);
+
+    //Menu Label
+    drawCenteredText("Dimensions", curLeft, curTop, curWidth, curHeight);
+    //Width and height buttons
+    curTop = curTop + curHeight + tMarg;
+    curHeight = height * (1/10);
+    drawUIBoxWithText(displayMenuOptions[0][0][0], secUIColor, accentColor, textColor, 2, 30, curLeft, curTop, curWidth, curHeight);
+
+    displayMenuOptions[1][0][0] = [curLeft, curTop, curWidth, curHeight];
+    curTop = curTop + curHeight + tMarg;
+    drawUIBoxWithText(displayMenuOptions[0][1][0], secUIColor, accentColor, textColor, 2, 30, curLeft, curTop, curWidth, curHeight);
+    displayMenuOptions[1][1][0] = [curLeft, curTop, curWidth, curHeight];
+    //Tetro Color Label
+    curTop = curTop + curHeight + sectionSep;
+    curHeight = height * (1/20);
+    drawCenteredText("Tetrimino Colors", curLeft, curTop, curWidth, curHeight);
+    
+    curTop = curTop + curHeight + tMarg;
+    curHeight = height * (1/20);
+    curWidth = ((width - lMarg) / 4) - lMarg;
+    curLeft = left + lMarg;
+    for (var i = 2; i < 4; i++) {
+        for (var j = 0; j < displayMenuOptions[0][i].length; j++) {
+            stroke(accentColor);
+            fill(primUIColor);
+            drawUIBoxWithText(displayMenuOptions[0][i][j], secUIColor, accentColor, textColor, 2, 30, curLeft, curTop, curWidth, curHeight);
+            displayMenuOptions[1][i][j] = [curLeft, curTop, curWidth, curHeight];
+            //rect(curLeft, curTop, curWidth, curHeight);
+            curLeft = curLeft + curWidth + lMarg;
+        }
+        curLeft = left + lMarg;
+        curTop = curTop + curHeight + tMarg;
+    }
+    curTop = curTop + tMarg;
+    curLeft = left + lMarg;
+    curWidth = width - lMarg * 2;
+    drawCenteredText("UI Colors", curLeft, curTop, curWidth, curHeight);
+    curWidth = ((width - lMarg) / 4) - lMarg;
+    curTop = curTop + curHeight+ tMarg;
+    for (var i = 4; i < 6; i++) {
+        for (var j = 0; j < displayMenuOptions[0][i].length; j++) {
+            stroke(accentColor);
+            fill(primUIColor);
+            drawUIBoxWithText(displayMenuOptions[0][i][j], secUIColor, accentColor, textColor, 2, 30, curLeft, curTop, curWidth, curHeight);
+            displayMenuOptions[1][i][j] = [curLeft, curTop, curWidth, curHeight];
+            //rect(curLeft, curTop, curWidth, curHeight);
+            curLeft = curLeft + curWidth + lMarg;
+        }
+        curLeft = left + lMarg;
+        curTop = curTop + curHeight + tMarg;
+    }
+    highlightMenuOption(curMenuPosition);
+}
+function drawSoundMenu() {
+    //Menu Bounding Box
+    strokeWeight(8);
+    stroke(accentColor);
+    fill(secUIColor);
+    rect(soundMenuDims[0], soundMenuDims[1], soundMenuDims[2], soundMenuDims[3]);
+    strokeWeight(1);
+    //Margins and buffer between 
+    var lMarg = soundMenuDims[2] * (1/20);
+    var tMarg = soundMenuDims[3] * (1/20);
+    var lSecBuff = soundMenuDims[2] * (1/10);
+    var tSecBuff = soundMenuDims[3] * (3/20);
+    var titleWidth = soundMenuDims[2] - (lMarg * 2);
+    var titleHeight = soundMenuDims[3] * (1/10);
+    drawUIBoxWithText("Sound Settings", secUIColor, accentColor, textColor, 0, 40, soundMenuDims[0]+lMarg, soundMenuDims[1]+tMarg, titleWidth, titleHeight);
+    var btnLeft = soundMenuDims[0] + lMarg;
+    var btnTop = soundMenuDims[1] + tMarg + titleHeight + tMarg;
+    var btnWidth = titleWidth
+    var btnHeight = soundMenuDims[3] * (1/10);
+        btnWidth = (soundMenuDims[2] - (lMarg * 2) - (lSecBuff*(soundMenuOptions[0][0].length - 1))) / (soundMenuOptions[0][0].length);
+        for (var j = 0; j < soundMenuOptions[0][0].length; j++) {
+            drawUIBoxWithText(soundMenuOptions[0][0][j], secUIColor, accentColor, textColor, 2, 30, btnLeft, btnTop, btnWidth, btnHeight);
+            soundMenuOptions[1][0][j] = [btnLeft, btnTop, btnWidth, btnHeight];
+            btnLeft = btnLeft + btnWidth + lSecBuff;
+
+        }
+        btnLeft = soundMenuDims[0] + lMarg;
+        btnTop = btnTop + btnHeight + tMarg;
+        btnWidth = soundMenuDims[2] - (lMarg * 2);
+        btnHeight = soundMenuDims[3] * (3/20);
+    for (var i = 1; i < soundMenuOptions[0].length; i++) {
+        drawUIBoxWithText(soundMenuOptions[0][i][0], secUIColor, accentColor, textColor, 2, 30, btnLeft, btnTop, btnWidth, btnHeight);
+        soundMenuOptions[1][i][0] = [btnLeft, btnTop, btnWidth, btnHeight];
+        btnTop = btnTop + btnHeight + tMarg;
+    }
+    highlightMenuOption(curMenuPosition);
+}
+function drawControlEditWindow(letter) {
+    var mRow = curMenuPosition[1];
+    var mCol = curMenuPosition[2];
+    var menWid = controlMenuDims[2] * (3/4);
+    var menHi = menWid;
+    var menLeft = (canvasWidth - menWid)/ 2;
+    var menTop = (canvasHeight - menHi)/ 2;
+    drawUIBoxWithText("", veryDarkUIColor, midUIColor, lightUIColor, 5, 0, menLeft, menTop, menWid, menHi);
+    drawUIBoxWithText("Changing key for [ " + labContArr[mRow][mCol] + " ]", midUIColor, midUIColor, "black", 0, 60, menLeft, menTop, menWid, menHi * (2/10));
+    drawUIBoxWithText(letter, darkUIColor, midUIColor, "white", 5, 60, menLeft, menTop+menHi * (2/10), menWid, menHi * (6/10));
+    drawUIBoxWithText("Press 'Next' to Confirm, or 'Back' to Cancel.", midUIColor, midUIColor, "black", 0, 60, menLeft, menTop+menHi * (8/10), menWid, menHi * (2/10));
+}
+function drawColorChangeMenu(color) {
+
+
+
+
+
+
+
+
+
+    var left = canvasWidth / 4;
+    var top = canvasHeight / 3;
+    var width = canvasWidth / 2;
+    var height = canvasHeight / 1.5;
+    //var color = [255,0,0];
+
+    var btnHi = height / 8;
+    var btnTop = top+(height/10)+(height/3)
+
+    stroke(accentColor);
+    strokeWeight(1);
+    fill(secUIColor);
+    rect(left, top, width, height);
+
+    fill(color);
+    rect(left + (width/8), top+(height/20), width * (3/4), height/3);
+    drawUIBoxWithText("Red", secUIColor, accentColor, textColor, 2, 18, left + (width/8), btnTop, width * (3/4), btnHi);
+    colorChangeMenuOptions[1][0] = [left + (width/8), btnTop, width * (3/4), btnHi];
+    btnTop = btnTop + btnHi + height/40;
+    drawUIBoxWithText("Green", secUIColor, accentColor, textColor, 2, 18, left + (width/8), btnTop, width * (3/4), btnHi);
+    colorChangeMenuOptions[1][1] = [left + (width/8), btnTop, width * (3/4), btnHi];
+    btnTop = btnTop + btnHi + height/40;
+    drawUIBoxWithText("Blue", secUIColor, accentColor, textColor, 2, 18, left + (width/8), btnTop, width * (3/4), btnHi);
+    colorChangeMenuOptions[1][2] = [left + (width/8), btnTop, width * (3/4), btnHi];
+    btnTop = btnTop + btnHi + height/40;
+    btnHi = height / 12;
+    
+    drawUIBoxWithText("Back", secUIColor, accentColor, textColor, 2, 18, left + (width * (5/16)), btnTop, width * (3/8), btnHi);
+    colorChangeMenuOptions[1][3] = [left + (width * (5/16)), btnTop, width * (3/8), btnHi];
+
+    
+    highlightMenuOption(curMenuPosition);
+
+}
+    //Buttons / Util
 function drawUIBoxWithText(dispText, bgCol, olCol, txtCol, olSize, txtSize, left, top, width, height) {
     let maxWidth = width * 0.9; // 90% of the box width
     let maxHeight = height * 0.9; // 90% of the box height
@@ -2444,6 +2858,12 @@ function drawUIBoxWithText(dispText, bgCol, olCol, txtCol, olSize, txtSize, left
 function drawVolumeSlider(dispText, bgCol, txtCol, volumeLevel, left, top, width, height) {
     //let maxWidth = width * 0.9; // 90% of the box width
     //let maxHeight = height * 0.9; // 90% of the box height
+    strokeWeight(5);
+    stroke(tertUIColor);
+    fill(primUIColor);
+    rect(left, top, width, height);
+    strokeWeight(1);
+
     var ttxtSize = 40;
     textSize(ttxtSize);
     let textWidthValue = textWidth(dispText);
@@ -2456,6 +2876,12 @@ function drawVolumeSlider(dispText, bgCol, txtCol, volumeLevel, left, top, width
     let txtMaxHi = labelHi * (9/10)
     let txtMaxWi = width * (9/10)
 
+    stroke(tertUIColor);
+    strokeWeight(1);
+    fill(bgCol);
+    rect(left, labelTop, width, labelHi);
+
+
     while (textWidthValue > txtMaxWi || textHeightValue > txtMaxHi) {
         ttxtSize -= 1; // Decrease font size
         textSize(ttxtSize);
@@ -2463,8 +2889,6 @@ function drawVolumeSlider(dispText, bgCol, txtCol, volumeLevel, left, top, width
         textHeightValue = ttxtSize;
     }
 
-    fill(bgCol);
-    rect(left, labelTop, width, labelHi);
     fill(txtCol);
     stroke(txtCol);
     textAlign(CENTER, CENTER);
@@ -2482,12 +2906,12 @@ function drawVolumeSlider(dispText, bgCol, txtCol, volumeLevel, left, top, width
         textWidthValue = textWidth(dispText);
         textHeightValue = ttxtSize;
     }
-
+    stroke(tertUIColor);
     fill(bgCol);
     rect(left, mainContTop, width, mainContHi);
 
-    fill(txtCol);
-    stroke(txtCol);
+    fill(tertUIColor);
+    stroke(tertUIColor);
     textAlign(CENTER, CENTER);
     dispText = "<[";
     var lineNum = Math.floor(volumeLevel/5);
@@ -2514,6 +2938,7 @@ function drawVolumeSlider(dispText, bgCol, txtCol, volumeLevel, left, top, width
         textHeightValue = ttxtSize;
     }
     //draw text
+    stroke(tertUIColor);
     fill(bgCol);
     rect(left, botTop, width, labelHi);
     fill(txtCol);
@@ -2537,11 +2962,11 @@ function drawArrowButton(labelText, contText, bgCol, txtCol, left, top, width, h
     var labTop = top;
     var labLeft = arrowLLeft + arrowWid;
     var labWid = width - (arrowWid * 2);
-    var labHi = height * (2/10);
+    var labHi = height * (3/10);
     var contTop = labTop + labHi;
     var contLeft = labLeft;
     var contWid = labWid;
-    var contHi = height * (8/10);  
+    var contHi = height * (7/10);  
     var arrowRLeft = contLeft+contWid;
 
     fill(bgCol);
@@ -2561,7 +2986,7 @@ function drawArrowButton(labelText, contText, bgCol, txtCol, left, top, width, h
         textHeightValue = ttxtSize;
     }
     fill(bgCol);
-    rect(arrowLLeft, arrowTop, arrowTop, arrowHi);
+    rect(arrowLLeft, arrowTop, arrowWid, arrowHi);
 
     fill(txtCol);
     stroke(txtCol);
@@ -2587,9 +3012,10 @@ function drawArrowButton(labelText, contText, bgCol, txtCol, left, top, width, h
 
     fill(txtCol);
     stroke(txtCol);
+    strokeWeight(0);
     textAlign(CENTER, CENTER);
     text(labelText, labLeft+ labWid / 2, labTop + labHi / 2);
-
+    strokeWeight(1);
 
     //drawContent
     txtMaxHi = contHi * (9/10);
@@ -2636,184 +3062,225 @@ function drawArrowButton(labelText, contText, bgCol, txtCol, left, top, width, h
     text(arrTxt, arrowRLeft + arrowWid / 2, arrowTop + arrowHi / 2);
 
 }
-    //MENUS
-function drawMainMenu() {
-    //Menu Bounding Box
-    strokeWeight(8);
-    stroke(midUIColor);
-    fill(veryDarkUIColor);
-    rect(mainMenuDims[0], mainMenuDims[1], mainMenuDims[2], mainMenuDims[3]);
-    strokeWeight(1);
-    //Margins and buffer between 
-    var lMarg = mainMenuDims[2] * (1/20);
-    var tMarg = mainMenuDims[3] * (1/20);
-    var lSecBuff = mainMenuDims[2] * (1/10);
-    var tSecBuff = mainMenuDims[3] * (2/10);
-    var titleWidth = mainMenuDims[2] - (lMarg * 2);
-    var titleHeight = mainMenuDims[3] * (2/10);
-
-    drawUIBoxWithText("* * * TETRIS * * *", lilDarkUIColor, midUIColor, "white", 5, 40, mainMenuDims[0]+lMarg, mainMenuDims[1]+tMarg, titleWidth, titleHeight);
-    var btnLeft = mainMenuDims[0] + lMarg;
-    var btnTop = mainMenuDims[1] + tMarg + titleHeight + tSecBuff;
-    var btnWidth = titleWidth
-    var btnHeight = mainMenuDims[3] * (1/10);
-
-    for (var i = 0; i < mainMenuOptions[0].length; i++) {
-        btnWidth = (mainMenuDims[2] - (lMarg * 2) - (lSecBuff*(mainMenuOptions[0][i].length - 1))) / mainMenuOptions[0][i].length;
-        for (var j = 0; j < mainMenuOptions[0][i].length; j++) {
-            drawUIBoxWithText(mainMenuOptions[0][i][j], lilDarkUIColor, midUIColor, "white", 2, 40, btnLeft, btnTop, btnWidth, btnHeight);
-            mainMenuOptions[1][i][j] = [btnLeft, btnTop, btnWidth, btnHeight];
-            btnLeft = btnLeft + btnWidth + lSecBuff;
-        }
-        btnLeft = mainMenuDims[0] + lMarg;
-        btnTop = btnTop + btnHeight + tMarg;
+function drawCenteredText(displayText, left, top, width, height, txtSize) {
+    let txtMaxHi = height * (9/10);
+    let txtMaxWi = width * (9/10);
+    if (!txtSize) {
+    txtSize = 100;
     }
-    highlightMenuOption([0,0,0]);
-}
-function drawSettingsMenu() {
-    var ctrTop = mMenuTop + mMenuHeight * (1/10);
-    var ctrLeft = mMenuLeft - mMenuWidth * (1/10);
-    var ctrHeight = mMenuHeight * (8/10);
-    var ctrWidth = mMenuWidth * (12/10);
-    drawUIBoxWithText("SETTINGS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
-}
-function drawControlsMenu() {
-    //Menu Bounding Box
-    strokeWeight(8);
-    stroke(midUIColor);
-    fill(veryDarkUIColor);
-    rect(controlMenuDims[0], controlMenuDims[1], controlMenuDims[2], controlMenuDims[3]);
-    strokeWeight(1);
-    //Margins and buffer between 
-    var lMarg = controlMenuDims[2] * (1/20);
-    var tMarg = controlMenuDims[3] * (1/40);
-    var lSecBuff = controlMenuDims[2] * (1/10);
-    var tSecBuff = controlMenuDims[3] * (3/20);
-    var titleWidth = controlMenuDims[2] - (lMarg * 2);
-    var titleHeight = controlMenuDims[3] * (1/20);
-
-    drawUIBoxWithText("In Game Controls", veryDarkUIColor, veryDarkUIColor, "white", 5, 40, controlMenuDims[0]+lMarg, controlMenuDims[1]+tMarg, titleWidth, titleHeight);
-    var btnLeft = controlMenuDims[0] + lMarg;
-    var btnTop = controlMenuDims[1] + tMarg + titleHeight + tMarg;
-    var btnWidth = titleWidth
-    var btnHeight = controlMenuDims[3] * (1/20);
-
-    for (var i = 0; i < 4; i++) {
-        btnWidth = (controlMenuDims[2] - (lMarg * 4) - (lSecBuff*(controlMenuOptions[0][i].length - 1))) / (controlMenuOptions[0][i].length * 2);
-        for (var j = 0; j < controlMenuOptions[0][i].length; j++) {
-
-            drawUIBoxWithText(labContArr[i][j], midUIColor, midUIColor, "white", 2, 40, btnLeft, btnTop, btnWidth, btnHeight);
-            btnLeft = btnLeft + btnWidth + lMarg;
-
-            drawUIBoxWithText(controlMenuOptions[0][i][j], lilDarkUIColor, midUIColor, "white", 2, 20, btnLeft, btnTop, btnWidth, btnHeight);
-            controlMenuOptions[1][i][j] = [btnLeft, btnTop, btnWidth, btnHeight];
-            btnLeft = btnLeft + btnWidth + lSecBuff;
-        }
-        btnLeft = controlMenuDims[0] + lMarg;
-        btnTop = btnTop + btnHeight + tMarg;
+    textSize(txtSize);
+    let textWidthValue = textWidth(displayText);
+    let textHeightValue = txtSize;
+    while ((textWidthValue > txtMaxWi || textHeightValue > txtMaxHi) && txtSize > 1) {
+        txtSize -= 1; // Decrease font size
+        textSize(txtSize);
+        textWidthValue = textWidth(displayText);
+        textHeightValue = txtSize;
     }
 
-    drawUIBoxWithText("Menu Controls", lilDarkUIColor, midUIColor, "white", 5, 40, controlMenuDims[0]+lMarg, btnTop+tSecBuff, titleWidth, titleHeight);
-    btnTop = btnTop+tSecBuff + titleHeight + tMarg;
-    for (var i = 4; i < controlMenuOptions[0].length; i++) {
-        btnWidth = (controlMenuDims[2] - (lMarg * 4) - (lSecBuff*(controlMenuOptions[0][i].length - 1))) / (controlMenuOptions[0][i].length * 2);
-        for (var j = 0; j < controlMenuOptions[0][i].length; j++) {
-            drawUIBoxWithText(labContArr[i][j], midUIColor, midUIColor, "white", 2, 40, btnLeft, btnTop, btnWidth, btnHeight);
-            btnLeft = btnLeft + btnWidth + lMarg;
-
-            drawUIBoxWithText(controlMenuOptions[0][i][j], lilDarkUIColor, midUIColor, "white", 2, 20, btnLeft, btnTop, btnWidth, btnHeight);
-            controlMenuOptions[1][i][j] = [btnLeft, btnTop, btnWidth, btnHeight];
-            btnLeft = btnLeft + btnWidth + lSecBuff;
+    if (txtSize < 30) {
+        strokeWeight(0);
+    } else {
+        strokeWeight(1);
+    }
+    fill(textColor);
+    stroke(textColor);
+    textAlign(CENTER, CENTER);
+    text(displayText, left + width / 2, top + height / 2);
+}
+//------------------------------------------------------------------------------MENU MOVEMENT--------------------------------------------------------------------------------------------
+function moveMenuCursorUp(menuOptions) {
+    var prevCursorPosition = [...curMenuPosition];
+        if (menuOptions[0].length > 1) {//if multiple rows
+            if (curMenuPosition[1] == 0){ //on top row
+                curMenuPosition[1] = menuOptions[0].length - 1;
+            } else {
+                curMenuPosition[1]--;
+                    if (menuOptions[0][curMenuPosition[1]].length < 2) {
+                        curMenuPosition[2] = 0;
+                }
+            }
+        unhighlightMenuOption(prevCursorPosition);
+        highlightMenuOption(curMenuPosition);
+    }
+}
+function moveMenuCursorDown(menuOptions) {
+    var prevCursorPosition = [...curMenuPosition];
+        if (menuOptions[0].length > 1) {//if multiple rows
+            if (curMenuPosition[1] == menuOptions[0].length - 1){ //on bot row
+                curMenuPosition[1] = 0;
+                if (menuOptions[0][curMenuPosition[1]].length == 1) {//if top row has only one
+                    curMenuPosition[2] = 0;
+                }
+            } else {
+                curMenuPosition[1]++;
+                if (menuOptions[0][curMenuPosition[1]].length < 2) {
+                    curMenuPosition[2] = 0;
+                }
+                if (!menuOptions[0][curMenuPosition[1]][curMenuPosition[2]] && curMenuPosition[2] != 0) {
+                    while (!menuOptions[0][curMenuPosition[1]][curMenuPosition[2]] && curMenuPosition[2] != 0) {
+                        curMenuPosition[2]--;
+                    }
+                }
+            }
         }
-        btnLeft = controlMenuDims[0] + lMarg;
-        btnTop = btnTop + btnHeight + tMarg;
+        unhighlightMenuOption(prevCursorPosition);
+        highlightMenuOption(curMenuPosition);
+}
+function moveMenuCursorLeft(menuOptions) {
+var prevCursorPosition = [...curMenuPosition];
+    if (menuOptions[0][curMenuPosition[1]].length > 1) {//if two cols
+        if (curMenuPosition[2] == 0){ //on first col
+            curMenuPosition[2] = (menuOptions[0][curMenuPosition[1]].length - 1);
+        } else {
+            curMenuPosition[2]--;
+        }
+        unhighlightMenuOption(prevCursorPosition);
+        highlightMenuOption(curMenuPosition);
+    }  
+}
+function moveMenuCursorRight(menuOptions) {
+    console.log("RIGHT")
+    var prevCursorPosition = [...curMenuPosition];
+        if (menuOptions[0][curMenuPosition[1]].length > 1) {//if two cols
+            if (curMenuPosition[2] == (menuOptions[0][curMenuPosition[1]].length - 1)){ //on final col
+                curMenuPosition[2]= 0;
+            } else {
+                curMenuPosition[2]++;
+            }
+            unhighlightMenuOption(prevCursorPosition);
+            highlightMenuOption(curMenuPosition);
+    }
+}
+function highlightMenuOption(posAry) {
+var btnCol = primUIColor;
+var bolCol = tertUIColor;
+var txCol = textColor
+
+var aMen = posAry[0]
+var aRow = posAry[1];
+var aCol = posAry[2];
+
+if (curMenuPosition[0] == 0) {
+    var left = mainMenuOptions[1][aRow][aCol][0];
+    var top = mainMenuOptions[1][aRow][aCol][1];
+    var width = mainMenuOptions[1][aRow][aCol][2];
+    var height = mainMenuOptions[1][aRow][aCol][3];
+    drawUIBoxWithText(mainMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 40, left, top, width, height);
+} else if (curMenuPosition[0] == 1) {
+    // var left = mainMenuOptions[1][aRow][aCol][0];
+    // var top = mainMenuOptions[1][aRow][aCol][1];
+    // var width = mainMenuOptions[1][aRow][aCol][2];
+    // var height = mainMenuOptions[1][aRow][aCol][3];
+    // drawUIBoxWithText(mainMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 40, left, top, width, height);
+} else if (curMenuPosition[0] == 2) {
+    var left = controlMenuOptions[1][aRow][aCol][0];
+    var top = controlMenuOptions[1][aRow][aCol][1];
+    var width = controlMenuOptions[1][aRow][aCol][2];
+    var height = controlMenuOptions[1][aRow][aCol][3];
+    drawUIBoxWithText(controlMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 40, left, top, width, height);
+} else if (curMenuPosition[0] == 3) {
+    var left = displayMenuOptions[1][aRow][aCol][0];
+    var top = displayMenuOptions[1][aRow][aCol][1];
+    var width = displayMenuOptions[1][aRow][aCol][2];
+    var height = displayMenuOptions[1][aRow][aCol][3];
+    var ctrlType = displayMenuOptions[2][aRow][aCol];
+
+    if (ctrlType == "clButton") {
+        drawUIBoxWithText(displayMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 20, left, top, width, height);
+    } else if (ctrlType == "arButton") {
+        if (curMenuPosition[1] == 0 && curMenuPosition[2] == 0) {
+            drawArrowButton(displayMenuOptions[0][aRow][aCol], canvasWidth, btnCol, txCol, left, top, width, height)
+        } else if (curMenuPosition[1] == 1 && curMenuPosition[2] == 0) {
+            drawArrowButton(displayMenuOptions[0][aRow][aCol], canvasHeight, btnCol, txCol, left, top, width, height)
+        }
     }
 
-    highlightMenuOption(curMenuPosition);
-}
-function drawDisplayMenu() {
-    var ctrTop = mMenuTop + mMenuHeight * (1/10);
-    var ctrLeft = mMenuLeft - mMenuWidth * (1/10);
-    var ctrHeight = mMenuHeight * (8/10);
-    var ctrWidth = mMenuWidth * (12/10);
-    drawUIBoxWithText("DISPLAY SETTINGS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
-}
-function drawSoundMenu() {
-//     var ctrTop = mMenuTop + mMenuHeight * (1/10);
-//     var ctrLeft = mMenuLeft - mMenuWidth * (1/10);
-//     var ctrHeight = mMenuHeight * (8/10);
-//     var ctrWidth = mMenuWidth * (12/10);
-//     drawUIBoxWithText("DISPLAY OPTIONS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
-    //Menu Bounding Box
-    strokeWeight(8);
-    stroke(midUIColor);
-    fill(veryDarkUIColor);
-    rect(soundMenuDims[0], soundMenuDims[1], soundMenuDims[2], soundMenuDims[3]);
-    strokeWeight(1);
-    //Margins and buffer between 
-    var lMarg = soundMenuDims[2] * (1/20);
-    var tMarg = soundMenuDims[3] * (1/20);
-    var lSecBuff = soundMenuDims[2] * (1/10);
-    var tSecBuff = soundMenuDims[3] * (3/20);
-    var titleWidth = soundMenuDims[2] - (lMarg * 2);
-    var titleHeight = soundMenuDims[3] * (1/10);
-
-    drawUIBoxWithText("Sound Settings", veryDarkUIColor, veryDarkUIColor, "white", 5, 40, soundMenuDims[0]+lMarg, soundMenuDims[1]+tMarg, titleWidth, titleHeight);
-    var btnLeft = soundMenuDims[0] + lMarg;
-    var btnTop = soundMenuDims[1] + tMarg + titleHeight + tMarg;
-    var btnWidth = titleWidth
-    var btnHeight = soundMenuDims[3] * (1/10);
-
-
-        btnWidth = (soundMenuDims[2] - (lMarg * 2) - (lSecBuff*(soundMenuOptions[0][0].length - 1))) / (soundMenuOptions[0][0].length);
-        for (var j = 0; j < soundMenuOptions[0][0].length; j++) {
-
-            //drawUIBoxWithText(labContArr[i][j], midUIColor, midUIColor, "white", 2, 40, btnLeft, btnTop, btnWidth, btnHeight);
-            //btnLeft = btnLeft + btnWidth + lMarg;
-
-            drawUIBoxWithText(soundMenuOptions[0][0][j], lilDarkUIColor, midUIColor, "white", 2, 30, btnLeft, btnTop, btnWidth, btnHeight);
-            soundMenuOptions[1][0][j] = [btnLeft, btnTop, btnWidth, btnHeight];
-            btnLeft = btnLeft + btnWidth + lSecBuff;
-
-        }
-        btnLeft = soundMenuDims[0] + lMarg;
-        btnTop = btnTop + btnHeight + tMarg;
-
-    //drawUIBoxWithText("Menu sounds", lilDarkUIColor, midUIColor, "white", 5, 40, soundMenuDims[0]+lMarg, btnTop+tSecBuff, titleWidth, titleHeight);
-    btnWidth = soundMenuDims[2] - (lMarg * 2);
-    btnHeight = soundMenuDims[3] * (3/20);
-    for (var i = 1; i < soundMenuOptions[0].length; i++) {
-
-        drawUIBoxWithText(soundMenuOptions[0][i][0], lilDarkUIColor, midUIColor, "white", 2, 30, btnLeft, btnTop, btnWidth, btnHeight);
-
-        soundMenuOptions[1][i][0] = [btnLeft, btnTop, btnWidth, btnHeight];
-        btnTop = btnTop + btnHeight + tMarg;
+} else if (curMenuPosition[0] == 4) {
+    var left = soundMenuOptions[1][aRow][aCol][0];
+    var top = soundMenuOptions[1][aRow][aCol][1];
+    var width = soundMenuOptions[1][aRow][aCol][2];
+    var height = soundMenuOptions[1][aRow][aCol][3];
+    var ctrlType = soundMenuOptions[2][aRow][aCol];
+    var volNum;
+    if (soundMenuOptions[0][aRow][aCol] == "Music Volume") {
+        volNum = audioLevels[0]
+    } else if (soundMenuOptions[0][aRow][aCol] == "SFX Volume") {
+        volNum = audioLevels[1]
+    } else if (soundMenuOptions[0][aRow][aCol] == "Sound Pack") {
+        volNum = audioLevels[2]
     }
+    if (ctrlType == "clButton") {
+        drawUIBoxWithText(soundMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 20, left, top, width, height);
+    } else if (ctrlType == "volSlide") {
+        drawVolumeSlider(soundMenuOptions[0][aRow][aCol], btnCol, "white", volNum, left, top, width, height);
+    } else if (ctrlType == "arButton") {
+        drawArrowButton(soundMenuOptions[0][aRow][aCol], audioPacks[selAudioPack], btnCol, "white", left, top, width, height)
+    }
+} else if (curMenuPosition[0] == 30) {
 
-    highlightMenuOption(curMenuPosition);
-
-    //drawUIBoxWithText("SOUND SETTINGS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
+    var left = colorChangeMenuOptions[1][aRow][0];
+    var top = colorChangeMenuOptions[1][aRow][1];
+    var width = colorChangeMenuOptions[1][aRow][2];
+    var height = colorChangeMenuOptions[1][aRow][3];
+    var ctrlType = colorChangeMenuOptions[2][aRow];
+        if (ctrlType == "clButton") {
+            drawUIBoxWithText(colorChangeMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 20, left, top, width, height);
+        } else if (ctrlType == "arButton") {
+            drawArrowButton(colorChangeMenuOptions[0][aRow], changingColor[aRow], btnCol, txCol, left, top, width, height)
+        }
+    }
 }
-function drawControlEditWindow(letter) {
-    var mRow = curMenuPosition[1];
-    var mCol = curMenuPosition[2];
-    var menWid = controlMenuDims[2] * (3/4);
-    var menHi = menWid;
-    var menLeft = (canvasWidth - menWid)/ 2;
-    var menTop = (canvasHeight - menHi)/ 2;
+function unhighlightMenuOption(posAry) {
+var btnCol = secUIColor;
+var bolCol = accentColor;
+var txCol = textColor;
+
+var aMen = posAry[0]
+var aRow = posAry[1];
+var aCol = posAry[2];
 
 
-    drawUIBoxWithText("", veryDarkUIColor, midUIColor, lightUIColor, 5, 0, menLeft, menTop, menWid, menHi);
-
-    drawUIBoxWithText("Changing key for [ " + labContArr[mRow][mCol] + " ]", midUIColor, midUIColor, "black", 0, 60, menLeft, menTop, menWid, menHi * (2/10));
-
-    drawUIBoxWithText(letter, darkUIColor, midUIColor, "white", 5, 60, menLeft, menTop+menHi * (2/10), menWid, menHi * (6/10));
-
-    drawUIBoxWithText("Press 'Next' to Confirm, or 'Back' to Cancel.", midUIColor, midUIColor, "black", 0, 60, menLeft, menTop+menHi * (8/10), menWid, menHi * (2/10));
-
-
+if (curMenuPosition[0] == 0) {
+    var left = mainMenuOptions[1][aRow][aCol][0];
+    var top = mainMenuOptions[1][aRow][aCol][1];
+    var width = mainMenuOptions[1][aRow][aCol][2];
+    var height = mainMenuOptions[1][aRow][aCol][3];
+    drawUIBoxWithText(mainMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 2, 40, left, top, width, height);
+} else  if (curMenuPosition[0] == 1) {
+    // var left = mainMenuOptions[1][aRow][aCol][0];
+    // var top = mainMenuOptions[1][aRow][aCol][1];
+    // var width = mainMenuOptions[1][aRow][aCol][2];
+    // var height = mainMenuOptions[1][aRow][aCol][3];
+    // drawUIBoxWithText(mainMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 4, 40, left, top, width, height);
+} else if (curMenuPosition[0] == 2) {
+    var left = controlMenuOptions[1][aRow][aCol][0];
+    var top = controlMenuOptions[1][aRow][aCol][1];
+    var width = controlMenuOptions[1][aRow][aCol][2];
+    var height = controlMenuOptions[1][aRow][aCol][3];
+    drawUIBoxWithText(controlMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 2, 20, left, top, width, height);
+} else if (curMenuPosition[0] == 3) {
+    var left = displayMenuOptions[1][aRow][aCol][0];
+    var top = displayMenuOptions[1][aRow][aCol][1];
+    var width = displayMenuOptions[1][aRow][aCol][2];
+    var height = displayMenuOptions[1][aRow][aCol][3];
+    drawUIBoxWithText(displayMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 2, 20, left, top, width, height);
+} else if (curMenuPosition[0] == 4) {
+    var left = soundMenuOptions[1][aRow][aCol][0];
+    var top = soundMenuOptions[1][aRow][aCol][1];
+    var width = soundMenuOptions[1][aRow][aCol][2];
+    var height = soundMenuOptions[1][aRow][aCol][3];
+    drawUIBoxWithText(soundMenuOptions[0][aRow][aCol], btnCol, bolCol, txCol, 2, 20, left, top, width, height);
+} else if (curMenuPosition[0] == 30) {
+    var left = colorChangeMenuOptions[1][aRow][0];
+    var top = colorChangeMenuOptions[1][aRow][1];
+    var width = colorChangeMenuOptions[1][aRow][2];
+    var height = colorChangeMenuOptions[1][aRow][3];
+    drawUIBoxWithText(colorChangeMenuOptions[0][aRow], btnCol, bolCol, txCol, 2, 40, left, top, width, height);
 }
-//------------------------------------------------------------------------------KEYPRESS--------------------------------------------------------------------------------------------
+}
+
+//------------------------------------------------------------------------------INPUT--------------------------------------------------------------------------------------------
 function keyPressed() {
     //if no music is play, start menu music!
     if (gameState == 0) {//if in pre-game menus
@@ -2873,8 +3340,129 @@ function keyPressed() {
                 drawMainMenu();//return to main menu
             }
         } else if (curMenuPosition[0] == 3) {//display menu
-            if (key.toUpperCase() === playControls[6][0]) {
-                //
+            if (key.toUpperCase() === playControls[4][0]) {
+                if (curMenuPosition[1] == 0) {
+                    if (canvasWidth > 199) {
+                        if (canvasWidth % 100 != 0) {
+                            canvasWidth = largestMultipleOf100(canvasWidth);
+                            resetDims();
+                            highlightMenuOption(curMenuPosition);
+                        } else {
+                            canvasWidth -= 100;
+                            resetDims();
+                            highlightMenuOption(curMenuPosition);
+                        }
+                    }
+                } else if (curMenuPosition[1] == 1) {
+                    if (canvasHeight > 199) {
+                        if (canvasHeight % 100 != 0) {
+                            canvasHeight = largestMultipleOf100(canvasHeight);
+                            resetDims();
+                            highlightMenuOption(curMenuPosition);
+                        } else {
+                            canvasHeight -= 100;
+                            resetDims();
+                            highlightMenuOption(curMenuPosition);
+                        }
+                    }
+                } else {
+                    moveMenuCursorLeft(displayMenuOptions);
+                }
+            } else if (key.toUpperCase() === playControls[4][1]){
+                console.log(curMenuPosition);
+                if (curMenuPosition[1] == 0) {
+                    if (canvasWidth < 1901) {
+                        if (canvasWidth % 100 != 0) {
+                            canvasWidth = largestMultipleOf100(canvasWidth) + 100;
+                            resetDims();
+                            highlightMenuOption(curMenuPosition);
+                        } else {
+                            canvasWidth += 100;
+                            resetDims();
+                            highlightMenuOption(curMenuPosition);
+                        }
+                    }
+                } else if (curMenuPosition[1] == 1) {
+                    if (canvasHeight < 1901) {
+                        if (canvasHeight % 100 != 0) {
+                            canvasHeight = largestMultipleOf100(canvasHeight) + 100;
+                            resetDims();
+                            highlightMenuOption(curMenuPosition);
+                        } else {
+                            canvasHeight += 100;
+                            resetDims();
+                            highlightMenuOption(curMenuPosition);
+                        }
+                    }
+                } else {
+                    moveMenuCursorRight(displayMenuOptions);
+                }
+            } else if (key.toUpperCase() === playControls[5][0]){
+                moveMenuCursorUp(displayMenuOptions);
+            } else if (key.toUpperCase() === playControls[5][1]){
+                moveMenuCursorDown(displayMenuOptions);
+            } else if (key.toUpperCase() === playControls[6][0]) {
+                if (curMenuPosition[1] > 1 && curMenuPosition[1] < 6) {
+                    
+                    if (curMenuPosition[1] == 2 && curMenuPosition[2] == 0) {
+                        changingColor = tetroColors[0];
+                        chColVal = 1;
+                    }
+                    if (curMenuPosition[1] == 2 && curMenuPosition[2] == 1) {
+                        changingColor = tetroColors[1];
+                        chColVal = 2;
+                    }
+                    if (curMenuPosition[1] == 2 && curMenuPosition[2] == 2) {
+                        changingColor = tetroColors[2];
+                        chColVal = 3;
+                    }
+                    if (curMenuPosition[1] == 2 && curMenuPosition[2] == 3) {
+                        changingColor = tetroColors[3];
+                        chColVal = 4;
+                    }
+                    if (curMenuPosition[1] == 3 && curMenuPosition[2] == 0) {
+                        changingColor = tetroColors[4];
+                        chColVal = 5;
+                    }
+                    if (curMenuPosition[1] == 3 && curMenuPosition[2] == 1) {
+                        changingColor = tetroColors[5];
+                        chColVal = 6;
+                    }
+                    if (curMenuPosition[1] == 3 && curMenuPosition[2] == 2) {
+                        changingColor = tetroColors[6];
+                        chColVal = 7;
+                    }
+                    if (curMenuPosition[1] == 3 && curMenuPosition[2] == 3) {
+                        changingColor = ghostColor;
+                        chColVal = 8;
+                    }
+                    if (curMenuPosition[1] == 4 && curMenuPosition[2] == 0) {
+                        changingColor = gridColor;
+                        chColVal = 9;
+                    }
+                    if (curMenuPosition[1] == 4 && curMenuPosition[2] == 1) {
+                        changingColor = primUIColor;
+                        chColVal = 10;
+                    }
+                    if (curMenuPosition[1] == 4 && curMenuPosition[2] == 2) {
+                        changingColor = secUIColor;
+                        chColVal = 11;
+                    }
+                    if (curMenuPosition[1] == 4 && curMenuPosition[2] == 3) {
+                        changingColor = tertUIColor;
+                        chColVal = 12;
+                    }
+                    if (curMenuPosition[1] == 5 && curMenuPosition[2] == 0) {
+                        changingColor = accentColor;
+                        chColVal = 13;
+                    }
+                    if (curMenuPosition[1] == 5 && curMenuPosition[2] == 1) {
+                        changingColor = textColor;
+                        chColVal = 14;
+                    }
+                    curMenuPosition = [30,0,0];
+                    drawColorChangeMenu(changingColor);
+                }
             } else if (key.toUpperCase() === playControls[6][1]) {
                 curMenuPosition = [0,0,0];//reset position to home of main menu
                 drawMainMenu();//return to main menu
@@ -2942,7 +3530,6 @@ function keyPressed() {
                         if (SFXMute == false) {
                             SFXMute = true;
                             soundMenuOptions[0][0][1] = "Unmute SFX Volume"
-                            console.log(soundMenuOptions[0][0][1]);
                             highlightMenuOption(curMenuPosition);
                         } else {
                             SFXMute = false;
@@ -2969,6 +3556,40 @@ function keyPressed() {
             } else {
                 drawControlEditWindow(key.toUpperCase());
                 changingKey = key.toUpperCase();
+            }
+        } else if (curMenuPosition[0] == 30) {
+            if (key.toUpperCase() === playControls[4][0]) {
+                if (curMenuPosition[1] != 3) {
+                    if (changingColor[curMenuPosition[1]] > 0) {
+                        changingColor[curMenuPosition[1]]--;
+                        drawColorChangeMenu(changingColor);
+                    }
+                }
+            } else if (key.toUpperCase() === playControls[4][1]){
+                if (curMenuPosition[1] != 3) {
+                    if (changingColor[curMenuPosition[1]] < 255) {
+                        changingColor[curMenuPosition[1]]++;
+                        drawColorChangeMenu(changingColor);
+                    }
+                }
+            } else if (key.toUpperCase() === playControls[5][0]){
+                moveMenuCursorUp(colorChangeMenuOptions);
+            } else if (key.toUpperCase() === playControls[5][1]){
+                moveMenuCursorDown(colorChangeMenuOptions);
+            } else if (key.toUpperCase() === playControls[6][0]) {
+                if (curMenuPosition[1] == 3) {
+                    if (chColVal != 0){
+                        updateColors();
+                    }
+                    curMenuPosition = [3,0,0];
+                    drawDisplayMenu();
+                }
+            } else if (key.toUpperCase() === playControls[6][1]) {
+                if (chColVal != 0){
+                    updateColors();
+                }
+                curMenuPosition = [3,0,0];
+                drawDisplayMenu();
             }
         }
     } else {
@@ -3072,6 +3693,10 @@ function keyReleased() {
         dasCounter = 0;
     }
 }
+function windowResized() {
+    getStartingDims();
+    resetDims();
+}
 //-----------------------------------------------------------------------------MATH/UTILS-------------------------------------------------------------------------------------------
 function getRandBetween(min, max) {
     min = Math.ceil(min);
@@ -3136,5 +3761,8 @@ function msToMinuteSecondTime(millisecondsIn) {
     outString = mString + ":" + sString + ":" +msString;
     return outString;
 
+}
+function largestMultipleOf100(inputNumber) {
+    return Math.floor(inputNumber / 100) * 100;
 }
 //-------------------------------------------------------------------------------DEBUG----------------------------------------------------------------------------------------------
