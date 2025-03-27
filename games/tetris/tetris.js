@@ -1,8 +1,7 @@
 //NEEDS BETTER RANDOMIZTION
 //BETTER SCORE CALCULATION
-//WORK ON T-SPIN DETECTION
-//WORK ON RIGHT SIDE UI
-//WORK ON DISPLAY MENU
+//MOUSE FOR BUTTONS
+//HOLD BUTTONS DOWN
 //WORK ON SETTIGNS MENU
 //
 //====================================================================================GLOBAL VARIABLES=================================================================================================================
@@ -771,26 +770,8 @@ function stopMusic() {
     }
 }
 function initVolume() {
-    menuMusic.setVolume(0.5);
-    level12Music.setVolume(0.5);
-    level34Music.setVolume(0.5);
-    level56Music.setVolume(0.5);
-    level78Music.setVolume(0.5);
-    level910Music.setVolume(0.5);
-    level1112Music.setVolume(0.5);
-    level1314Music.setVolume(0.5);
-    level1516Music.setVolume(0.5);
-    level1718Music.setVolume(0.5);
-    level19PMusic.setVolume(0.5);
-    singleClearSound.setVolume(0.5);
-    doubleClearSound.setVolume(0.5);
-    tripleClearSound.setVolume(0.5);
-    fourClearSound.setVolume(0.5);
-    BtoBTetrisSound.setVolume(0.5)
-    allClearSound.setVolume(0.5);
-    deathSound.setVolume(0.5);
-    tspinSound.setVolume(0.5);
-    tspinMiniSound.setVolume(0.5);
+    setMusicVolume(audioLevels[0]);
+    setSFXVolume(audioLevels[1]);
 }
 function setMusicVolume(newVol) {
     menuMusic.setVolume(newVol/100);
@@ -862,11 +843,11 @@ function playNewSoundPack() {
         level56Music = loadSound('aud/crash/level56Music.wav');
         level78Music = loadSound('aud/crash/level78Music.wav');
         level910Music = loadSound('aud/crash/level910Music.wav');
-        level1112Music = loadSound('aud/classic/level1112Music.wav');
-        level1314Music = loadSound('aud/classic/level1314Music.wav');
-        level1516Music = loadSound('aud/classic/level1516Music.wav');
-        level1718Music = loadSound('aud/classic/level1718Music.wav');
-        level19PMusic = loadSound('aud/classic/level19PMusic.wav');
+        level1112Music = loadSound('aud/crash/level1112Music.wav');
+        level1314Music = loadSound('aud/crash/level1314Music.wav');
+        level1516Music = loadSound('aud/crash/level1516Music.wav');
+        level1718Music = loadSound('aud/crash/level1718Music.wav');
+        level19PMusic = loadSound('aud/crash/level19PMusic.wav');
         singleClearSound = loadSound('aud/crash/singleClearSound.wav');
         doubleClearSound = loadSound('aud/crash/doubleClearSound.wav');
         tripleClearSound = loadSound('aud/crash/tripleClearSound.wav');
@@ -1020,7 +1001,7 @@ function wasAllClear() {
 function levelUp() {
     clearsToLevel = 10;
     level++;
-    if (musicMute ==false) {
+    if (musicMute == false) {
         if (level == 3) {
             if (level12Music.isPlaying()) {
                 level12Music.stop(); // Stop the music
@@ -1085,7 +1066,7 @@ function levelUp() {
                 level1718Music.loop(); // Start and loop the music
             }
         }
-        if (level == 9) {
+        if (level == 19) {
             if (level1718Music.isPlaying()) {
                 level1718Music.stop(); // Stop the music
             }
