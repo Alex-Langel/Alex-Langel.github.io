@@ -48,18 +48,18 @@ function drawControls() {
     if (gameState == 0) {
         strokeWeight(lineSize);
         stroke(0,0,0);
-        fill(0,50,0);
+        fill(50,0,100);
         rect(0,height*(8/10),width/2,height*(2/10));
         drawCenteredText("vs Human",0,height*(8/10),width/2,height*(2/10), 80);
         strokeWeight(lineSize);
         stroke(0,0,0);
-        fill(0,100,0);
+        fill(100,0,200);
         rect(width/2,height*(8/10),width/2,height*(2/10));
         drawCenteredText(" vs CPU", width/2,height*(8/10),width/2,height*(2/10), 80);
     } else {
         strokeWeight(lineSize);
         stroke(0,0,0);
-        fill(0,200,0);
+        fill(75,0,150);
         rect(0,height*(8/10),width,height*(2/10));
         drawCenteredText("Reset",0,height*(8/10),width,height*(2/10), 160);
     }
