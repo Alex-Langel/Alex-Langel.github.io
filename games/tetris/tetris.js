@@ -27,19 +27,30 @@ var cellWid = gridWidth / gridCols;
 var cellHi = gridHeight / gridRows;
 
 //Menu Positioning
-var mainMenuDims =  [canvasWidth * (1/10), 
-                    canvasHeight * (1/10), 
-                    canvasWidth * (8/10), 
-                    canvasHeight * (8/10)];
+var mainMenuDims =      [canvasWidth * (1/10), 
+                        canvasHeight * (1/10), 
+                        canvasWidth * (8/10), 
+                        canvasHeight * (8/10)];
+
+var settingsMenuDims =  [canvasWidth * (4/20),
+                        canvasHeight * (1/20),
+                        canvasWidth * (6/10),
+                        canvasHeight * (9/10)];
+
 var controlMenuDims =   [mainMenuDims[0] + mainMenuDims[2] * (1/10), 
                         mainMenuDims[1] - mainMenuDims[3] * (1/10), 
                         mainMenuDims[2] * (8/10),
                         mainMenuDims[3] * (12/10)];
 
-var soundMenuDims = [mainMenuDims[0] - mainMenuDims[2] * (1/10), 
-                    mainMenuDims[1] + mainMenuDims[3] * (1/10), 
-                    mainMenuDims[2] * (12/10),
-                    mainMenuDims[3] * (8/10)];
+var soundMenuDims =     [mainMenuDims[0] - mainMenuDims[2] * (1/10), 
+                        mainMenuDims[1] + mainMenuDims[3] * (1/10), 
+                        mainMenuDims[2] * (12/10),
+                        mainMenuDims[3] * (8/10)];
+
+var displayMenuDims =   [canvasWidth * (1/20),
+                        canvasHeight * (1/20),
+                        canvasWidth * (9/10),
+                        canvasHeight * (9/10)];
 
 
 //Controls
@@ -79,10 +90,6 @@ let tertUIColor = [60,25,100];
 let accentColor = [171,131,235];
 let textColor = [255,255,255];
 let tetroColors = [[0,255,255],[255,255,0],[255,0,255],[0,0,255],[255,165,0],[0,128,0],[255,0,0]];
-
-
-
-let bgColor = [5,5,5];//remove
 
 let lightUIColor = [200,200,200];
 let lilLightUIColor = [170,170,170];
@@ -465,8 +472,8 @@ function getStartingDims() {
     newHeight = Math.min(newHeight, newWidth);
     newWidth = Math.min(newHeight, newWidth);
     console.log(newHeight);
-    canvasHeight = Math.max(newHeight, 200);
-    canvasWidth = Math.max(newWidth, 200);
+    canvasHeight = Math.max(newHeight, 300);
+    canvasWidth = Math.max(newWidth, 300);
 }
 function resetDims() {
     resizeCanvas(canvasWidth, canvasHeight);
@@ -484,16 +491,26 @@ function resetDims() {
         canvasHeight * (1/10), 
         canvasWidth * (8/10), 
         canvasHeight * (8/10)];
+
     controlMenuDims =   [mainMenuDims[0] + mainMenuDims[2] * (1/10), 
             mainMenuDims[1] - mainMenuDims[3] * (1/10), 
             mainMenuDims[2] * (8/10),
             mainMenuDims[3] * (12/10)];
+
+    settingsMenuDims =  [canvasWidth * (4/20),
+        canvasHeight * (1/20),
+        canvasWidth * (6/10),
+        canvasHeight * (9/10)];
 
     soundMenuDims = [mainMenuDims[0] - mainMenuDims[2] * (1/10), 
         mainMenuDims[1] + mainMenuDims[3] * (1/10), 
         mainMenuDims[2] * (12/10),
         mainMenuDims[3] * (8/10)];
 
+    displayMenuDims =   [canvasWidth * (1/20),
+        canvasHeight * (1/20),
+        canvasWidth * (9/10),
+        canvasHeight * (9/10)];
 
     if (gameState == 0) {
         if (curMenuPosition[0] == 0) {
@@ -2726,11 +2743,27 @@ function drawMainMenu() {
     highlightMenuOption([0,0,0]);
 }
 function drawSettingsMenu() {
-    var ctrTop = mainMenuDims[0] * (1/10);
-    var ctrLeft = mainMenuDims[1] * (1/10);
-    var ctrHeight = mainMenuDims[2] * (8/10);
-    var ctrWidth = mainMenuDims[3] * (12/10);
-    drawUIBoxWithText("SETTINGS COMING SOON", darkUIColor, lightUIColor, "white", 1, 20, ctrTop, ctrLeft, ctrHeight, ctrWidth);
+    strokeWeight(8);
+    stroke(accentColor);
+    fill(secUIColor);
+    rect(settingsMenuDims[0], settingsMenuDims[1], settingsMenuDims[2], settingsMenuDims[3]);
+    strokeWeight(1);
+
+
+    var lMarg = settingsMenuDims[2] * (1/20);
+    var tMarg = settingsMenuDims[3] * (1/40);
+    var lSecBuff = settingsMenuDims[2] * (1/10);
+    var tSecBuff = settingsMenuDims[3] * (3/20);
+    var titleWidth = settingsMenuDims[2] - (lMarg * 2);
+    var titleHeight = settingsMenuDims[3] * (1/20);
+
+    drawUIBoxWithText("Settings", secUIColor, accentColor, textColor, 0, 40, settingsMenuDims[0]+lMarg, settingsMenuDims[1]+tMarg, titleWidth, titleHeight);
+    var btnLeft = settingsMenuDims[0] + lMarg;
+    var btnTop = settingsMenuDims[1] + tMarg + titleHeight + tMarg;
+    var btnWidth = titleWidth
+    var btnHeight = settingsMenuDims[3] * (1/20);
+
+    //drawUIBoxWithText("SETTINGS COMING SOON", secUIColor, accentColor, textColor, 1, 20, ctrLeft, ctrTop, ctrWidth, ctrHeight);
 }
 function drawControlsMenu() {
     //Menu Bounding Box
@@ -2787,10 +2820,10 @@ function drawControlsMenu() {
     highlightMenuOption(curMenuPosition);
 }
 function drawDisplayMenu() {
-    var left = canvasWidth * (1/20);
-    var top = canvasHeight * (1/20);
-    var width = canvasWidth * (9/10);
-    var height = canvasHeight * (9/10);
+    var left = displayMenuDims[0];
+    var top = displayMenuDims[1];
+    var width = displayMenuDims[2];
+    var height = displayMenuDims[3];
     var tMarg = height * (1/40);
     var lMarg = height * (1/20);
     var sectionSep = height * (1/20);
@@ -2802,6 +2835,8 @@ function drawDisplayMenu() {
     stroke(accentColor);
     strokeWeight(5);
     fill(secUIColor);
+    console.log(width);
+    console.log(canvasWidth);
     rect(left, top, width, height);
     strokeWeight(1);
 
@@ -2907,17 +2942,8 @@ function drawControlEditWindow(letter) {
     drawUIBoxWithText("Press 'Next' to Confirm, or 'Back' to Cancel.", midUIColor, midUIColor, "black", 0, 60, menLeft, menTop+menHi * (8/10), menWid, menHi * (2/10));
 }
 function drawColorChangeMenu(color) {
-
-
-
-
-
-
-
-
-
     var left = canvasWidth / 4;
-    var top = canvasHeight / 3;
+    var top = canvasHeight / 5;
     var width = canvasWidth / 2;
     var height = canvasHeight / 1.5;
     //var color = [255,0,0];
@@ -3465,8 +3491,8 @@ function keyPressed() {
             }
         } else if (curMenuPosition[0] == 3) {//display menu
             if (key.toUpperCase() === playControls[4][0]) {
-                if (curMenuPosition[1] == 0) {
-                    if (canvasWidth > 299) {
+                if (curMenuPosition[1] == 0 ) {
+                    if (canvasWidth > 399 && canvasWidth > canvasHeight / 2.5) {
                         if (canvasWidth % 100 != 0) {
                             canvasWidth = largestMultipleOf100(canvasWidth);
                             resetDims();
@@ -3478,8 +3504,8 @@ function keyPressed() {
                         }
                     }
                 } else if (curMenuPosition[1] == 1) {
-                    if (canvasHeight > 299) {
-                        if (canvasHeight % 100 != 0) {
+                    if (canvasHeight > 399 && canvasHeight > canvasWidth / 2.5) {
+                        if (canvasHeight % 100 != 0 ) {
                             canvasHeight = largestMultipleOf100(canvasHeight);
                             resetDims();
                             highlightMenuOption(curMenuPosition);
@@ -3495,7 +3521,7 @@ function keyPressed() {
             } else if (key.toUpperCase() === playControls[4][1]){
                 console.log(curMenuPosition);
                 if (curMenuPosition[1] == 0) {
-                    if (canvasWidth < 1901) {
+                    if (canvasWidth < 1901 && canvasWidth < canvasHeight * 2.5) {
                         if (canvasWidth % 100 != 0) {
                             canvasWidth = largestMultipleOf100(canvasWidth) + 100;
                             resetDims();
@@ -3507,7 +3533,7 @@ function keyPressed() {
                         }
                     }
                 } else if (curMenuPosition[1] == 1) {
-                    if (canvasHeight < 1901) {
+                    if (canvasHeight < 1901 && canvasHeight < canvasWidth * 2.5) {
                         if (canvasHeight % 100 != 0) {
                             canvasHeight = largestMultipleOf100(canvasHeight) + 100;
                             resetDims();
@@ -3785,8 +3811,8 @@ function keyPressed() {
                     holdLock = true;
                     holdPiece();
                 }
-        } else if (key.toUpperCase() === playControls[3][1]) { //RESTART KEY
-            beingGame();
+        } else if (key.toUpperCase() === playControls[3][1]) { //RESTART KEY 
+            beginGame();
         } else if (key.toUpperCase() === playControls[6][0]) { //NEXT KEY
             //beginGame();
         } else if (key.toUpperCase() === playControls[6][1]) { //BACK KEY
