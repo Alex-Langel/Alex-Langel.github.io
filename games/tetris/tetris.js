@@ -3785,7 +3785,8 @@ function keyPressed() {
                     holdLock = true;
                     holdPiece();
                 }
-        } else if (key.toUpperCase() === playControls[3][1]) { //RESTART KEY 
+        } else if (key.toUpperCase() === playControls[3][1]) { //RESTART KEY
+            beingGame();
         } else if (key.toUpperCase() === playControls[6][0]) { //NEXT KEY
             //beginGame();
         } else if (key.toUpperCase() === playControls[6][1]) { //BACK KEY
