@@ -48,6 +48,7 @@ var labContArr = [["Move Left", "Move Right"],["Soft Drop", "Hard Drop"], ["Rota
 let changingKey = "";
 let changingColor = [0,0,0];
 let chColVal = 0;
+let menuHeldTime = 0;
 //Menus
 let curMenuPosition = [0,0,0];
 let mainMenuOptions = [[["Play Game"], ["Settings", "Controls"], ["Display", "Sound"]],
@@ -183,6 +184,70 @@ let level = 1;                          //Counter for current level
 let startTimer;                         //Start of Time Tracking
 let elapsedTime = 0;                        //Time since Time Tracking began
 
+//LOCAL STORAGE
+function saveColors() {
+    // Create an object with all the color variables
+    const colors = {
+        gridColor: gridColor,
+        ghostColor: ghostColor,
+        primUIColor: primUIColor,
+        secUIColor: secUIColor,
+        tertUIColor: tertUIColor,
+        accentColor: accentColor,
+        textColor: textColor,
+        tetroColors: tetroColors
+    };
+
+    // Save the colors object as a JSON string in localStorage
+    localStorage.setItem('userColors', JSON.stringify(colors));
+}
+function loadColors() {
+    // Retrieve the saved colors from localStorage
+    const savedColors = localStorage.getItem('userColors');
+
+    // If there are saved colors, parse the JSON and apply them
+    if (savedColors) {
+        const colors = JSON.parse(savedColors);
+        
+        // Assign the stored colors back to your color variables
+        gridColor = colors.gridColor || gridColor;
+        ghostColor = colors.ghostColor || ghostColor;
+        primUIColor = colors.primUIColor || primUIColor;
+        secUIColor = colors.secUIColor || secUIColor;
+        tertUIColor = colors.tertUIColor || tertUIColor;
+        accentColor = colors.accentColor || accentColor;
+        textColor = colors.textColor || textColor;
+        tetroColors = colors.tetroColors || tetroColors;
+    }
+}
+function saveAudio() {
+    // Save the playControls array as a JSON string in localStorage
+    localStorage.setItem('userAudio', JSON.stringify(audioLevels));
+}
+function loadAudio() {
+    // Retrieve the saved Audio from localStorage
+    const savedAudio = localStorage.getItem('userAudio');
+    
+    // If there are saved Audio, parse and apply them
+    if (savedAudio) {
+        audioLevels = JSON.parse(savedAudio);
+    }
+}
+function saveControls() {
+    // Save the playControls array as a JSON string in localStorage
+    localStorage.setItem('userControls', JSON.stringify(playControls));
+}
+function loadControls() {
+    // Retrieve the saved controls from localStorage
+    const savedControls = localStorage.getItem('userControls');
+    
+    // If there are saved controls, parse and apply them
+    if (savedControls) {
+        playControls = JSON.parse(savedControls);
+        controlMenuOptions[0] = [...playControls];
+    }
+}
+
 //FIRST TIME SETUP
 function preload() {
     menuMusic = loadSound('aud/classic/menuMusic.wav');
@@ -219,6 +284,9 @@ function setup(){
     let canvas = createCanvas(canvasWidth, canvasHeight);
     canvas.parent("canvCont");
     grid = initGrid();
+    loadColors();
+    loadAudio();
+    loadControls();
     initBags();
     drawGrid();
     drawUI();
@@ -229,7 +297,60 @@ function setup(){
 //MAIN GAME LOOP
 function draw(){
     if (gameState == 0) {
-
+        if (curMenuPosition[0] == 4) {
+            if (holdingRight == true) {
+                if (curMenuPosition[1] == 1) {
+                    if (menuHeldTime > 10) {
+                        if (audioLevels[0] < 100) {
+                            audioLevels[0] ++;
+                            setMusicVolume(audioLevels[0]);
+                            highlightMenuOption(curMenuPosition);
+                        }
+                    }
+                } else if (curMenuPosition[1] == 2) {
+                    if (menuHeldTime > 10) {
+                        if (audioLevels[1] < 100) {
+                            audioLevels[1] ++;
+                            setMusicVolume(audioLevels[1]);
+                            highlightMenuOption(curMenuPosition);
+                        }
+                    }
+                }
+            }
+            if (holdingLeft == true) {
+                if (curMenuPosition[1] == 1) {
+                    if (menuHeldTime > 10) {
+                        if (audioLevels[0] > 0) {
+                            audioLevels[0] --;
+                            setMusicVolume(audioLevels[0]);
+                            highlightMenuOption(curMenuPosition);
+                        }
+                    }
+                } else if (curMenuPosition[1] == 2) {
+                    if (menuHeldTime > 10) {
+                        if (audioLevels[1] > 0) {
+                            audioLevels[1] --;
+                            setMusicVolume(audioLevels[1]);
+                            highlightMenuOption(curMenuPosition);
+                        }
+                    }
+                }
+            }
+        } else if (curMenuPosition[0] == 30) {
+            if (holdingRight == true) {
+                if (menuHeldTime > 10) {
+                    increaseColorVal();
+                }
+            }
+            if (holdingLeft == true) {
+                if (menuHeldTime > 10) {
+                    decreaseColorVal();
+                }
+            }
+        }
+    if (holdingLeft || holdingRight) {
+        menuHeldTime++;
+    }
     } else if (gameState == 1) {//game running
         elapsedTime = millis() - startTimer;
         drawTimer();
@@ -785,7 +906,7 @@ function setMusicVolume(newVol) {
     level1516Music.setVolume(newVol/100);
     level1718Music.setVolume(newVol/100);
     level19PMusic.setVolume(newVol/100);
-
+    saveAudio();
 }
 function setSFXVolume(newVol) {
     singleClearSound.setVolume(newVol/100);
@@ -793,25 +914,26 @@ function setSFXVolume(newVol) {
     tripleClearSound.setVolume(newVol/100);
     fourClearSound.setVolume(newVol/100);
     allClearSound.setVolume(newVol/100);
+    saveAudio();
 }
 function incSoundPack() {
     stopMusic();
-     if (selAudioPack == audioPacks.length - 1) {
-        selAudioPack = 0;
+     if (audioLevels[2] == audioPacks.length - 1) {
+        audioLevels[2] = 0;
      } else {
-        selAudioPack++;
+        audioLevels[2]++;
      }
 }
 function decSoundPack() {
     stopMusic();
-    if (selAudioPack == 0) {
-       selAudioPack = audioPacks.length - 1;
+    if (audioLevels[2] == 0) {
+       audioLevels[2] = audioPacks.length - 1;
     } else {
-       selAudioPack--;
+       audioLevels[2]--;
     }
 }
 function playNewSoundPack() {
-    switch(selAudioPack) {
+    switch(audioLevels[2]) {
     case 0:
         stopMusic();
         menuMusic = loadSound('aud/classic/menuMusic.wav', onSoundLoaded);
@@ -882,6 +1004,74 @@ function playNewSoundPack() {
         deathSound = loadSound('aud/classic/deathSound.wav');
     break;
     }
+    initVolume();
+    saveAudio();
+}
+function increaseColorVal() {
+    if (curMenuPosition[1] != 3) {
+        if (changingColor[curMenuPosition[1]] < 255) {
+            changingColor[curMenuPosition[1]]++;
+            drawColorChangeMenu(changingColor);
+        }
+    }
+}
+function decreaseColorVal() {
+    if (curMenuPosition[1] != 3) {
+        if (changingColor[curMenuPosition[1]] > 0) {
+            changingColor[curMenuPosition[1]]--;
+            drawColorChangeMenu(changingColor);
+        }
+    }
+}
+function updateColors() {
+    if (chColVal != 0) {
+        switch (chColVal) {
+            case 1:
+                curTetro[0] = changingColor;
+            break;
+            case 2:
+                curTetro[1] = changingColor;
+            break;
+            case 3:
+                curTetro[2] = changingColor;
+            break;
+            case 4:
+                curTetro[3] = changingColor;
+            break;
+            case 5:
+                curTetro[4] = changingColor;
+            break;
+            case 6:
+                curTetro[5] = changingColor;
+            break;
+            case 7:
+                curTetro[6] = changingColor;
+            break;
+            case 8:
+                ghostColor = changingColor;
+            break;
+            case 9:
+                gridColor = changingColor;
+            break;
+            case 10:
+                primUIColor = changingColor;
+            break;
+            case 11:
+                secUIColor = changingColor;
+            break;
+            case 12:
+                tertUIColor = changingColor;
+            break;
+            case 13:
+                accentColor = changingColor;
+            break;
+            case 14:
+                textColor = changingColor;
+            break;
+        }
+        chColVal = 0;
+    }
+    saveColors();
 }
 //-----------------------------------------------------------------------------OTHER  ---------------------------------------------------------------------------------------------
 function getClearString() {
@@ -1104,55 +1294,7 @@ function deleteAndPushRow(rowNum) {
         grid[0][j] = "";
     }
 }
-function updateColors() {
-    if (chColVal != 0) {
-        switch (chColVal) {
-            case 1:
-                curTetro[0] = changingColor;
-            break;
-            case 2:
-                curTetro[1] = changingColor;
-            break;
-            case 3:
-                curTetro[2] = changingColor;
-            break;
-            case 4:
-                curTetro[3] = changingColor;
-            break;
-            case 5:
-                curTetro[4] = changingColor;
-            break;
-            case 6:
-                curTetro[5] = changingColor;
-            break;
-            case 7:
-                curTetro[6] = changingColor;
-            break;
-            case 8:
-                ghostColor = changingColor;
-            break;
-            case 9:
-                gridColor = changingColor;
-            break;
-            case 10:
-                primUIColor = changingColor;
-            break;
-            case 11:
-                secUIColor = changingColor;
-            break;
-            case 12:
-                tertUIColor = changingColor;
-            break;
-            case 13:
-                accentColor = changingColor;
-            break;
-            case 14:
-                textColor = changingColor;
-            break;
-        }
-        chColVal = 0;
-    }
-}
+
 //-----------------------------------------------------------------------------MOVEMENT---------------------------------------------------------------------------------------------
 function onGround(cells) {
     for (let i = 0; i < 4; i++) {
@@ -2102,6 +2244,7 @@ function holdPiece() {
     drawHoldPiece(heldTetro);
 }
 //-----------------------------------------------------------------------------MOVEMENT UTIL---------------------------------------------------------------------------------------------
+
 function tryMovement(cellArray, offsetX, offsetY) {
     let tempPositions = cellArray.map(cell => [...cell]);
     // Apply offset to all positions
@@ -3196,7 +3339,7 @@ if (curMenuPosition[0] == 0) {
     } else if (ctrlType == "volSlide") {
         drawVolumeSlider(soundMenuOptions[0][aRow][aCol], btnCol, "white", volNum, left, top, width, height);
     } else if (ctrlType == "arButton") {
-        drawArrowButton(soundMenuOptions[0][aRow][aCol], audioPacks[selAudioPack], btnCol, "white", left, top, width, height)
+        drawArrowButton(soundMenuOptions[0][aRow][aCol], audioPacks[audioLevels[2]], btnCol, "white", left, top, width, height)
     }
 } else if (curMenuPosition[0] == 30) {
 
@@ -3323,7 +3466,7 @@ function keyPressed() {
         } else if (curMenuPosition[0] == 3) {//display menu
             if (key.toUpperCase() === playControls[4][0]) {
                 if (curMenuPosition[1] == 0) {
-                    if (canvasWidth > 199) {
+                    if (canvasWidth > 299) {
                         if (canvasWidth % 100 != 0) {
                             canvasWidth = largestMultipleOf100(canvasWidth);
                             resetDims();
@@ -3335,7 +3478,7 @@ function keyPressed() {
                         }
                     }
                 } else if (curMenuPosition[1] == 1) {
-                    if (canvasHeight > 199) {
+                    if (canvasHeight > 299) {
                         if (canvasHeight % 100 != 0) {
                             canvasHeight = largestMultipleOf100(canvasHeight);
                             resetDims();
@@ -3455,12 +3598,16 @@ function keyPressed() {
                 } else if (curMenuPosition[1] == 1) {
                     if (audioLevels[0] > 0) {
                         audioLevels[0] --;
+                        holdingLeft = true;
+                        menuHeldTime = 0;
                         setMusicVolume(audioLevels[0]);
                         highlightMenuOption(curMenuPosition);
                     }
                 } else if (curMenuPosition[1] == 2) {
                     if (audioLevels[1] > 0) {
                         audioLevels[1] --;
+                        holdingLeft = true;
+                        menuHeldTime = 0;
                         setMusicVolume(audioLevels[1]);
                         highlightMenuOption(curMenuPosition);
                     }
@@ -3475,12 +3622,16 @@ function keyPressed() {
                 } else if (curMenuPosition[1] == 1) {
                     if (audioLevels[0] < 100) {
                         audioLevels[0] ++;
+                        holdingRight = true;
+                        menuHeldTime = 0;
                         setMusicVolume(audioLevels[0]);
                         highlightMenuOption(curMenuPosition);
                     }
                 } else if (curMenuPosition[1] == 2) {
-                    if (audioLevels[1] > 0) {
+                    if (audioLevels[1] < 100) {
                         audioLevels[1] ++;
+                        holdingRight = true;
+                        menuHeldTime = 0;
                         setMusicVolume(audioLevels[1]);
                         highlightMenuOption(curMenuPosition);
                     }
@@ -3529,6 +3680,7 @@ function keyPressed() {
                 if (changingKey != "") {
                     playControls[curMenuPosition[1]][curMenuPosition[2]] = changingKey;
                     controlMenuOptions[0][curMenuPosition[1]][curMenuPosition[2]] = changingKey;
+                    saveControls();
                 }
                 drawControlsMenu();
             } else if (key.toUpperCase() === playControls[6][1]) {
@@ -3540,19 +3692,13 @@ function keyPressed() {
             }
         } else if (curMenuPosition[0] == 30) {
             if (key.toUpperCase() === playControls[4][0]) {
-                if (curMenuPosition[1] != 3) {
-                    if (changingColor[curMenuPosition[1]] > 0) {
-                        changingColor[curMenuPosition[1]]--;
-                        drawColorChangeMenu(changingColor);
-                    }
-                }
+                menuHeldTime = 0;
+                holdingLeft = true;
+                decreaseColorVal();
             } else if (key.toUpperCase() === playControls[4][1]){
-                if (curMenuPosition[1] != 3) {
-                    if (changingColor[curMenuPosition[1]] < 255) {
-                        changingColor[curMenuPosition[1]]++;
-                        drawColorChangeMenu(changingColor);
-                    }
-                }
+                menuHeldTime = 0;
+                holdingRight = true;
+                increaseColorVal();
             } else if (key.toUpperCase() === playControls[5][0]){
                 moveMenuCursorUp(colorChangeMenuOptions);
             } else if (key.toUpperCase() === playControls[5][1]){
@@ -3668,6 +3814,13 @@ function keyReleased() {
         holdingRight = false;
         if (holdingLeft) lastKeyHeld = 'left'; // Switch to left if still held
     }
+    if (key.toUpperCase() === playControls[4][0]) {
+        holdingLeft = false;
+    } 
+    if (key.toUpperCase() === playControls[4][1]) {
+        holdingRight = false;
+    }
+
       // If neither key is held, reset DAS state
     if (!holdingLeft && !holdingRight) {
         lastKeyHeld = null;
