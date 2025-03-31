@@ -3,7 +3,7 @@ let canvasWidth = container.clientWidth;
 let canvasHeight = container.clientHeight;
 let cellSize = canvasWidth / 3;
 let lineSize = canvasWidth / 50;
-
+let canvasLeft = 0;
 
 let turn = 0;
 var gameOver = 0;
@@ -39,6 +39,9 @@ function windowResized() {
     lineSize = canvasWidth / 50;
     cellSize = canvasWidth / 3;
     resizeCanvas(canvasWidth, canvasHeight);
+    canvasLeft = (container.clientWidth - canvasWidth) / 2
+    canvas.style.position = 'absolute';
+    canvas.style.left = `${canvasLeft}px`;
     drawBoard();
     drawControls();
   }
@@ -58,6 +61,10 @@ function getStartingDims() {
     canvasWidth = newWidth
     lineSize = canvasWidth / 50;
     cellSize = canvasWidth / 3;
+
+    canvasLeft = (container.clientWidth - canvasWidth) / 2;
+    canvas.style.position = 'absolute';
+    canvas.style.left = `${canvasLeft}px`;
 }
 function drawControls() {
     //fill(50,0,25);
