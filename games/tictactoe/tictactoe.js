@@ -250,7 +250,7 @@ function getCPUMove(){
             console.log("CPU Blocking");
             return cpuNextCoords;
         } else {
-            if (board[1][1] == "0") {
+            if (board[1][1] == 0) {
                 console.log("CPU Taking Center");
                 return [1,1]
             } else {
