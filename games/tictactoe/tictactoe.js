@@ -22,6 +22,26 @@ function setup() {
     drawBoard();
     drawControls();
 } 
+function windowResized() {
+    let windowWidth = container.clientWidth;
+    let windowHeight = container.clientHeight;
+    let newWidth = (windowWidth);
+    let newHeight = (windowHeight);
+    newHeight = Math.max(newHeight, 120);
+    newWidth = Math.max(newWidth, 100);
+    if (newWidth > newHeight * (8/10)) {
+        newWidth = newHeight * (8/10);
+    } else {
+        newHeight = newWidth * (10/8);
+    }
+    canvasHeight = newHeight
+    canvasWidth = newWidth
+    lineSize = canvasWidth / 50;
+    cellSize = canvasWidth / 3;
+    resizeCanvas(canvasWidth, canvasHeight);
+    drawBoard();
+    drawControls();
+  }
 function getStartingDims() {
     let windowWidth = container.clientWidth;
     let windowHeight = container.clientHeight;
@@ -183,7 +203,7 @@ function clickCell(row, col) {
                     if (gameState == 1 && turn == 9) {
                         drawBoard();
                     } else if (gameState == 1) {
-                        cpuTurn();
+                        setTimeout(cpuTurn, 500);
                     }
                 }
             }
@@ -191,7 +211,6 @@ function clickCell(row, col) {
     }
 
 }
-
 function getArrayIndex(row, col) {
     for (var i = 0; i < posMoves.length; i++) {
         if (posMoves[i][0] == row && posMoves[i][1] == col) {
@@ -200,7 +219,6 @@ function getArrayIndex(row, col) {
         }
     }
 }
-
 function cpuTurn() {
     var cpuNextCoords = getCPUMove();
     console.log(cpuNextCoords);
@@ -214,7 +232,6 @@ function cpuTurn() {
         drawBoard();
     }
 }
-
 function getCPUMove(){
     var cpuNextCoords = findWin();
     if (cpuNextCoords[0] != -1 && cpuNextCoords[1] != -1) {
@@ -237,7 +254,6 @@ function getCPUMove(){
         }
     }
 }
-
 function findWin() {
     var checkInt1;
     var checkInt2;
@@ -293,7 +309,6 @@ function findWin() {
     }
     return [-1,-1];
 }
-
 function findBlock() {
     var checkInt1;
     var checkInt2;
@@ -359,7 +374,6 @@ function findBlock() {
     }
     return [-1,-1];
 }
-
 function startGameHuman() {
     console.log("HUMAN GAME");
     humanGame = true;
