@@ -47,8 +47,17 @@
 			</div>
 		</div>
 		<div class="Group" id = "RPSSelect" style = "Display: None">
-			<div class="gpTop" id="oppMove">
-				Opponent is choosing
+			<div class="gpTop" id="moveDisp">
+				<div class="gpTopTop" id="myMove">
+					
+				</div>
+				<div class="gpTopMid" id="oppMove">
+					Opponent is choosing
+				</div>
+				<div class="gpTopBot" id="result">
+					
+				</div>
+
 			</div>
 			<div class="gpMid" id="scoreBoard">
 				0 - 0
@@ -58,8 +67,11 @@
                 <button class="moveButton" id="paperButton"> Paper </button>
                 <button class="moveButton" id="scissorsButton"> Scissors </button>
 			</div>
-			<div class="gpBot" id="moveWaiting">
-				You have chosen! Waiting on Opponent.
+			<div class="gpBot2" id="moveWaiting">
+				
+			</div>
+			<div class="gpBot2" id="rematchBtn">
+				<button class="remButton" id="remButton"> Rematch! </button>
 			</div>
 		</div>        
 	</div>
@@ -68,7 +80,6 @@
 			<button class="disconnectBtn" id="disconnectBtn" disabled> Disconnect </button>
 		</div>
 	</div>
-	
 <script type="module" src="script.js"></script>
 
 </body>
