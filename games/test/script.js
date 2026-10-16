@@ -22,6 +22,9 @@ const db = getDatabase(app);
 let joinCode = null;
 let pid = null;
 let stopWatchingRoom = null;
+let wins = 0;
+let losses = 0;
+let draws = 0;
 
 async function startGame() {
     //CREATE ROOM IN DB
@@ -30,7 +33,7 @@ async function startGame() {
     const dbRef = ref(db);
     let codeExists = true;
     let newCode = null;
-    let stopWatchingRoom = null;
+
 
     // Keep generating a code until we find one that doesn't exist in Firebase
 	//TODO: Add prevention for infinite looping
@@ -165,7 +168,15 @@ async function watchRoom(code) {
                 errorOut("PLAYER COUNT IS " + room.playerCount);
             }
         }
-        //AFTER PLAYERS HAVE CONNECTED
+        //IF LOOKING AT SCOREBOARD CLEAR PLAYER MOVES FOR NEXT GAME
+        if (room.status == "Scoreboard") {
+            remove(ref(db, `games/${joinCode}/p1`));
+            remove(ref(db, `games/${joinCode}/p2`));
+        }
+
+
+
+        //GAMING LOGIC
         if (room.status !== "Waiting for P2 to join." && room.status !=="Connection Established." && room.status !=="Game Over.") {
             //IF LESS THAN 2 PLAYERS
             if (room.playerCount < 2) {
@@ -175,14 +186,19 @@ async function watchRoom(code) {
                 document.getElementById('RPSSelect').style.display="none";
                 document.getElementById('OpponentLeft').style.display = "";
                 set(ref(db, `games/${code}/status`), "Game Over.");
-            } else { //BOTH PLAYERS CURRENTLY CONNECTED
+            } else if (room.status == "Gaming!"){ //BOTH PLAYERS CURRENTLY CONNECTED
                 const myMove = room[`p${pid}`];
                 const opponentPid = pid === 1 ? 2 : 1;
                 const opponentMove = room[`p${opponentPid}`];
 
                 const moveButtons = document.getElementById("selMove");
                 const myLabel = document.getElementById("moveWaiting");
+                const rematchButton = document.getElementById("rematchBtn");
+
+                const myMoveLabel = document.getElementById("myMove");
                 const oppMoveLabel = document.getElementById("oppMove");
+                const resultLabel = document.getElementById("result")
+                
                 const scoreBoard = document.getElementById("scoreBoard");
 
                 // Neither player has chosen
@@ -193,33 +209,46 @@ async function watchRoom(code) {
                 // I chose, opponent hasn't
                 else if (myMove && !opponentMove) {
                     moveButtons.style.display = "none";
-                    myLabel.style.display = "block";
+                    myLabel.style.display = "flex";
+
                     oppMoveLabel.textContent = "Waiting for opponent...";
-                    scoreBoard.textContent = "You chose: " + myMove;
+                    myLabel.textContent = "You chose: " + myMove;
                 }
 
                 // Opponent chose, I haven't
                 else if (!myMove && opponentMove) {
-                    moveButtons.style.display = "";
                     oppMoveLabel.textContent = "Opponent has chosen!";
-                    scoreBoard.textContent = "Choose your move!";
                 }
 
                 // Both players chose
                 else {
                     moveButtons.style.display = "none";
-
-                    oppMoveLabel.textContent = `You chose ${myMove} | Opponent chose ${opponentMove}`;
-
+                    myLabel.style.display = "none";
+                    myMoveLabel.style.display = "flex";
+                    rematchButton.style.display = "flex";
+                    myMoveLabel.textContent = "You chose: " + myMove;
+                    oppMoveLabel.textContent = "Opponent chose: " + opponentMove;
                     let result;
-
                     if (myMove === opponentMove) {
                         result = "It's a tie!";
+                        draws += 1;
                     } else if ((myMove === "Rock" && opponentMove === "Scissors") || (myMove === "Paper" && opponentMove === "Rock") || (myMove === "Scissors" && opponentMove === "Paper")) {
                         result = "You win!";
+                        wins +=1;
                     } else {
                         result = "You lose!";
+                        losses += 1;
                     }
+                    resultLabel.style.display = "block";
+                    resultLabel.textContent = result;
+                    let score = null;
+                    if (draws > 0) {
+                        score = wins + " - " + losses + " (" + draws + ")";
+                    } else {
+                        score = wins + " - " + losses
+                    }
+                    scoreBoard.textContent = score;
+                    set(ref(db, `games/${code}/status`), "Scoreboard");
                 }
             }
         }
