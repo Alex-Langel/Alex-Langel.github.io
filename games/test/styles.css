@@ -1,0 +1,149 @@
+body {
+	height: 99vh;
+	width: 100vw;
+	/* Stack Header/Main/Footer and Center */
+	display: flex;
+	flex-direction: column;
+	align-items: center;    
+	justify-content: space-evenly;
+	margin: 0;
+}
+
+.Main-Container{
+	width: 95%;
+	height: 70%;
+	border: 2px solid black;
+	display: flex;
+	justify-content: center;
+}
+.Head-Container{
+	width: 95%;
+	height: 12%;
+	border: 2px solid yellow;
+	display: flex;
+	gap: 10px; /* Space between the 4 container groups */	
+	
+}
+.Foot-Container{
+	width: 95%;
+	height: 12%;
+	border: 2px solid yellow;
+}
+.Group{
+	display: grid;
+	place-items: center;
+	border: 2px solid red;
+	width: 20%;
+}
+.ButtonContainer{
+	border: 2px solid blue;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+}
+.JoinTxt{
+	border: 2px solid green;
+	flex: 1;
+    height: 35px; /* Set a fixed height for consistency */
+    box-sizing: border-box;
+    padding: 0 8px;
+	min-width: 0;
+}
+.JoinBtn{
+	border: 2px solid blue;
+}
+.HeaderSub{
+	width: 25%;
+	height: 100%;
+	border: 2px solid orange;
+	display: flex;
+	flex-direction: column;
+}
+.Label{
+	border: 2px solid black;
+	height: 20%;
+	flex: 1;
+	
+	display: flex;
+	align-items: center;
+	padding-left: 5px;
+}
+.WaitLabel{
+	border: 2px solid black;
+}
+.LeftLabel{
+	border: 2px solid black;
+}
+.gpTop{
+	width: 100%;
+	height: 100%;
+	border: 2px solid black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.gpMid{
+	width: 100%;
+	height: 100%;
+	border: 2px solid black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.gpBot{
+	width: 100%;
+	height: 100%;
+	border: 2px solid black;
+	display: flex;
+	flex-direction: row;
+	gap: 10%;
+	justify-content: center;
+	align-items: center;
+}
+.moveButton{
+	border: 2px solid green;
+	height: 50%;
+	width: 30%;
+}
+.JoinTxtContainer{
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Small gap between input and button */
+    width: 80%; /* Adjust as needed to fit your container */
+	border: 2px solid red;
+	box-sizing: border-box;
+}
+.pasteJoinCodeBtn{
+	height: 35px;
+    width: 35px; /* Width matches height to keep it square */
+    border: 2px solid green;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+	flex-shrink: 0;
+}
+.FooterSub{
+	width: 25%;
+	height: 100%;
+	border: 2px solid orange;
+	display: flex;
+	flex-direction: column;
+}
+.disconnectBtn{
+	width: 100%;
+	height: 100%;
+	border: 2px solid black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+#moveWaiting{
+	display: none;
+}
