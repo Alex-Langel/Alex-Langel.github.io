@@ -367,6 +367,32 @@ async function disconnect() {
     output2("Ouput2");
 }
 
+async function rematch() {
+    const moveButtons = document.getElementById("selMove");
+    const myLabel = document.getElementById("moveWaiting");
+    const rematchButton = document.getElementById("rematchBtn");
+
+    const myMoveLabel = document.getElementById("myMove");
+    const oppMoveLabel = document.getElementById("oppMove");
+    const resultLabel = document.getElementById("result")
+                
+    const scoreBoard = document.getElementById("scoreBoard");
+
+    moveButtons.style.display = "";
+    myLabel.style.display = "none";
+    rematchButton.style.display = "none";
+
+    myMoveLabel.style.display = "none";
+    resultLabel.style.display = "none";
+    oppMoveLabel.textContent = "Opponent is choosing"
+
+    const status = (await get(ref(db, `games/${joinCode}/status`))).val();
+
+    if (status === "Scoreboard") {
+        await update(ref(db, `games/${joinCode}/status`), "Gaming!");
+    }
+}
+
 //Button clicks
 document.getElementById('createBtn').addEventListener('click', startGame);
 document.getElementById('joinBtn').addEventListener('click', joinGame);
@@ -375,6 +401,7 @@ document.getElementById('disconnectBtn').addEventListener('click', disconnect);
 document.getElementById('rockButton').addEventListener('click', () => pickMove("Rock"));
 document.getElementById('paperButton').addEventListener('click', () => pickMove("Paper"));
 document.getElementById('scissorsButton').addEventListener('click', () => pickMove("Scissors"));
+document.getElementById('remBtn').addEventListener('click', rematch);
 
 //Keypresses
 //
