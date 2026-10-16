@@ -389,7 +389,7 @@ async function rematch() {
     const status = (await get(ref(db, `games/${joinCode}/status`))).val();
 
     if (status === "Scoreboard") {
-        await update(ref(db, `games/${joinCode}/status`), "Gaming!");
+        await set(ref(db, `games/${joinCode}/status`), "Gaming!");
     }
 }
 
