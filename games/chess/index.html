@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="styles.css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title> Chess </title>
+</head>
+<body>
+    <div class="headerRow">
+        <div class="headerBlockSm">
+            <div class="label labelOdd" id="outputLab1">
+			    Output1:
+			</div>
+			<div class="label labelEven" id="outputLab2">
+			    Output2:
+			</div>
+			<div class="label labelOdd" id="outputLab3">
+			    Output3:
+			</div>
+        </div>
+        <div class="headerBlockLg">
+            
+        </div>
+        <div class="headerBlockSm">
+            <div class="label labelOdd" id="outputLab4">
+			    Output4:
+			</div>
+			<div class="label labelEven" id="outputLab5">
+			    Output5:
+			</div>
+			<div class="label labelOdd" id="outputLab6">
+			    Output6:
+			</div>
+        </div>
+    </div>
+    <div class="mainContent">
+        <div class="gameSpace" id="gameSpace">
+            <div class="boardSpace" id="boardSpace">
+                <div class="boardBar">
+                    <div class="evalBar">
+                        <div class="evalTop"></div><div class="evalBot"></div>
+                    </div>
+                    <div class="Board">
+                    <!-- Rank 8 (Top) -->
+                    <div class="boardRow">
+                        <div class="boardSquare lightSquare" id="a8Square">
+                            ♜
+                        </div>
+                        <div class="boardSquare darkSquare" id="b8Square">
+                            ♞
+                        </div>
+                        <div class="boardSquare lightSquare" id="c8Square">
+                            ♝
+                        </div>
+                        <div class="boardSquare darkSquare" id="d8Square">
+                            ♛
+                        </div>
+                        <div class="boardSquare lightSquare" id="e8Square">
+                            ♚
+                        </div>
+                        <div class="boardSquare darkSquare" id="f8Square">
+                            ♝
+                        </div>
+                        <div class="boardSquare lightSquare" id="g8Square">
+                            ♞
+                        </div>
+                        <div class="boardSquare darkSquare" id="h8Square">
+                            ♜
+                        </div>
+                </div>
+                    <!-- Rank 7 -->
+                    <div class="boardRow">
+                        <div class="boardSquare darkSquare" id="a7Square">
+                            ♟
+                        </div>
+                        <div class="boardSquare lightSquare" id="b7Square">
+                            ♟
+                        </div>
+                        <div class="boardSquare darkSquare" id="c7Square">
+                            ♟
+                        </div>
+                        <div class="boardSquare lightSquare" id="d7Square">
+                            ♟  
+                        </div>
+                        <div class="boardSquare darkSquare" id="e7Square">
+                            ♟
+                        </div>
+                        <div class="boardSquare lightSquare" id="f7Square">
+                            ♟
+                        </div>
+                        <div class="boardSquare darkSquare" id="g7Square">
+                            ♟
+                        </div>
+                        <div class="boardSquare lightSquare" id="h7Square">
+                            ♟
+                        </div>
+                    </div>
+                    <!-- Rank 6 -->
+                    <div class="boardRow">
+                        <div class="boardSquare lightSquare" id="a6Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="b6Square">
+
+                        </div>
+                        <div class="boardSquare lightSquare" id="c6Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="d6Square">
+
+                        </div>
+                        <div class="boardSquare lightSquare" id="e6Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="f6Square">
+
+                        </div>
+                        <div class="boardSquare lightSquare" id="g6Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="h6Square">
+
+                        </div>
+                    </div>
+                    <!-- Rank 5 -->
+                    <div class="boardRow">
+                        <div class="boardSquare darkSquare" id="a5Square">
+
+                        </div>
+                        <div class="boardSquare lightSquare" id="b5Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="c5Square">
+
+                        </div>
+                        <div class="boardSquare lightSquare" id="d5Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="e5Square">
+
+                        </div>
+                        <div class="boardSquare lightSquare" id="f5Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="g5Square">
+
+                        </div>
+                        <div class="boardSquare lightSquare" id="h5Square">
+
+                        </div>
+                    </div>
+                    <!-- Rank 4 -->
+                    <div class="boardRow">
+                        <div class="boardSquare lightSquare" id="a4Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="b4Square">
+
+                        </div>
+                        <div class="boardSquare lightSquare" id="c4Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="d4Square">
+                            
+                        </div>
+                        <div class="boardSquare lightSquare" id="e4Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="f4Square">
+
+                        </div>
+                        <div class="boardSquare lightSquare" id="g4Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="h4Square">
+
+                        </div>
+                    </div>
+                    <!-- Rank 3 -->
+                    <div class="boardRow">
+                        <div class="boardSquare darkSquare" id="a3Square">
+
+                        </div>
+                        <div class="boardSquare lightSquare" id="b3Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="c3Square">
+                            
+                        </div>
+                        <div class="boardSquare lightSquare" id="d3Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="e3Square">
+
+                        </div>
+                        <div class="boardSquare lightSquare" id="f3Square">
+
+                        </div>
+                        <div class="boardSquare darkSquare" id="g3Square">
+
+                        </div>
+                        <div class="boardSquare lightSquare" id="h3Square">
+
+                        </div>
+                    </div>
+                    <!-- Rank 2 -->
+                    <div class="boardRow">
+                        <div class="boardSquare lightSquare" id="a2Square">
+                            ♙
+                        </div>
+                        <div class="boardSquare darkSquare" id="b2Square">
+                            ♙
+                        </div>
+                        <div class="boardSquare lightSquare" id="c2Square">
+                            ♙
+                        </div>
+                        <div class="boardSquare darkSquare" id="d2Square">
+                            ♙
+                        </div>
+                        <div class="boardSquare lightSquare" id="e2Square">
+                            ♙
+                        </div>
+                        <div class="boardSquare darkSquare" id="f2Square">
+                            ♙
+                        </div>
+                        <div class="boardSquare lightSquare" id="g2Square">
+                            ♙
+                        </div>
+                        <div class="boardSquare darkSquare" id="h2Square">
+                            ♙
+                        </div>
+                    </div>
+                    <!-- Rank 1 (Bottom) -->
+                    <div class="boardRow">
+                        <div class="boardSquare darkSquare" id="a1Square">
+                            ♖
+                        </div>
+                        <div class="boardSquare lightSquare" id="b1Square">
+                            ♘
+                        </div>
+                        <div class="boardSquare darkSquare" id="c1Square">
+                            ♗
+                        </div>
+                        <div class="boardSquare lightSquare" id="d1Square">
+                            ♕
+                        </div>
+                        <div class="boardSquare darkSquare" id="e1Square">
+                            ♔
+                        </div>
+                        <div class="boardSquare lightSquare" id="f1Square">
+                            ♗
+                        </div>
+                        <div class="boardSquare darkSquare" id="g1Square">
+                            ♘
+                        </div>
+                        <div class="boardSquare lightSquare" id="h1Square">
+                            ♖
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="moveBarContainer">
+                <div class="moveBarHeader">TURNS</div>
+                <div class="moveBar" id="moveBar">
+                </div>
+            </div>
+        </div>
+        <div class="UIContainer startMenu" id="startMenu">
+            <div    class="menuLabel">This is chess :)                       </div>
+            <button class="menuButton localButton"      type="button" id="localButton"   > Local </button>
+            <button class="menuButton createRoomButton" type="button" id="" > Create Room </button>
+            <button class="menuButton joinRoomButton"   type="button"> Join Room </button>
+        </div>
+        <div class="UIContainer localMenu" id="localMenu">
+            <button class="menuButton localButton"      type="button" id="vsHumanButton"> VS Human </button>
+            <button class="menuButton createRoomButton" type="button"> VS Computer </button>
+            <button class="menuButton joinRoomButton"   type="button" id="localBackButton"> Go Back </button>
+        </div>
+    </div>
+<script type="module" src="scripts.js"></script>
+</body>
+</html>
