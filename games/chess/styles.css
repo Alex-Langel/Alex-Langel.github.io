@@ -1,0 +1,263 @@
+:root {
+    /*
+    --purpleMain: rgb(50, 25, 75);
+    --purpleLight: rgb(82, 57, 107);
+    --purpleDark: rgb(27, 1, 57);
+    --purpleLittleLight: rgb(51, 1, 101);
+    --purpleExtraLight: rgb(129, 92, 166);
+    --purpleExtraDark: rgb(11, 1, 24);
+    */
+
+    --purpleBlack: rgb(24, 7, 42);
+    --purpleVeryDark: rgb(38, 17, 60);
+    --purpleDark: rgb(50, 25, 75);
+    --purpleMain: rgb(80, 35, 150);
+    --purpleLight: rgb(135, 66, 205);
+    --purpleVeryLight: rgb(155, 92, 217);
+    --purpleWhite: rgb(175, 95, 255);
+
+
+}
+* {
+    box-sizing: border-box;
+}
+body{
+    height: 100vh;
+	width: 100vw;
+	/* Stack Header/Main/Footer and Center */
+	display: flex;
+	flex-direction: column;
+	align-items: center;    
+	justify-content: space-evenly;
+	margin: 0;
+    padding: 0;
+    background-color: var(--purpleDark);
+}
+.headerRow{
+	width: 95%;
+	height: 12%;
+	border: 2px solid yellow;
+	display: flex;
+	gap: 10px; /* Space between the 4 container groups */	
+}
+.mainContent{
+	width: 95%;
+	height: 70%;
+
+	display: flex;
+	justify-content: center;
+
+    min-height: 0;           
+    min-width: 0;
+    border: 2px solid red;
+}
+.boardSpace{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+}
+.boardBar{
+    display: grid;
+    grid-template-columns: 15px minmax(0, 1fr);
+    column-gap: 5px;
+    align-items: stretch;
+    width: min(100%, calc(70vh + 20px));
+    min-width: 0;
+    min-height: 0;
+}
+.Board{
+    /*
+    width: min(100%, 70vh);
+    */
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+.evalBar{
+    height: 100%;
+    width: 15px;
+}
+.evalTop{
+    height: 50%;
+    width: 100%;
+    background-color: black;
+}
+.evalBot{
+    height: 50%;
+    width: 100%;
+    background-color: white;
+}
+.boardRow{
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    min-height: 0;
+
+}
+.boardSquare{
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    aspect-ratio: 1/1;
+    font-size: 8vmin;
+    line-height: 1;
+    cursor: pointer;       
+    user-select: none;
+}  
+.darkSquare{
+    border: 2px solid black;
+    background-color: rgb(100, 70, 0);
+}
+.lightSquare{
+    border: 2px solid white;
+    background-color: darkkhaki;
+}
+.moveBarContainer{
+    height: auto;
+    width: 10%;
+    margin-left: auto;
+    background-color: var(--purpleExtraLight);
+    min-width: 120px;
+}
+.moveBarHeader{
+    background-color: var(--purpleExtraDark);
+    color: white;
+    display: flex;
+    justify-content: center;
+    position: sticky;
+    z-index: 1;
+}
+.moveBar{
+    height: auto;
+    width: 100%;
+    flex: none;
+    margin-left: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.moveBarEntry{
+    color: white;
+    display: flex;
+}
+.moveBarEntryOdd{
+    background-color: var(--purpleMain);
+}
+.moveBarEntryEven{
+    background-color: var(--purpleLight);
+}
+.moveBarTurnNo{
+    display: flex;
+    justify-content: center;
+    width: 20%;
+}
+.moveBarTurnWhite{
+    display: flex;
+    justify-content: center;
+    width: 40%;
+    border-left: 1px solid black;
+}
+.moveBarTurnBlack{
+    display: flex;
+    justify-content: center;
+    width: 40%;
+    border-left: 1px solid black;
+}
+.label{
+	border: 2px solid black;
+	height: 20%;
+	flex: 1;
+	display: flex;
+	align-items: center;
+	padding-left: 5px;
+}
+.labelOdd{
+    background-color: var(--purpleExtraLight);
+}
+.labelEven{
+    background-color: var(--purpleLight);
+}
+.headerBlockSm{
+	width: 25%;
+	height: 100%;
+	border: 2px solid orange;
+	display: flex;
+	flex-direction: column;
+}
+.headerBlockLg{
+	width: 50%;
+	height: 100%;
+	border: 2px solid orange;
+	display: flex;
+	flex-direction: column;
+}
+
+
+
+
+
+
+
+
+
+
+.gameSpace {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    min-height: 0;
+    min-width: 0;
+}
+.menuLabel{
+    width: 80%;
+    aspect-ratio: 4/1;
+    border-radius: 10px;
+    background-color: var(--purpleLight);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.UIContainer{
+    height: 100%;
+    aspect-ratio: 1/2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: var(--purpleMain);
+    border-radius: 20px;
+}
+.menuButton{
+    width: 80%;
+    aspect-ratio: 4/1;
+    background-color: var(--purpleVeryLight);
+
+    border-radius: 10px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border: 2px solid var(--purpleVeryWhite);
+    
+}
+.menuButton:hover{
+    background-color: var(--purpleLight);
+}
+.menuButton:active{
+    background-color: var(--purpleMain);
+}
+.menuButton:focus-visible{
+    border: 4px solid var(--purpleVeryWhite);
+}
