@@ -1,6 +1,6 @@
 let boardState = null;
 let selectedSquare = null;
-let currentTurn = "white";
+let currentTurn = "White";
 let validMoves = null;
 let turnCounter = 1;
 let curMenu = "mainMenu";
@@ -16,14 +16,9 @@ let blackH8RookMoved = false;
 let enPassantSquare = null;
 let promoPause = false;
 
-let elLocalMenu = document.getElementById("localMenu");
-    elLocalMenu.style.display = "none";
-resetGameVars();
-resetBoard();
-drawBoard();
-initOutputs();
-displayMainMenu();
+let leftLabel = false;
 
+displayMainMenu();
 
 
 function handleSquareClick(squareId) {
@@ -57,7 +52,7 @@ function handleSquareClick(squareId) {
                 let pieceObj = boardState[squareId];
                 let rank = parseInt(squareId.charAt(1));
                 let isPromoting = pieceObj && pieceObj.piece === "Pawn" && 
-                                ((pieceObj.color === "white" && rank === 8) || (pieceObj.color === "black" && rank === 1));
+                                ((pieceObj.color === "White" && rank === 8) || (pieceObj.color === "Black" && rank === 1));
 
                 if (isPromoting) {
                     // Rare exception: Pause and launch the modal
@@ -67,7 +62,6 @@ function handleSquareClick(squareId) {
                 }
                 moveNote = checkCheck(moveNote);
                 addMoveToList(moveNote);
-                writeOut(moveNote,3);
                 clearSelection();
                 swapTurns();
 
@@ -78,20 +72,20 @@ function handleSquareClick(squareId) {
 }
 
 function checkCheck(moveNote) {
-    if (currentTurn == "white") {
-        if (isThisCheck("black", boardState)) {
-            if (isThisCheckmate("black", boardState)) {
+    if (currentTurn == "White") {
+        if (isThisCheck("Black", boardState)) {
+            if (isThisCheckmate("Black", boardState)) {
                 moveNote = moveNote + "#"
-                gameOver("white");
+                gameOver("White");
             } else {
                 moveNote = moveNote + "+"
             }
         }
     } else {
-        if (isThisCheck("white", boardState)) {
-            if (isThisCheckmate("white", boardState)) {
+        if (isThisCheck("White", boardState)) {
+            if (isThisCheckmate("White", boardState)) {
                 moveNote = moveNote + "#"
-                gameOver("black");
+                gameOver("Black");
             } else {
                 moveNote = moveNote + "+"
             }
@@ -147,13 +141,13 @@ function calculateValidMoves(squareId) {
                 let twoAheadSquare = null;
                 let diagRightSquare = null;
                 let rankforTwoMoves = null;
-            if (movingColor == "white") {
+            if (movingColor == "White") {
                 diagLeftSquare = (String.fromCharCode(squareId.charAt(0).charCodeAt(0) - 1)) + (movingRank+1)+"Square";
                 aheadSquare = (movingFile)+(movingRank+1)+"Square";
                 twoAheadSquare = (movingFile)+(movingRank+2)+"Square";
                 diagRightSquare = (String.fromCharCode(squareId.charAt(0).charCodeAt(0) + 1)) + (movingRank+1)+"Square";
                 rankforTwoMoves = 2;
-            } else { //black move
+            } else { //Black move
                 diagLeftSquare = (String.fromCharCode(squareId.charAt(0).charCodeAt(0) - 1)) + (movingRank-1)+"Square";
                 aheadSquare = (movingFile)+(movingRank-1)+"Square";
                 twoAheadSquare = (movingFile)+(movingRank-2)+"Square";
@@ -428,30 +422,30 @@ function calculateValidMoves(squareId) {
 
             // --- CASTLING LOGIC FOR KING ---
         let color = boardState[squareId].color;
-        if (color === "white" && !whiteKingMoved && squareId === "e1Square") {
+        if (color === "White" && !whiteKingMoved && squareId === "e1Square") {
             // Kingside Castle (g1)
             if (!whiteH1RookMoved && boardState["h1Square"]?.piece === "Rook" && 
                 !boardState["f1Square"] && !boardState["g1Square"] &&
-                !isThisCheck("white", boardState) && !selfCheck("e1Square", "f1Square") && !selfCheck("e1Square", "g1Square")) {
+                !isThisCheck("White", boardState) && !selfCheck("e1Square", "f1Square") && !selfCheck("e1Square", "g1Square")) {
                 validMoves.push("g1Square");
             }
             // Queenside Castle (c1)
             if (!whiteA1RookMoved && boardState["a1Square"]?.piece === "Rook" && 
                 !boardState["b1Square"] && !boardState["c1Square"] && !boardState["d1Square"] &&
-                !isThisCheck("white", boardState) && !selfCheck("e1Square", "d1Square") && !selfCheck("e1Square", "c1Square")) {
+                !isThisCheck("White", boardState) && !selfCheck("e1Square", "d1Square") && !selfCheck("e1Square", "c1Square")) {
                 validMoves.push("c1Square");
             }
-        } else if (color === "black" && !blackKingMoved && squareId === "e8Square") {
+        } else if (color === "Black" && !blackKingMoved && squareId === "e8Square") {
             // Kingside Castle (g8)
             if (!blackH8RookMoved && boardState["h8Square"]?.piece === "Rook" && 
                 !boardState["f8Square"] && !boardState["g8Square"] &&
-                !isThisCheck("black", boardState) && !selfCheck("e8Square", "f8Square") && !selfCheck("e8Square", "g8Square")) {
+                !isThisCheck("Black", boardState) && !selfCheck("e8Square", "f8Square") && !selfCheck("e8Square", "g8Square")) {
                 validMoves.push("g8Square");
             }
             // Queenside Castle (c8)
             if (!blackA8RookMoved && boardState["a8Square"]?.piece === "Rook" && 
                 !boardState["b8Square"] && !boardState["c8Square"] && !boardState["d8Square"] &&
-                !isThisCheck("black", boardState) && !selfCheck("e8Square", "d8Square") && !selfCheck("e8Square", "c8Square")) {
+                !isThisCheck("Black", boardState) && !selfCheck("e8Square", "d8Square") && !selfCheck("e8Square", "c8Square")) {
                 validMoves.push("c8Square");
             }
         }
@@ -620,48 +614,48 @@ function executeMove(movingFromSquare, movingToSquare, board, updateHTML = true)
 function resetGameVars() {
     boardState = null;
     selectedSquare = null;
-    currentTurn = "white";
+    currentTurn = "White";
     validMoves = null;
     turnCounter = 1;
 }
 
 function resetBoard() {
     boardState = {
-        'a1Square': { piece: 'Rook',   color: 'white' },
-        'b1Square': { piece: 'Knight', color: 'white' },
-        'c1Square': { piece: 'Bishop', color: 'white' },
-        'd1Square': { piece: 'Queen',  color: 'white' },
-        'e1Square': { piece: 'King',   color: 'white' },
-        'f1Square': { piece: 'Bishop', color: 'white' },
-        'g1Square': { piece: 'Knight', color: 'white' },
-        'h1Square': { piece: 'Rook',   color: 'white' },
+        'a1Square': { piece: 'Rook',   color: 'White' },
+        'b1Square': { piece: 'Knight', color: 'White' },
+        'c1Square': { piece: 'Bishop', color: 'White' },
+        'd1Square': { piece: 'Queen',  color: 'White' },
+        'e1Square': { piece: 'King',   color: 'White' },
+        'f1Square': { piece: 'Bishop', color: 'White' },
+        'g1Square': { piece: 'Knight', color: 'White' },
+        'h1Square': { piece: 'Rook',   color: 'White' },
 
-        'a2Square': { piece: 'Pawn', color: 'white' },
-        'b2Square': { piece: 'Pawn', color: 'white' },
-        'c2Square': { piece: 'Pawn', color: 'white' },
-        'd2Square': { piece: 'Pawn', color: 'white' },
-        'e2Square': { piece: 'Pawn', color: 'white' },
-        'f2Square': { piece: 'Pawn', color: 'white' },
-        'g2Square': { piece: 'Pawn', color: 'white' },
-        'h2Square': { piece: 'Pawn', color: 'white' },
+        'a2Square': { piece: 'Pawn', color: 'White' },
+        'b2Square': { piece: 'Pawn', color: 'White' },
+        'c2Square': { piece: 'Pawn', color: 'White' },
+        'd2Square': { piece: 'Pawn', color: 'White' },
+        'e2Square': { piece: 'Pawn', color: 'White' },
+        'f2Square': { piece: 'Pawn', color: 'White' },
+        'g2Square': { piece: 'Pawn', color: 'White' },
+        'h2Square': { piece: 'Pawn', color: 'White' },
 
-        'a7Square': { piece: 'Pawn', color: 'black' },
-        'b7Square': { piece: 'Pawn', color: 'black' },
-        'c7Square': { piece: 'Pawn', color: 'black' },
-        'd7Square': { piece: 'Pawn', color: 'black' },
-        'e7Square': { piece: 'Pawn', color: 'black' },
-        'f7Square': { piece: 'Pawn', color: 'black' },
-        'g7Square': { piece: 'Pawn', color: 'black' },
-        'h7Square': { piece: 'Pawn', color: 'black' },
+        'a7Square': { piece: 'Pawn', color: 'Black' },
+        'b7Square': { piece: 'Pawn', color: 'Black' },
+        'c7Square': { piece: 'Pawn', color: 'Black' },
+        'd7Square': { piece: 'Pawn', color: 'Black' },
+        'e7Square': { piece: 'Pawn', color: 'Black' },
+        'f7Square': { piece: 'Pawn', color: 'Black' },
+        'g7Square': { piece: 'Pawn', color: 'Black' },
+        'h7Square': { piece: 'Pawn', color: 'Black' },
 
-        'a8Square': { piece: 'Rook',   color: 'black' },
-        'b8Square': { piece: 'Knight', color: 'black' },
-        'c8Square': { piece: 'Bishop', color: 'black' },
-        'd8Square': { piece: 'Queen',  color: 'black' },
-        'e8Square': { piece: 'King',   color: 'black' },
-        'f8Square': { piece: 'Bishop', color: 'black' },
-        'g8Square': { piece: 'Knight', color: 'black' },
-        'h8Square': { piece: 'Rook',   color: 'black' },
+        'a8Square': { piece: 'Rook',   color: 'Black' },
+        'b8Square': { piece: 'Knight', color: 'Black' },
+        'c8Square': { piece: 'Bishop', color: 'Black' },
+        'd8Square': { piece: 'Queen',  color: 'Black' },
+        'e8Square': { piece: 'King',   color: 'Black' },
+        'f8Square': { piece: 'Bishop', color: 'Black' },
+        'g8Square': { piece: 'Knight', color: 'Black' },
+        'h8Square': { piece: 'Rook',   color: 'Black' },
     };
 }
 
@@ -687,7 +681,7 @@ function getPieceText(squareId) {
         piece=boardState[squareId].piece;
     }
     let pieceText = "";
-    if (color == "black") {
+    if (color == "Black") {
         switch (piece) {
             case "Pawn":
                 pieceText = "♟"; 
@@ -711,7 +705,7 @@ function getPieceText(squareId) {
             //should never happen
             break;
         }
-    } else if (color == "white") {
+    } else if (color == "White") {
         switch (piece) {
             case "Pawn":
                 pieceText = "♙"; 
@@ -751,19 +745,41 @@ function writeOut(writeText, writeIndex) {
 }
 
 function initOutputs() {
-    //lab1 = document.getElementById("outputLab1");
-    document.getElementById("outputLab1").textContent = "Player X"
-    document.getElementById("outputLab2").textContent = "Turn " + turnCounter + " | " + currentTurn;
+
+    if (!leftLabel) {
+        createLeftLabel();
+    }
+
+    writeOut("Chess :)", 1);
+    writeOut(currentTurn + " to move", 2);
+    writeOut("Turn " + turnCounter, 3)
+}
+
+function createLeftLabel() {
+    const lgBlock = document.querySelector('.headerBlockLg');
+    const smBlock = document.createElement('div');
+    smBlock.className = 'headerBlockSm';
+
+    for (let i = 1; i <= 3; i++) {
+        const label = document.createElement('div');
+        label.className = i % 2 !== 0 ? 'label labelOdd' : 'label labelEven';
+        label.id = "outputLab" + i;
+        smBlock.appendChild(label);
+    }
+
+    lgBlock.parentNode.insertBefore(smBlock, lgBlock);
+    leftLabel = true;
 }
 
 function swapTurns() {
-    if (currentTurn == "white") {
-        currentTurn = "black";
+    if (currentTurn == "White") {
+        currentTurn = "Black";
     } else {
-        currentTurn = "white";
+        currentTurn = "White";
         turnCounter++;
     }
-    writeOut("Turn " + turnCounter + " | " + currentTurn, 2);
+    writeOut(currentTurn + " to move", 2);
+    writeOut("Turn " + turnCounter, 3);
 }
 
 function getMoveNotation(fromSquareId, toSquareId) {
@@ -804,7 +820,7 @@ function getMoveNotation(fromSquareId, toSquareId) {
 
 function addMoveToList(move) {
     const moveBar = document.getElementById("moveBar");
-    if (currentTurn == "white") {
+    if (currentTurn == "White") {
         const entry = document.createElement("div");
         let oddOrEven = null
         if (turnCounter % 2 == 0) {
@@ -875,7 +891,7 @@ function isThisCheckmate(color, board) {
 
 function checkByPawn(color, kingSquare, board) {
     let offset = 0;
-    if (color == "white") {
+    if (color == "White") {
         offset = 1;
     } else {
         offset = -1;
@@ -1058,7 +1074,7 @@ function gameOver(color) {
 
     // 3. Create and style the inner content container
     const popupContent = document.createElement("div");
-    popupContent.style.backgroundColor = "white";
+    popupContent.style.backgroundColor = "White";
     popupContent.style.padding = "20px";
     popupContent.style.borderRadius = "8px";
     popupContent.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.3)";
@@ -1082,31 +1098,44 @@ function gameOver(color) {
 }
 
 function displayMainMenu() {
-    let elBoard = document.getElementById("gameSpace");
-    elBoard.style.display = "none";
 
-    let elLocalMenu = document.getElementById("localMenu");
-    elLocalMenu.style.display = "none";
+    let localMenu = document.getElementById("localMenu");
+    if (localMenu) {
+        localMenu.remove();
+    }
+    let mainMenu = document.getElementById("startMenu");
+    if (!mainMenu) {
+        generateMainMenu();
+    }
 
-    let elMainMenu = document.getElementById("startMenu");
-    elMainMenu.style.display = "";
     let curMenu = "mainMenu"
 }
-function displayLocalMenu() {
-    let elMainMenu = document.getElementById("startMenu");
-    elMainMenu.style.display = "none";
 
+function displayLocalMenu() {
+    generateLocalMenu();
+    let mainMenu = document.getElementById("startMenu");
+    if (mainMenu) {
+        mainMenu.remove();
+    }
     let elLocalMenu = document.getElementById("localMenu");
     elLocalMenu.style.display = "";
     curMenu = "localMenu";
 }
+
 function displayLocalGame() {
     let elBoard = document.getElementById("gameSpace");
-    elBoard.style.display = "";
+    if (!elBoard) {
+        generateGameSpace();
+    }
 
     let elLocalMenu = document.getElementById("localMenu");
     elLocalMenu.style.display = "none";
     curMenu = "Game";
+    resetGameVars();
+    resetBoard();
+    drawBoard();
+    initOutputs();
+    writeOut("Local Game", 1);
 }
 
 function showPromotionModal(color, squareId, moveNote) {
@@ -1122,10 +1151,10 @@ function showPromotionModal(color, squareId, moveNote) {
     content.innerHTML = '<h3 style="margin:0 0 10px 0;">Promote Pawn</h3>';
 
     const options = [
-        { piece: 'Queen',  icon: color === 'white' ? '♕' : '♛' },
-        { piece: 'Rook',   icon: color === 'white' ? '♖' : '♜' },
-        { piece: 'Bishop', icon: color === 'white' ? '♗' : '♝' },
-        { piece: 'Knight', icon: color === 'white' ? '♘' : '♞' }
+        { piece: 'Queen',  icon: color === 'White' ? '♕' : '♛' },
+        { piece: 'Rook',   icon: color === 'White' ? '♖' : '♜' },
+        { piece: 'Bishop', icon: color === 'White' ? '♗' : '♝' },
+        { piece: 'Knight', icon: color === 'White' ? '♘' : '♞' }
     ];
 
     options.forEach(opt => {
@@ -1148,7 +1177,6 @@ function showPromotionModal(color, squareId, moveNote) {
             // 4. Run the exact same end-of-turn steps inline
             moveNote = checkCheck(moveNote);
             addMoveToList(moveNote);
-            writeOut(moveNote, 3);
             clearSelection();
             swapTurns();
 
@@ -1163,28 +1191,160 @@ function showPromotionModal(color, squareId, moveNote) {
     board.appendChild(overlay);
 }
 
+function generateGameSpace() {
+    const mainContent = document.getElementById("mainContent");
 
+    const gameSpace = document.createElement("div");
+    gameSpace.className = "gameSpace";
+    gameSpace.id = "gameSpace";
 
+    const boardSpace = document.createElement("div");
+    boardSpace.className = "boardSpace";
+    boardSpace.id = "boardSpace";
 
+    const boardBar = document.createElement("div");
+    boardBar.className = "boardBar";
 
-document.addEventListener("DOMContentLoaded", () => {
+    const evalBar = document.createElement("div");
+    evalBar.className = "evalBar";
+
+    const evalTop = document.createElement("div");
+    evalTop.className = "evalTop";
+
+    const evalBot = document.createElement("div");
+    evalBot.className = "evalBot";
+
+    evalBar.append(evalTop, evalBot);
+
+    const board = document.createElement("div");
+    board.className = "Board";
+
+    const files = "abcdefgh";
+    const whitePieces = ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"];
+    const blackPieces = ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"];
+
+    for (let rank = 8; rank >= 1; rank--) {
+        const boardRow = document.createElement("div");
+        boardRow.className = "boardRow";
+
+        for (let fileIndex = 0; fileIndex < 8; fileIndex++) {
+            const file = files[fileIndex];
+
+            const square = document.createElement("div");
+            square.id = `${file}${rank}Square`;
+            square.className = `boardSquare ${
+                (rank + fileIndex) % 2 === 0 ? "lightSquare" : "darkSquare"
+            }`;
+
+            if (rank === 8) {
+                square.textContent = blackPieces[fileIndex];
+            } else if (rank === 7) {
+                square.textContent = "♟";
+            } else if (rank === 2) {
+                square.textContent = "♙";
+            } else if (rank === 1) {
+                square.textContent = whitePieces[fileIndex];
+            }
+
+            boardRow.appendChild(square);
+        }
+
+        board.appendChild(boardRow);
+    }
+
+    boardBar.append(evalBar, board);
+    boardSpace.appendChild(boardBar);
+
+    const moveBarContainer = document.createElement("div");
+    moveBarContainer.className = "moveBarContainer";
+
+    const moveBarHeader = document.createElement("div");
+    moveBarHeader.className = "moveBarHeader";
+    moveBarHeader.textContent = "TURNS";
+
+    const moveBar = document.createElement("div");
+    moveBar.className = "moveBar";
+    moveBar.id = "moveBar";
+
+    moveBarContainer.append(moveBarHeader, moveBar);
+    
+    gameSpace.append(boardSpace, moveBarContainer);
+    mainContent.appendChild(gameSpace);
+
     const squares = document.querySelectorAll(".boardSquare");
-
     squares.forEach(square => {
-        square.addEventListener("click", (event) => {
-            const squareId = square.id; // e.g., "e2Square"
+        square.addEventListener("click", () => {
+            const squareId = square.id;
             handleSquareClick(squareId);
         });
     });
-});
-document.getElementById("localButton").addEventListener("click", displayLocalMenu)
 
-document.getElementById("vsHumanButton").addEventListener("click", displayLocalGame)
+}
 
-document.getElementById("localBackButton").addEventListener("click", displayMainMenu)
+function generateMainMenu() {
+    const mainContent = document.getElementById("mainContent");
+    const mainMenu = document.createElement("div");
+    mainMenu.className = "UIContainer mainMenu";
+    mainMenu.id = "startMenu";
 
+    const menuLabel = document.createElement("div");
+    menuLabel.className = "menuLabel";
+    menuLabel.textContent = "CHESS";
 
+    const localButton = document.createElement("button");
+    localButton.className = "menuButton localButton";
+    localButton.type = "button";
+    localButton.id = "localButton";
+    localButton.textContent = "Local Game";
 
+    const createRoomButton = document.createElement("button");
+    createRoomButton.className = "menuButton createRoomButton";
+    createRoomButton.type = "button";
+    createRoomButton.textContent = "Create Room";
+
+    const joinRoomButton = document.createElement("button");
+    joinRoomButton.className = "menuButton joinRoomButton";
+    joinRoomButton.type = "button";
+    joinRoomButton.id = "localBackButton";
+    joinRoomButton.textContent = "Join Room";
+
+    localButton.addEventListener("click", displayLocalMenu);
+    
+    mainMenu.append(menuLabel, localButton, createRoomButton, joinRoomButton);
+
+    mainContent.appendChild(mainMenu);
+}
+
+function generateLocalMenu() {
+    const mainContent = document.getElementById("mainContent");
+    const localMenu = document.createElement("div");
+    localMenu.className = "UIContainer localMenu";
+    localMenu.id = "localMenu";
+
+    const vsHumanButton = document.createElement("button");
+    vsHumanButton.className = "menuButton vsHumanButton";
+    vsHumanButton.type = "button";
+    vsHumanButton.id = "vsHumanButton";
+    vsHumanButton.textContent = "VS Human";
+
+    const vsComputerButton = document.createElement("button");
+    vsComputerButton.className = "menuButton vsComputerButton";
+    vsComputerButton.type = "button";
+    vsComputerButton.textContent = "VS Computer";
+
+    const backButton = document.createElement("button");
+    backButton.className = "menuButton backButton";
+    backButton.type = "button";
+    backButton.id = "localBackButton";
+    backButton.textContent = "Go Back";
+
+    vsHumanButton.addEventListener("click", displayLocalGame);
+    backButton.addEventListener("click", displayMainMenu);
+    
+    localMenu.append(vsHumanButton, vsComputerButton, backButton);
+
+    mainContent.appendChild(localMenu);
+}
 
 /*
 FULLY FUNCTIONAL CHESS ACHIEVED!!!!!
