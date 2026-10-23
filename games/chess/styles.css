@@ -36,7 +36,6 @@ body{
 .headerRow{
 	width: 95%;
 	height: 12%;
-	border: 2px solid yellow;
 	display: flex;
 	gap: 10px; /* Space between the 4 container groups */	
 }
@@ -49,7 +48,6 @@ body{
 
     min-height: 0;           
     min-width: 0;
-    border: 2px solid red;
 }
 .boardSpace{
     width: 100%;
@@ -130,6 +128,8 @@ body{
     margin-left: auto;
     background-color: var(--purpleExtraLight);
     min-width: 120px;
+    border: 2px solid black;
+    border-radius: 10px;
 }
 .moveBarHeader{
     background-color: var(--purpleExtraDark);
@@ -183,7 +183,7 @@ body{
 	padding-left: 5px;
 }
 .labelOdd{
-    background-color: var(--purpleExtraLight);
+    background-color: var(--purpleMain);
 }
 .labelEven{
     background-color: var(--purpleLight);
@@ -191,14 +191,12 @@ body{
 .headerBlockSm{
 	width: 25%;
 	height: 100%;
-	border: 2px solid orange;
 	display: flex;
 	flex-direction: column;
 }
 .headerBlockLg{
 	width: 50%;
 	height: 100%;
-	border: 2px solid orange;
 	display: flex;
 	flex-direction: column;
 }
