@@ -62,12 +62,77 @@ function handleSquareClick(squareId) {
                 }
                 moveNote = checkCheck(moveNote);
                 addMoveToList(moveNote);
+                checkEval(moveNote);
                 clearSelection();
                 swapTurns();
 
                 //handlePromotion() ENDS TURN IN CASE OF WAIT FOR PROMO
             }
         }
+    }
+}
+
+function checkEval(moveNote) {
+     if (moveNote.includes("x") || moveNote.includes("=")) {
+        let whiteVal = 0;
+        let blackVal = 0;
+
+        for (let piece of Object.keys(boardState)) {
+            if (!boardState[piece]) continue;
+
+            if (boardState[piece].color == "White") {
+                switch (boardState[piece].piece) {
+                    case "Pawn":
+                        whiteVal = whiteVal + 1;
+                    break;
+                    case "Bishop":
+                        whiteVal = whiteVal + 3;
+                    break;
+                    case "Knight":
+                        whiteVal = whiteVal + 3;
+                    break;
+                    case "Rook":
+                        whiteVal = whiteVal + 5;
+                    break;
+                    case "Queen":
+                        whiteVal = whiteVal + 9;
+                    break;
+                    default:
+
+                    break;
+                }
+            } else {
+                switch (boardState[piece].piece) {
+                    case "Pawn":
+                        blackVal = blackVal + 1;
+                    break;
+                    case "Bishop":
+                        blackVal = blackVal + 3;
+                    break;
+                    case "Knight":
+                        blackVal = blackVal + 3;
+                    break;
+                    case "Rook":
+                        blackVal = blackVal + 5;
+                    break;
+                    case "Queen":
+                        blackVal = blackVal + 9;
+                    break;
+                    default:
+
+                    break;
+                }
+            }
+        }
+        let totVal = whiteVal + blackVal;
+        const barTop = document.getElementById("evalTop");
+        const barBot = document.getElementById("evalBot");
+
+        barTop.style.height = `${(blackVal / totVal) * 100}%`;
+        barBot.style.height = `${(whiteVal / totVal) * 100}%`;
+        //get white piece value
+        //get black piece value
+        //update bar accordingly
     }
 }
 
@@ -1177,6 +1242,7 @@ function showPromotionModal(color, squareId, moveNote) {
             // 4. Run the exact same end-of-turn steps inline
             moveNote = checkCheck(moveNote);
             addMoveToList(moveNote);
+            checkEval(moveNote);
             clearSelection();
             swapTurns();
 
@@ -1210,9 +1276,11 @@ function generateGameSpace() {
 
     const evalTop = document.createElement("div");
     evalTop.className = "evalTop";
+    evalTop.id = "evalTop";
 
     const evalBot = document.createElement("div");
     evalBot.className = "evalBot";
+    evalBot.id = "evalBot";
 
     evalBar.append(evalTop, evalBot);
 
